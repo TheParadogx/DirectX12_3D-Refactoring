@@ -6,7 +6,7 @@
 #include<cstdio>
 #include<string>
 #include<string_view>
-
+#include<mutex>
 
 namespace Ecse::Utility
 {
@@ -107,6 +107,9 @@ namespace Ecse::Utility
 				LogInternal(File, Line, ELogLevel::Error, std::string("Format Error: ") + e.what());
 			}
 		}
+
+	private:
+		static std::mutex sLogMutex;
 	};
 
 }

@@ -4,6 +4,9 @@
 
 namespace Ecse::Utility
 {
+	//	メモリ上に確保
+	std::mutex Logger::sLogMutex;
+
 	static bool operator&(const EConsoleTextColor a, const EConsoleTextColor b)
 	{
 		return static_cast<uint8_t>(a) & static_cast<uint8_t>(b);
@@ -66,8 +69,10 @@ namespace Ecse::Utility
 	/// <param name="Message">出力テキスト</param>
 	void Logger::LogInternal(const char* File, int Line, ELogLevel Level, const std::string& Message)
 	{
+		std::lock_guard lock(sLogMutex);
+
 		//	Debug出力（vsの出力ウィンドウ）
-		std::string debugMsg = std::format("[{}] {}\n", (int)Level, Message);
+		std::string debugMsg = std::format("[{}]{}\n", (int)Level, Message);
 		OutputDebugStringA(debugMsg.c_str());
 		
 		//	エラー以外は色を変える
@@ -79,18 +84,18 @@ namespace Ecse::Utility
 		std::string label = "";
 		switch (Level) {
 		case ELogLevel::Warning: 
-			label = "[Warning] "; 
+			label = "[Warning]"; 
 			break;
 
 		case ELogLevel::Error:   
-			label = "[Error]   "; 
+			label = "[Error]"; 
 			break;
 
 		case ELogLevel::Fatal:   
-			label = "[FATAL]   "; 
+			label = "[FATAL]"; 
 			break;
 		default:                 
-			label = "[Log]     "; 
+			label = "[Log]"; 
 			break;
 		}
 
