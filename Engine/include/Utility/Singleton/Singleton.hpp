@@ -23,7 +23,7 @@ namespace Ecse::Utility
 	/// </summary>
 	/// <typeparam name="T">継承先のクラス</typeparam>
 	template<typename T>
-	class Singleton : public ISystem
+	class Singleton : public IService
 	{
 	public:
 		/// <summary>
