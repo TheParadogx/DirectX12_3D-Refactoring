@@ -100,6 +100,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\Utility\Export\README.md" />
+    <None Include="README.md" />
   </ItemGroup>
 </Project>

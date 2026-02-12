@@ -54,6 +54,9 @@ namespace Ecse::Utility
 		White = Red | Blue | Green,
 	};
 
+	/// <summary>
+	/// ログを表示するためのクラス
+	/// </summary>
 	class ENGINE_API Logger : public Singleton<Logger>
 	{
 		GENERATE_SINGLETON_BODY(Logger);
@@ -84,21 +87,26 @@ namespace Ecse::Utility
 
 	public:
 
+		/// <summary>
+		/// ログ表示用のAPI
+		/// </summary>
+		/// <param name="File">__FILE__</param>
+		/// <param name="Line">__LINE__</param>
+		/// <param name="Level">ログの出力レベル</param>
+		/// <param name="...args">可変引数</param>
 		template<typename... Args>
-		void Output(const char* File, int line, ELogLevel Level, std::string_view Fmt, Args&&... args)
+		void Output(const char* File, int Line, ELogLevel Level, std::string_view Fmt, Args&&... args)
 		{
 			try
 			{
 				std::string message = std::vformat(Fmt, std::make_format_args(args...));
-				LogInternal(File, line, Level, message);
+				LogInternal(File, Line, Level, message);
 			}
 			catch (const std::format_error& e)
 			{
-				LogInternal(File, line, ELogLevel::Error, std::string("Format Error: ") + e.what());
+				LogInternal(File, Line, ELogLevel::Error, std::string("Format Error: ") + e.what());
 			}
 		}
-
-	private:
 	};
 
 }
@@ -107,7 +115,18 @@ namespace Ecse::Utility
 * 呼び出しを楽にするためのマクロ
 * Loggerが登録されているときだけ処理をする
 */
-#define ECSE_LOG(level, text, ...) \
-    if (auto* logger = ::Ecse::Utility::Logger::Get()) { \
-        logger->Output(__FILE__, __LINE__, level, text __VA_OPT__(,) __VA_ARGS__); \
-    }
+#ifdef _DEBUG
+// デバッグビルド時：すべて出す
+#define ECSE_LOG(level, fmt, ...) \
+        if (auto* logger = ::Ecse::Utility::Logger::Get()) { \
+            logger->Output(__FILE__, __LINE__, level, fmt __VA_OPT__(,) __VA_ARGS__); \
+        }
+#else
+// リリースビルド時：Error と Fatal だけ出す（それ以外はコードごと消滅させる）
+#define ECSE_LOG(level, fmt, ...) \
+        if (level >= ::Ecse::Utility::ELogLevel::Error) { \
+            if (auto* logger = ::Ecse::Utility::Logger::Get()) { \
+                logger->Output(__FILE__, __LINE__, level, fmt __VA_OPT__(,) __VA_ARGS__); \
+            } \
+        }
+#endif
