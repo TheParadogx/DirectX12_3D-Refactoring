@@ -92,10 +92,10 @@
     <ClCompile Include="External\Plugin\ImGui\ImGuizmo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utility\ServiceLocator\ServiceLocator.cpp">
+    <ClCompile Include="src\System\ServiceLocator\ServiceLocator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utility\Log\Logger.cpp">
+    <ClCompile Include="src\System\Log\Logger.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

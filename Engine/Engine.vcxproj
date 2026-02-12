@@ -212,8 +212,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Utility\Log\Logger.cpp" />
-    <ClCompile Include="src\Utility\ServiceLocator\ServiceLocator.cpp" />
+    <ClCompile Include="src\System\Log\Logger.cpp" />
+    <ClCompile Include="src\System\ServiceLocator\ServiceLocator.cpp" />
     <ClCompile Include="src\Core\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

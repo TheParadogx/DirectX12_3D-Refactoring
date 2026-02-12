@@ -30,6 +30,11 @@
 
 
 // STL
+#include<utility>
+#include<type_traits>
+#include<typeindex>
+#include<typeinfo>
+
 #include<vector>
 #include<array>
 #include<queue>
@@ -68,6 +73,7 @@
 
 #include <dxgidebug.h>
 #include<cassert>
+#include<cstdint>
 
 // Library
 #include<ImGui/imgui.h>
@@ -77,5 +83,8 @@
 // エリアス
 #include<Utility/Types/EcseTypes.hpp>
 #include<Utility/Export/Export.hpp>
+
+//	自作システム系
+#include<System/Service/ServiceLocator.hpp>
 
 #endif //PCH_H
