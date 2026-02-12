@@ -80,11 +80,10 @@
 #include<entt/entt.hpp>
 #include<DirectXTex/DirectXTex.h>
 
-// エリアス
+//	My
 #include<Utility/Types/EcseTypes.hpp>
 #include<Utility/Export/Export.hpp>
-
-//	自作システム系
 #include<System/Service/ServiceLocator.hpp>
+#include<System/Log/Logger.hpp>
 
 #endif //PCH_H

@@ -96,7 +96,7 @@ namespace Ecse::System
 		/// <param name="Level">ログの出力レベル</param>
 		/// <param name="...args">可変引数</param>
 		template<typename... Args>
-		void Output(ELogLevel Level, std::string_view Fmt, Args&&... args, const std::source_location Location = std::source_location::current())
+		void Output(ELogLevel Level, std::string_view Fmt, const std::source_location Location, Args&&... args)
 		{
 			try
 			{
@@ -120,24 +120,24 @@ namespace Ecse::System
 * Loggerが登録されているときだけ処理をする
 * ifとelseの間にマクロを展開すると内側のif分に結びつく可能性があるのでdo whileにします。
 */
-#ifndef ESCE_LOG
+
+#ifndef ECSE_LOG
 #ifdef _DEBUG
 // デバッグビルド：全てを記録
-#define ESCE_LOG(level, fmt, ...) \
+#define ECSE_LOG(level, format, ...) \
         do { \
             if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
-                logger->Output(level, fmt __VA_OPT__(,) __VA_ARGS__); \
+                logger->Output(level, format,std::source_location::current(), ##__VA_ARGS__); \
             } \
         } while (0)
 #else
-#define ESCE_MIN_LOG_LEVEL ::Ecse::System::ELogLevel::Error
-
+#define ELOG_LEVEL ::Ecse::System::ELogLevel::Error
 // リリースビルド：Error 以上だけをコンパイル対象にする
-#define ESCE_LOG(level, fmt, ...) \
+#define ECSE_LOG(level, format, ...) \
         do { \
-            if constexpr (level >= ESCE_MIN_LOG_LEVEL ) { \
+            if constexpr (level >= ELOG_LEVEL ) { \
                 if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
-                    logger->Output(level, fmt __VA_OPT__(,) __VA_ARGS__); \
+                    logger->Output(level, format,std::source_location::current(), ##__VA_ARGS__); \
                 } \
             } \
         } while (0)
