@@ -18,6 +18,14 @@ namespace Ecse::Utility
 		{
 			sServices = new std::unordered_map<std::type_index, void*>();
 		}
+
+		//	中身がないやつが登録しようとしたら削除する
+		if (Instance == nullptr)
+		{
+			sServices->erase(Type);
+			return;
+		}
+
 		// 演算子の優先度があるので(*sServices)
 		(*sServices)[Type] = Instance;
 		// 	sServices->operator[](Type) = Instance;
@@ -36,6 +44,9 @@ namespace Ecse::Utility
 		{
 			return it->second;
 		}
+
+		//	検索失敗のログを出す
+
 		return nullptr;
 	}
 

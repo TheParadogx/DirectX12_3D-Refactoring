@@ -161,6 +161,7 @@
     <ClInclude Include="External\Plugin\ImGui\imstb_rectpack.h" />
     <ClInclude Include="External\Plugin\ImGui\imstb_textedit.h" />
     <ClInclude Include="External\Plugin\ImGui\imstb_truetype.h" />
+    <ClInclude Include="include\Utility\ServiceLocator\IService.hpp" />
     <ClInclude Include="include\Utility\Types\EcseTypes.hpp" />
     <ClInclude Include="include\Core\pch.h" />
     <ClInclude Include="include\Utility\Export\Export.hpp" />

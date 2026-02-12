@@ -2,8 +2,17 @@
 #include<Utility/Export/Export.hpp>
 #include<typeindex>
 
+#include"IService.hpp"
+#include<concepts>
+
 namespace Ecse::Utility
 {
+	/// <summary>
+	/// どの型でも渡せたらやばいので特定の基底クラスに縛ります。
+	/// </summary>
+	template<typename T>
+	concept IsEngineSystem = std::derived_from<T, IService>;
+
 	/// <summary>
 	/// 各システムのインスタンスを一括管理をするクラス
 	/// DLL化のことを考えて境界を超えれるようにしてます。
@@ -16,7 +25,7 @@ namespace Ecse::Utility
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="Instance"></param>
-		template<typename T>
+		template<IsEngineSystem  T>
 		static void Register(T* Instance)
 		{
 			RegisterInternal(typeid(T));
@@ -27,7 +36,7 @@ namespace Ecse::Utility
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		template<typename T>
+		template<IsEngineSystem  T>
 		static T* Get()
 		{
 			return static_cast<T*>(GetInternal((typeid(T))));
@@ -37,7 +46,7 @@ namespace Ecse::Utility
 		/// 登録を解除する
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		template<typename T>
+		template<IsEngineSystem  T>
 		static void Unregister() 
 		{
 			RegisterInternal((typeid(T)), nullptr);
