@@ -4,6 +4,9 @@
 
 #include<cstdint>
 #include<cstdio>
+#include<string>
+#include<string_view>
+
 
 namespace Ecse::Utility
 {
@@ -65,22 +68,36 @@ namespace Ecse::Utility
 		/// </summary>
 		virtual void OnDestroy() override;
 
-	public:
+	private:
 		/// <summary>
-		/// コンソールへの出力
-		/// 直接呼ばずに ECSE_LOG のマクロから呼ぶことを推奨
+		/// 色のセット
 		/// </summary>
-		/// <param name="Sorcefile">__FILE__</param>
+		void SetTextColor(ELogLevel Level);
+		/// <summary>
+		/// ログの表示
+		/// </summary>
+		/// <param name="File">__FILE__</param>
 		/// <param name="Line">__LINE__</param>
 		/// <param name="Level">ログの出力レベル</param>
-		/// <param name="Text">出力テキスト</param>
-		/// <param name="">可変引数</param>
-		void Output(const char* Sourcefile, int Line, ELogLevel Level, const char* Text, ...);
+		/// <param name="Message">出力テキスト</param>
+		void LogInternal(const char* File, int Line, ELogLevel Level, const std::string& Message);
+
+	public:
+
+		template<typename... Args>
+		void Output(const char* File, int Line, ELogLevel Level, std::string_view Fmt, Args&&... args) 
+		{
+			try
+			{
+				std::string message = std::vformat(Fmt, std::format_args(args..));
+				LogInternal(File, Line, Level, message);
+			}
+			catch (const std::format_error& e)
+			{
+				LogInternal(File, Line, Level, std::string("Format Error: ") + e.what());
+			}
+		}
 	private:
-
-		static FILE* mConOutFP;
-		static FILE* mConInFP;
-
 	};
 
 }

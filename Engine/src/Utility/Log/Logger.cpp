@@ -4,9 +4,6 @@
 
 namespace Ecse::Utility
 {
-	FILE* Logger::mConInFP = nullptr;
-	FILE* Logger::mConOutFP = nullptr;
-
 	static bool operator&(const EConsoleTextColor a, const EConsoleTextColor b)
 	{
 		return static_cast<uint8_t>(a) & static_cast<uint8_t>(b);
@@ -17,8 +14,16 @@ namespace Ecse::Utility
 	/// </summary>
 	void Logger::OnCreate()
 	{
-		AllocConsole();
+		if (AllocConsole() == true)
+		{
+			FILE* fp = nullptr;
+			freopen_s(&fp, "CONOUT$", "w", stdout);
+			freopen_s(&fp, "CONIN$", "r", stdin);
 
+			//	日本語に対応させます。
+			std::setlocale(LC_ALL, "japanese");
+		}
+		std::cout << "[System] Logger Online." << std::endl;
 	}
 
 	/// <summary>
@@ -28,16 +33,4 @@ namespace Ecse::Utility
 	{
 	}
 
-	/// <summary>
-	/// コンソールへの出力
-	/// 直接呼ばずに ECSE_LOG のマクロから呼ぶことを推奨
-	/// </summary>
-	/// <param name="Sorcefile">__FILE__</param>
-	/// <param name="Line">__LINE__</param>
-	/// <param name="Level">ログの出力レベル</param>
-	/// <param name="Text">出力テキスト</param>
-	/// <param name="">可変引数</param>
-	void Logger::Output(const char* Sourcefile, int Line, ELogLevel Level, const char* Text, ...)
-	{
-	}
 }

@@ -2,6 +2,7 @@
 #include<Utility/ServiceLocator/ServiceLocator.hpp>
 #include<Utility/ServiceLocator/IService.hpp>
 
+
 /*
 * 派生クラスでもインスタンスを生成できないようにする処理のマクロ定義
 * これを継承先privateで呼び出す。
