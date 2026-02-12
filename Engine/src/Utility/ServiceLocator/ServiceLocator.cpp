@@ -2,32 +2,42 @@
 #include "Utility/ServiceLocator/ServiceLocator.hpp"
 
 
+/*
+* typeid(T)が同一のモノとして扱われない可能性がホットリロードであるので
+* その時はID方式に変更しようかな。
+*/
+
 namespace Ecse::Utility
 {
-	//	生ポインタなのはホットリロードを実装するときに
-	//  アンロードでもインスタンスを破棄されずに同じ実体をさしたいので
-	static std::unordered_map<std::type_index, void*>* sServices = nullptr;
 
+	/// <summary>
+	/// DLL境界を超えて唯一のマップ実体を保証するための内部関数。
+	/// 将来的にホットリロードをやる可能性があるのでvoid*にしています
+	/// </summary>
+	static std::unordered_map<std::type_index, void*>* GetServiceMap()
+	{
+		// 最初の呼び出し時に一度だけnew
+		// 関数内の static 変数は、その DLL 内のデータセグメントに一つだけ配置
+		static std::unordered_map<std::type_index, void*>* sServices = new std::unordered_map<std::type_index, void*>();
+		return sServices;
+	}
 
 	/// <summary>
 	/// dll境界を超えつつ登録するためのヘルパー
 	/// </summary>
 	void ServiceLocator::RegisterInternal(std::type_index Type, void* Instance)
 	{
-		if (sServices == nullptr)
-		{
-			sServices = new std::unordered_map<std::type_index, void*>();
-		}
+		auto Services = GetServiceMap();
 
 		//	中身がないやつが登録しようとしたら削除する
 		if (Instance == nullptr)
 		{
-			sServices->erase(Type);
+			Services->erase(Type);
 			return;
 		}
 
 		// 演算子の優先度があるので(*sServices)
-		(*sServices)[Type] = Instance;
+		(*Services)[Type] = Instance;
 		// 	sServices->operator[](Type) = Instance;
 	}
 
@@ -36,11 +46,11 @@ namespace Ecse::Utility
 	/// </summary>
 	void* ServiceLocator::GetInternal(std::type_index Type)
 	{
-		if (sServices == nullptr) return nullptr;
+		auto Services = GetServiceMap();
 
 		//	検索
-		auto it = sServices->find(Type);
-		if (it != sServices->end())
+		auto it = Services->find(Type);
+		if (it != Services->end())
 		{
 			return it->second;
 		}

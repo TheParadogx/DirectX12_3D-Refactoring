@@ -28,7 +28,7 @@ namespace Ecse::Utility
 		template<IsEngineSystem  T>
 		static void Register(T* Instance)
 		{
-			RegisterInternal(typeid(T));
+			RegisterInternal(typeid(T),Instance);
 		}
 
 		/// <summary>
