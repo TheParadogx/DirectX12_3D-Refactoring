@@ -85,18 +85,19 @@ namespace Ecse::Utility
 	public:
 
 		template<typename... Args>
-		void Output(const char* File, int Line, ELogLevel Level, std::string_view Fmt, Args&&... args) 
+		void Output(const char* File, int line, ELogLevel Level, std::string_view Fmt, Args&&... args)
 		{
 			try
 			{
-				std::string message = std::vformat(Fmt, std::format_args(args..));
-				LogInternal(File, Line, Level, message);
+				std::string message = std::vformat(Fmt, std::make_format_args(args...));
+				LogInternal(File, line, Level, message);
 			}
 			catch (const std::format_error& e)
 			{
-				LogInternal(File, Line, Level, std::string("Format Error: ") + e.what());
+				LogInternal(File, line, ELogLevel::Error, std::string("Format Error: ") + e.what());
 			}
 		}
+
 	private:
 	};
 
