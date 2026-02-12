@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
-#include "Utility/Log/Logger.hpp"
+#include "System/Log/Logger.hpp"
 
 
-namespace Ecse::Utility
+namespace Ecse::System
 {
 	//	メモリ上に確保
 	std::mutex Logger::sLogMutex;

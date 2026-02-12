@@ -1,14 +1,16 @@
 ﻿#pragma once
 #include<Utility/Export/Export.hpp>
-#include<Utility/Singleton/Singleton.hpp>
+#include<System/Service/ServiceProvider.hpp>
+#include<System/Service/ServiceLocator.hpp>
 
 #include<cstdint>
 #include<cstdio>
 #include<string>
 #include<string_view>
 #include<mutex>
+#include <source_location>
 
-namespace Ecse::Utility
+namespace Ecse::System
 {
 	/// <summary>
 	/// Debug出力のレベル定義
@@ -57,9 +59,8 @@ namespace Ecse::Utility
 	/// <summary>
 	/// ログを表示するためのクラス
 	/// </summary>
-	class ENGINE_API Logger : public Singleton<Logger>
+	class ENGINE_API Logger : public ServiceProvider<Logger>
 	{
-		GENERATE_SINGLETON_BODY(Logger);
 	protected:		
 		/// <summary>
 		/// コンソールウィンドウの作成とそのコンソールに書き込めるようにターゲット
@@ -95,16 +96,16 @@ namespace Ecse::Utility
 		/// <param name="Level">ログの出力レベル</param>
 		/// <param name="...args">可変引数</param>
 		template<typename... Args>
-		void Output(const char* File, int Line, ELogLevel Level, std::string_view Fmt, Args&&... args)
+		void Output(ELogLevel Level, std::string_view Fmt, Args&&... args, const std::source_location Location = std::source_location::current())
 		{
 			try
 			{
 				std::string message = std::vformat(Fmt, std::make_format_args(args...));
-				LogInternal(File, Line, Level, message);
+				LogInternal(Location.file_name(), static_cast<int>(Location.line()), Level, message);
 			}
 			catch (const std::format_error& e)
 			{
-				LogInternal(File, Line, ELogLevel::Error, std::string("Format Error: ") + e.what());
+				LogInternal(Location.file_name(), static_cast<int>(Location.line()), ELogLevel::Error, std::string("Format Error: ") + e.what());
 			}
 		}
 
@@ -117,19 +118,28 @@ namespace Ecse::Utility
 /*
 * 呼び出しを楽にするためのマクロ
 * Loggerが登録されているときだけ処理をする
+* ifとelseの間にマクロを展開すると内側のif分に結びつく可能性があるのでdo whileにします。
 */
+#ifndef ESCE_LOG
 #ifdef _DEBUG
-// デバッグビルド時：すべて出す
-#define ECSE_LOG(level, fmt, ...) \
-        if (auto* logger = ::Ecse::Utility::Logger::Get()) { \
-            logger->Output(__FILE__, __LINE__, level, fmt __VA_OPT__(,) __VA_ARGS__); \
-        }
-#else
-// リリースビルド時：Error と Fatal だけ出す（それ以外はコードごと消滅させる）
-#define ECSE_LOG(level, fmt, ...) \
-        if (level >= ::Ecse::Utility::ELogLevel::Error) { \
-            if (auto* logger = ::Ecse::Utility::Logger::Get()) { \
-                logger->Output(__FILE__, __LINE__, level, fmt __VA_OPT__(,) __VA_ARGS__); \
+// デバッグビルド：全てを記録
+#define ESCE_LOG(level, fmt, ...) \
+        do { \
+            if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
+                logger->Output(level, fmt __VA_OPT__(,) __VA_ARGS__); \
             } \
-        }
+        } while (0)
+#else
+#define ESCE_MIN_LOG_LEVEL ::Ecse::System::ELogLevel::Error
+
+// リリースビルド：Error 以上だけをコンパイル対象にする
+#define ESCE_LOG(level, fmt, ...) \
+        do { \
+            if constexpr (level >= ESCE_MIN_LOG_LEVEL ) { \
+                if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
+                    logger->Output(level, fmt __VA_OPT__(,) __VA_ARGS__); \
+                } \
+            } \
+        } while (0)
+#endif
 #endif

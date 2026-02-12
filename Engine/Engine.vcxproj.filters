@@ -51,19 +51,19 @@
     <ClInclude Include="include\Utility\Types\EcseTypes.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Utility\Singleton\Singleton.hpp">
+    <ClInclude Include="include\System\Service\ServiceProvider.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Utility\ServiceLocator\ServiceLocator.hpp">
+    <ClInclude Include="include\System\Service\ServiceLocator.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\Utility\Export\Export.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Utility\ServiceLocator\IService.hpp">
+    <ClInclude Include="include\System\Service\IService.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Utility\Log\Logger.hpp">
+    <ClInclude Include="include\System\Log\Logger.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

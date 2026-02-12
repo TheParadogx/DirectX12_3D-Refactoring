@@ -5,7 +5,7 @@
 #include"IService.hpp"
 #include<concepts>
 
-namespace Ecse::Utility
+namespace Ecse::System
 {
 	/// <summary>
 	/// どの型でも渡せたらやばいので特定の基底クラスに縛ります。

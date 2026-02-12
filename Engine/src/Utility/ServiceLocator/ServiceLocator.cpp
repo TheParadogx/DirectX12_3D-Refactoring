@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "Utility/ServiceLocator/ServiceLocator.hpp"
+#include "System/Service/ServiceLocator.hpp"
 
 
 /*
@@ -7,7 +7,7 @@
 * その時はID方式に変更しようかな。
 */
 
-namespace Ecse::Utility
+namespace Ecse::System
 {
 
 	/// <summary>

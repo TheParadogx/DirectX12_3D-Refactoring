@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Ecse::Utility
+namespace Ecse::System
 {
 	/// <summary>
 	/// サービスの基底クラス（コンセプト用）
