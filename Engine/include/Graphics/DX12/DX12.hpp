@@ -7,6 +7,9 @@
 
 namespace Ecse::Graphics
 {
+	/// <summary>
+	/// DX12でのレンダリングまでの基盤部分の一括管理
+	/// </summary>
 	class DX12 : public System::ServiceProvider<DX12>
 	{
 		ECSE_SERVICE_ACCESS(DX12);
@@ -19,6 +22,9 @@ namespace Ecse::Graphics
 		static constexpr int FRAME_COUNT = 3;
 	private:
 
+		/// <summary>
+		/// 各フレームごとに必要な情報をまとめた構造体
+		/// </summary>
 		struct FrameResrouce
 		{
 			/// <summary>
