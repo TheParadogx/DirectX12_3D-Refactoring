@@ -196,9 +196,11 @@ namespace Ecse::Graphics
 	{
 		UINT factoryFlags = 0;
 
+		//	デバイス作成時やリソース解放時の詳細なエラーチェックが可能にするための機能の有効化
 #if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
 		factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
+		// CreateDXGIFactory2を使用することで、デバッグフラグを指定した生成が可能
 		const HRESULT hr = CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&mFactory));
 		if (FAILED(hr))
 		{
