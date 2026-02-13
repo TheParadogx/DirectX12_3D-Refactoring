@@ -179,7 +179,7 @@ namespace Ecse::Graphics
 		}
 
 		//	Debugデバイスの取得
-#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
+#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
 		if (FAILED(mDevice.As(&mDebugDevice)))
 		{
 			ECSE_LOG(System::ELogLevel::Warning, "DirectX12: Failed to get DebugDevice interface.");
