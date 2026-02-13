@@ -155,6 +155,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\System\Engine\Engine.hpp" />
     <ClInclude Include="External\Plugin\ImGui\imconfig.h" />
     <ClInclude Include="External\Plugin\ImGui\imgui.h" />
     <ClInclude Include="External\Plugin\ImGui\ImGuizmo.h" />
@@ -165,8 +166,10 @@
     <ClInclude Include="External\Plugin\ImGui\imstb_rectpack.h" />
     <ClInclude Include="External\Plugin\ImGui\imstb_textedit.h" />
     <ClInclude Include="External\Plugin\ImGui\imstb_truetype.h" />
+    <ClInclude Include="include\System\Engine\EngineContext.hpp" />
     <ClInclude Include="include\System\Log\Logger.hpp" />
     <ClInclude Include="include\System\Service\IService.hpp" />
+    <ClInclude Include="include\System\Window\WindowSetting.hpp" />
     <ClInclude Include="include\Utility\Types\EcseTypes.hpp" />
     <ClInclude Include="include\Core\pch.h" />
     <ClInclude Include="include\Utility\Export\Export.hpp" />
@@ -175,6 +178,7 @@
     <ClInclude Include="include\System\Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Engine\Engine.cpp" />
     <ClCompile Include="External\Plugin\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>

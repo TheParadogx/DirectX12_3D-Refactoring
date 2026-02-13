@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include<System/Window/Window.hpp>
+#include<System/Window/WindowSetting.hpp>
 
 /// <summary>
 /// ウィンドウ
@@ -53,7 +54,7 @@ namespace Ecse::System
     /// </summary>
     /// <param name="Setting">生成時の設定</param>
     /// <returns>true:成功</returns>
-    bool Window::Initiliaze(const WindowSetting& Setting)
+    bool Window::Initialize(const WindowSetting& Setting)
     {
         //  ウィンドウサイズ
         mWidth = Setting.Width;

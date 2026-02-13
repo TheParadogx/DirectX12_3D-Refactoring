@@ -1,6 +1,5 @@
 ﻿#include "pch.h"
-#include "System/Log/Logger.hpp"
-
+#include<System/Log/Logger.hpp>
 
 namespace Ecse::System
 {
