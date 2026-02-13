@@ -16,6 +16,7 @@ namespace Ecse::System
 	/// </summary>
 	class ENGINE_API Window : public ServiceProvider<Window>
 	{
+		ECSE_SERVICE_ACCESS(Window);
 	protected:
 		//	生成・破棄
 		virtual void OnCreate() override;

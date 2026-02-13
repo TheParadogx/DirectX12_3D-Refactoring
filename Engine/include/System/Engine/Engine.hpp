@@ -13,6 +13,8 @@ namespace Ecse::System
 	/// </summary>
 	class ENGINE_API Engine :public ServiceProvider<Engine>
 	{
+		ECSE_SERVICE_ACCESS(Engine);
+
 	protected:
 		void OnCreate()override;
 	public:

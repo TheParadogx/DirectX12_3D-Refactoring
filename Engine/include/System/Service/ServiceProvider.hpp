@@ -5,9 +5,11 @@
 #include<memory>
 
 /*
-* 派生クラスでもインスタンスを生成できないようにする処理のマクロ定義
-* これを継承先privateで呼び出す。
+* OnCreateとOnDestroyに触れるように
 */
+#define ECSE_SERVICE_ACCESS(ClassName) \
+    friend class ::Ecse::System::ServiceProvider<ClassName>; \
+    friend struct std::default_delete<ClassName>;
 
 namespace Ecse::System
 {

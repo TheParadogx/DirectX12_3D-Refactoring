@@ -30,4 +30,8 @@ namespace Ecse
 	// 同期デバッグ
 	using Fence = ComPtr<ID3D12Fence>;
 	using Debug = ComPtr<ID3D12Debug5>;
+
+	//	デバック
+	using DebugDevice = ComPtr<ID3D12DebugDevice2>;
+	using InfoQueue = ComPtr<ID3D12InfoQueue1>;
 }

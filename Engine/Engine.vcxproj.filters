@@ -78,6 +78,9 @@
     <ClInclude Include="include\System\Window\WindowSetting.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\DX12\DX12.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
@@ -114,6 +117,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Engine\Engine.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DX12\DX12.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

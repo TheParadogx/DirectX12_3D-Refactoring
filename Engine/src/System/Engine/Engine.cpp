@@ -37,12 +37,34 @@ namespace Ecse::System
 			return false;
 		}
 
-
-
+		//	ここに他のシステムも同様の初期化する
 
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
+
+		return true;
+	}
+
+	/// <summary>
+	/// メインループ
+	/// これを While(Engine->Run()) みたいに呼び出す。
+	/// エンジン外のデバックツールなどを表示できるようにする。
+	/// </summary>
+	/// <returns>true:続行 false:終了</returns>
+	bool Engine::Run()
+	{
+		if (mIsInitialized == false) return false;
+
+		//	OSメッセージ処理
+		mpWindow->ProcessMessages();
+
+		//	終了判定
+		if (mpWindow->IsQuitRequested())
+		{
+			return false;
+		}
+
 
 		return true;
 	}
