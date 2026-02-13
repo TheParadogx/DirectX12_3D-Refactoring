@@ -43,7 +43,7 @@ namespace Ecse::System
     {
         if (mHandle != nullptr)
         {
-            ::UnregisterClass(mWindowClass.lpszMenuName, mWindowClass.hInstance);
+            ::UnregisterClass(mWindowClass.lpszClassName, mWindowClass.hInstance);
             ECSE_LOG(ELogLevel::Log, "Window Deleted.");
         }
     }
@@ -108,7 +108,7 @@ namespace Ecse::System
         //  ウィンドウの作成
         mHandle = ::CreateWindowExW(
             0,
-            mWindowClass.lpszMenuName,
+            mWindowClass.lpszClassName,
             Setting.Title.c_str(),
             style,
             x, y,
@@ -140,4 +140,123 @@ namespace Ecse::System
         return true;
     }
 
-}
+    /// <summary>
+    /// メッセージループの処理
+    /// </summary>
+    void Window::ProcessMessages()
+    {
+        MSG msg = {};
+        while (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                mIsQuitRequested = true;
+            }
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+        }
+    }
+
+    /// <summary>
+    /// 終了フラグの確認
+    /// </summary>
+    /// <returns>true:App終了</returns>
+    bool Window::IsQuitRequested() const
+    {
+        return mIsQuitRequested;
+    }
+
+    /// <summary>
+    /// ウィンドウハンドル取得
+    /// </summary>
+    /// <returns></returns>
+    HWND Window::GetHWND()const
+    {
+        return mHandle;
+    }
+
+    /// <summary>
+    /// カーソルの表示・非表示を変更する
+    /// </summary>
+    /// <param name="isVisible">true:表示する</param>
+    void Window::SetCursorVisible(bool isVisible)
+    {
+        if (mIsCursorVisible == isVisible) return;
+
+        mIsCursorVisible = isVisible;
+        if (isVisible)
+        {
+            //  カーソルの数値が＋(表示)になるまで呼び出す
+            while (::ShowCursor(TRUE) < 0);
+        }
+        else
+        {
+            //  カーソルの数値がー(非表示)になるまで呼び出す
+            while (::ShowCursor(FALSE) >= 0);
+        }
+
+    }
+
+    /// <summary>
+    /// カーソルの表示状態かどうかの判定
+    /// </summary>
+    /// <returns>true:表示中</returns>
+    bool Window::IsCursorVisible()const
+    {
+        return mIsCursorVisible;
+    }
+
+    /// <summary>
+    /// 実際のウィンドウの横サイズ
+    /// </summary>
+    /// <returns></returns>
+    int Window::GetWidth()const
+    {
+        return mWidth;
+    }
+
+    /// <summary>
+    /// 実際のウィンドウの縦サイズ
+    /// </summary>
+    /// <returns></returns>
+    int Window::GetHeight()const
+    {
+        return mHeight;
+    }
+
+    /// <summary>
+    /// 内部で設定した仮想の横サイズ
+    /// </summary>
+    /// <returns></returns>
+    int Window::GetVirtualWidth() const
+    {
+        return mVirtualWidth;
+    }
+
+    /// <summary>
+    /// 内部で設定した仮想の縦サイズ
+    /// </summary>
+    /// <returns></returns>
+    int Window::GetVirtualHeight() const
+    {
+        return mVirtualHeight;
+    }
+
+    /// <summary>
+    /// 実サイズの割合と仮想サイズ（横）
+    /// </summary>
+    /// <returns></returns>
+    float Window::GetScaleX() const
+    {
+        return static_cast<float>(mWidth) / mVirtualWidth;
+    }
+
+    /// <summary>
+    /// 実サイズの割合と仮想サイズ（縦）
+    /// </summary>
+    /// <returns></returns>
+    float Window::GetScaleY() const
+    {
+        return static_cast<float>(mHeight) / mVirtualHeight;
+    }
+} 

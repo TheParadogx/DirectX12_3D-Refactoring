@@ -63,18 +63,6 @@ namespace Ecse::System
 		/// <returns></returns>
 		HWND GetHWND() const;
 
-		//	実際のウィンドウのサイズ
-		int GetWidth() const;
-		int GetHeight() const;
-
-		//	内部の仮想ウィンドウサイズ
-		int GetVirtualWidth() const;
-		int GetVirtualHeight() const;
-
-		//	仮想サイズから実サイズのスケール比
-		float GetScaleX() const;
-		float GetScaleY() const;
-	public:
 		/// <summary>
 		/// カーソルの表示・非表示を変更する
 		/// </summary>
@@ -87,6 +75,18 @@ namespace Ecse::System
 		/// <returns>true:表示中</returns>
 		bool IsCursorVisible()const;
 
+
+		//	実際のウィンドウのサイズ
+		int GetWidth() const;
+		int GetHeight() const;
+
+		//	内部の仮想ウィンドウサイズ
+		int GetVirtualWidth() const;
+		int GetVirtualHeight() const;
+
+		//	仮想サイズから実サイズのスケール比
+		float GetScaleX() const;
+		float GetScaleY() const;
 	private:
 
 		/// <summary>
