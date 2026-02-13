@@ -100,7 +100,7 @@ namespace Ecse::System
 		{
 			try
 			{
-				std::string message = std::vformat(Fmt, std::make_format_args(args...));
+				std::string message = std::vformat(Fmt, std::make_format_args(std::forward<Args>(args)...));				
 				LogInternal(Location.file_name(), static_cast<int>(Location.line()), Level, message);
 			}
 			catch (const std::format_error& e)
