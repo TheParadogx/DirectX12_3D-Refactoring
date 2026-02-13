@@ -61,6 +61,7 @@ namespace Ecse::System
 	/// </summary>
 	class ENGINE_API Logger : public ServiceProvider<Logger>
 	{
+		ECSE_SERVICE_ACCESS(Logger);
 	protected:		
 		/// <summary>
 		/// コンソールウィンドウの作成とそのコンソールに書き込めるようにターゲット

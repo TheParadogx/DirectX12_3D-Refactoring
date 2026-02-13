@@ -1,26 +1,122 @@
 ﻿#pragma once
 
+#include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceProvider.hpp>
 #include<Utility/Types/EcseTypes.hpp>
+#include<Graphics/Color/Color.hpp>
 
 #include<array>
 
 namespace Ecse::Graphics
 {
+
 	/// <summary>
 	/// DX12でのレンダリングまでの基盤部分の一括管理
 	/// </summary>
-	class DX12 : public System::ServiceProvider<DX12>
+	class ENGINE_API DX12 : public System::ServiceProvider<DX12>
 	{
 		ECSE_SERVICE_ACCESS(DX12);
+
+	protected:
+		/// <summary>
+		/// 初期化（実質コンストラクタ）
+		/// </summary>
+		void OnCreate()override;
+
+		/// <summary>
+		/// 終了処理（実質デストラクタ）
+		/// </summary>
+		void OnDestroy()override;
+
 	public:
 
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <param name="WindowHandle">ウィンドウのハンドル</param>
+		/// <param name="Width">スクリーン横幅</param>
+		/// <param name="Height">スクリーン縦幅</param>
+		/// <returns>true:成功</returns>
+		bool Initialize(HWND WindowHandle, UINT Width, UINT Height);
+
+		/// <summary>
+		/// 描画開始
+		/// </summary>
+		void BegineRendering();
+
+		/// <summary>
+		/// 画面のフリップ
+		/// </summary>
+		void Flip();
+
+		/// <summary>
+		/// GPUの処理待ち
+		/// </summary>
+		void WaitForGPU();
+
+		/// <summary>
+		/// ビューポートとシザー矩形の設定
+		/// </summary>
+		void SetViewPort(float Width, float Height, float x = 0.0f, float y = 0.0f);
+	private:
+		/// <summary>
+		/// デバッグレイヤーの起動
+		/// </summary>
+		void DebugLayerOn();
+
+		/// <summary>
+		/// デバイスの初期化
+		/// </summary>
+		/// <returns>true:成功</returns>
+		bool InitializeDevice();
+
+		/// <summary>
+		/// ファクトリーの初期化
+		/// </summary>
+		/// <returns>true:成功</returns>
+		bool InitializeFactory();
+
+		/// <summary>
+		/// スワップチェインの初期化
+		/// </summary>
+		/// <param name="WindowHandle"></param>
+		/// <param name="Width"></param>
+		/// <param name="Height"></param>
+		/// <returns>true:成功</returns>
+		bool InitializeSwapChain(HWND WindowHandle, UINT Width, UINT Height);
+
+		/// <summary>
+		/// バックバッファ用ディスクリプタヒープの初期化
+		/// </summary>
+		/// <returns>true:成功</returns>
+		bool InitializeBackBufferHeap();
+
+		/// <summary>
+		/// 深度バッファ用ディスクリプタヒープの初期化
+		/// </summary>
+		/// <returns>true:成功</returns>
+		bool InitializeDepthHeap();
+
+		/// <summary>
+		/// レンダーターゲットの初期化
+		/// </summary>
+		/// <param name="width"></param>
+		/// <param name="height"></param>
+		/// <returns>true:成功</returns>
+		bool InitializeRenderTarget(UINT Width, UINT Height);
+
+		/// <summary>
+		/// フェンスの初期化
+		/// </summary>
+		/// <returns>true:成功</returns>
+		bool InitializeFence();
+
+	private:
 		/// <summary>
 		/// バッファの数
 		/// 今回はトリプルバッファで作成。２でもいい
 		/// </summary>
 		static constexpr int FRAME_COUNT = 3;
-	private:
 
 		/// <summary>
 		/// 各フレームごとに必要な情報をまとめた構造体
@@ -30,11 +126,11 @@ namespace Ecse::Graphics
 			/// <summary>
 			/// コマンドリストが記録に使うメモリ領域。実行中はリセット不可（すると落ちる）
 			/// </summary>
-			CmdAlloc Allocator;
+			CmdAlloc Allocator = nullptr;
 			/// <summary>
 			/// 実際に色が書き込まれるテクスチャ本体
 			/// </summary>
-			Resource BackBuffer;
+			Resource BackBuffer = nullptr;
 			/// <summary>
 			/// このフレームがGPUで完了したかを確認するためのフェンス値
 			/// </summary>
@@ -101,13 +197,15 @@ namespace Ecse::Graphics
 		/// </summary>
 		UINT mFrameIndex;
 
-
-		// ここに背景色を追加
+		/// <summary>
+		/// 背景色
+		/// </summary>
+		Color mColor;
 
 		/// <summary>
 		/// フォーマット
 		/// </summary>
-		DXGI_FORMAT mFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		DXGI_FORMAT mFormat;
 
 	};
 

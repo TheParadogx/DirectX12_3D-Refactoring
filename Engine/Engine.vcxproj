@@ -155,7 +155,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Graphics\Color\Color.hpp" />
     <ClInclude Include="include\Graphics\DX12\DX12.hpp" />
+    <ClInclude Include="include\System\EngineConfig.hpp" />
     <ClInclude Include="include\System\Engine\Engine.hpp" />
     <ClInclude Include="External\Plugin\ImGui\imconfig.h" />
     <ClInclude Include="External\Plugin\ImGui\imgui.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="include\System\Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Color\Color.cpp" />
     <ClCompile Include="src\Graphics\DX12\DX12.cpp" />
     <ClCompile Include="src\System\Engine\Engine.cpp" />
     <ClCompile Include="External\Plugin\ImGui\imgui.cpp">

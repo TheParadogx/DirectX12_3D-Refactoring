@@ -38,6 +38,9 @@ namespace Ecse::System
 		void Shutdown();
 
 	private:
+
+
+	private:
 		Window* mpWindow;
 
 		/// <summary>

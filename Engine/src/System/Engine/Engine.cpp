@@ -4,6 +4,8 @@
 #include<System/Service/ServiceLocator.hpp>
 
 #include<System/Window/Window.hpp>
+#include<System/Log/Logger.hpp>
+#include<System/EngineConfig.hpp>
 
 namespace Ecse::System
 {
@@ -22,6 +24,9 @@ namespace Ecse::System
 	bool Engine::Initialize(const EngineContext& Context)
 	{
 		if (mIsInitialized == true) return false;
+
+		// ログ
+		Logger::Create();
 
 		ECSE_LOG(ELogLevel::Log, "Engine Initialize.");
 
@@ -67,6 +72,16 @@ namespace Ecse::System
 
 
 		return true;
+	}
+
+	void Engine::Shutdown()
+	{
+		if (mIsInitialized == false) return;
+
+		ECSE_LOG(ELogLevel::Log, "Engine Shutdown.");
+
+		Window::Release();
+		mIsInitialized == false;
 	}
 }
 
