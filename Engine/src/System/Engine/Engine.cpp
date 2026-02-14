@@ -8,6 +8,8 @@
 #include<System/EngineConfig.hpp>
 #include<Graphics/DX12/DX12.hpp>
 
+#include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
+
 namespace Ecse::System
 {
 	void Engine::OnCreate()
@@ -34,31 +36,22 @@ namespace Ecse::System
 
 		ECSE_LOG(ELogLevel::Log, "Engine Initialize.");
 
+
+		//	短くしたら見やすいのか見にくいのか分らなくなってきた。
 		//	ウィンドウ
-		if (Window::Create() == false)
-		{
-			ECSE_LOG(ELogLevel::Fatal, "Failed CreateWindow .");
-			return false;
-		}
+		if (Window::Create() == false) return false;
 		mpWindow = ServiceLocator::Get<Window>();
-		if (mpWindow == nullptr || mpWindow->Initialize(Context.WinSetting) == false)
-		{
-			return false;
-		}
+		if (mpWindow->Initialize(Context.WinSetting) == false)return false;
 
-		//	DX12
-		if (DX12::Create() == false)
-		{
-			ECSE_LOG(ELogLevel::Fatal, "Failed CreateDX12 .");
-			return false;
-		}
+		// Dx12
+		if (DX12::Create() == false) return false;
 		mpDX12 = ServiceLocator::Get<DX12>();
-		if (mpDX12 == nullptr || mpDX12->Initialize(mpWindow->GetHWND(), mpWindow->GetWidth(), mpWindow->GetHeight()) == false)
-		{
-			return false;
-		}
+		if (mpDX12->Initialize(mpWindow->GetHWND(), mpWindow->GetWidth(), mpWindow->GetHeight()) == false) return false;
 
-		//	ここに他のシステムも同様の初期化する
+		//	GDHManager
+		if (GDescriptorHeapManager::Create() == false) return false;
+		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
+		if (gdh->Initialize() == false) return false;
 
 
 		// 全ての初期化正常終了後にフラグを立てる
