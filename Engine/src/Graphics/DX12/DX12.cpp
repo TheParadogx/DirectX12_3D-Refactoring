@@ -279,7 +279,7 @@ namespace Ecse::Graphics
 	void DX12::DebugLayerOn()
 	{
 		// Debug5のインターフェースで起動
-		Debug debugLayer = nullptr;
+		Debug5 debugLayer = nullptr;
 
 		HRESULT hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer));
 		if (SUCCEEDED(hr))
