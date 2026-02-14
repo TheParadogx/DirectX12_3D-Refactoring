@@ -3,6 +3,7 @@
 #include<array>
 #include<Utility/Types/EcseTypes.hpp>
 #include<System/Service/ServiceProvider.hpp>
+#include<Utility/Export/Export.hpp>
 
 namespace Ecse::Graphics
 {
@@ -11,7 +12,7 @@ namespace Ecse::Graphics
 	/// <summary>
 	/// GDHの管理と空き領域の捜索
 	/// </summary>
-	class GDescriptorHeapManager : public System::ServiceProvider<GDescriptorHeapManager >
+	class ENGINE_API GDescriptorHeapManager : public System::ServiceProvider<GDescriptorHeapManager >
 	{
 		ECSE_SERVICE_ACCESS(GDescriptorHeapManager);
 
