@@ -95,15 +95,7 @@ namespace Ecse::Graphics
 		/// 深度バッファ用ディスクリプタヒープの初期化
 		/// </summary>
 		/// <returns>true:成功</returns>
-		bool InitializeDepthHeap();
-
-		/// <summary>
-		/// レンダーターゲットの初期化
-		/// </summary>
-		/// <param name="width"></param>
-		/// <param name="height"></param>
-		/// <returns>true:成功</returns>
-		bool InitializeRenderTarget(UINT Width, UINT Height);
+		bool InitializeDepthHeap(UINT Width, UINT Height);
 
 		/// <summary>
 		/// フェンスの初期化
