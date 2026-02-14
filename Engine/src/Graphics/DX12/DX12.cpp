@@ -238,6 +238,42 @@ namespace Ecse::Graphics
 	}
 
 	/// <summary>
+	/// Dx12デバイスの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12Device* DX12::GetDevice()
+	{
+		return mDevice.Get();
+	}
+
+	/// <summary>
+	/// Dx12コマンドリストの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12GraphicsCommandList* DX12::GetCommandList()
+	{
+		return mCmdList.Get();
+	}
+
+	/// <summary>
+	/// Dx12コマンドアロケーターの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12CommandAllocator* DX12::GetCommandAllocator()
+	{
+		return mFrames[mFrameIndex].Allocator.Get();
+	}
+
+	/// <summary>
+	/// Dx12コマンドキューの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12CommandQueue* DX12::GetCommandQueue()
+	{
+		return mCmdQueue.Get();
+	}
+
+	/// <summary>
 	/// デバッグレイヤーの起動
 	/// </summary>
 	void DX12::DebugLayerOn()
