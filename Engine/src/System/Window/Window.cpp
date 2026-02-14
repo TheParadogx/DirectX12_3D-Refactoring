@@ -2,14 +2,20 @@
 #include<System/Window/Window.hpp>
 #include<System/Window/WindowSetting.hpp>
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 /// <summary>
 /// ウィンドウ
 /// </summary>
 /// <returns></returns>
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	// TODO:ImGui
-	// TODO:Input
+    //	ImGui用プロシージャー用処理呼び出し
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    {
+        return true;
+    }
+    // TODO:Input
 
     switch (msg)
     {

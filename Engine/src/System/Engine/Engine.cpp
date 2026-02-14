@@ -7,6 +7,9 @@
 #include<System/Log/Logger.hpp>
 #include<System/EngineConfig.hpp>
 #include<Graphics/DX12/DX12.hpp>
+#include<Debug/ImGui/ImGuiManager.hpp>
+#include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
+
 
 namespace Ecse::System
 {
@@ -26,6 +29,7 @@ namespace Ecse::System
 	{
 
 		using namespace Graphics;
+		using namespace Debug;
 
 		if (mIsInitialized == true) return false;
 
@@ -34,32 +38,27 @@ namespace Ecse::System
 
 		ECSE_LOG(ELogLevel::Log, "Engine Initialize.");
 
+
+		//	短くしたら見やすいのか見にくいのか分らなくなってきた。
 		//	ウィンドウ
-		if (Window::Create() == false)
-		{
-			ECSE_LOG(ELogLevel::Fatal, "Failed CreateWindow .");
-			return false;
-		}
+		if (Window::Create() == false) return false;
 		mpWindow = ServiceLocator::Get<Window>();
-		if (mpWindow == nullptr || mpWindow->Initialize(Context.WinSetting) == false)
-		{
-			return false;
-		}
+		if (mpWindow->Initialize(Context.WinSetting) == false)return false;
 
-		//	DX12
-		if (DX12::Create() == false)
-		{
-			ECSE_LOG(ELogLevel::Fatal, "Failed CreateDX12 .");
-			return false;
-		}
+		// Dx12
+		if (DX12::Create() == false) return false;
 		mpDX12 = ServiceLocator::Get<DX12>();
-		if (mpDX12 == nullptr || mpDX12->Initialize(mpWindow->GetHWND(), mpWindow->GetWidth(), mpWindow->GetHeight()) == false)
-		{
-			return false;
-		}
+		if (mpDX12->Initialize(mpWindow->GetHWND(), mpWindow->GetWidth(), mpWindow->GetHeight()) == false) return false;
 
-		//	ここに他のシステムも同様の初期化する
+		//	GDHManager
+		if (GDescriptorHeapManager::Create() == false) return false;
+		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
+		if (gdh->Initialize() == false) return false;
 
+		// ImGui
+		if (Debug::ImGuiManager::Create() == false) return false;
+		mpImGui = ServiceLocator::Get<ImGuiManager>();
+		if (mpImGui->Initialize() == false) return false;
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
@@ -105,6 +104,7 @@ namespace Ecse::System
 
 		ECSE_LOG(ELogLevel::Log, "Engine Shutdown.");
 
+		if(mpImGui->IsCreated()) mpImGui->Release();
 		Window::Release();
 		mIsInitialized == false;
 	}
@@ -113,14 +113,13 @@ namespace Ecse::System
 	{
 		mpDX12->BegineRendering();
 		mpDX12->SetViewPort(0, 0, mpWindow->GetWidth(), mpWindow->GetHeight());
-
-		// Renderer等もここに
+		mpImGui->NewFrame();
 	}
 
 	void Engine::EndFrame()
 	{
 		// ImGuiのRenderなどもここに呼ぶ
-
+		mpImGui->EndFrame();
 		mpDX12->Flip();
 	}
 }

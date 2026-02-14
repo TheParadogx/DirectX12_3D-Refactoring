@@ -58,6 +58,31 @@ namespace Ecse::Graphics
 		/// ビューポートとシザー矩形の設定
 		/// </summary>
 		void SetViewPort(float Width, float Height, float x = 0.0f, float y = 0.0f);
+
+		/// <summary>
+		/// Dx12デバイスの取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12Device* GetDevice();
+
+		/// <summary>
+		/// Dx12コマンドリストの取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12GraphicsCommandList* GetCommandList();
+
+		/// <summary>
+		/// Dx12コマンドアロケーターの取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12CommandAllocator* GetCommandAllocator();
+
+		/// <summary>
+		/// Dx12コマンドキューの取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12CommandQueue* GetCommandQueue();
+
 	private:
 		/// <summary>
 		/// デバッグレイヤーの起動
@@ -103,12 +128,15 @@ namespace Ecse::Graphics
 		/// <returns>true:成功</returns>
 		bool InitializeFence();
 
-	private:
+	public:
+
 		/// <summary>
 		/// バッファの数
-		/// 今回はトリプルバッファで作成。２でもいい
+		/// 今回はトリプルバッファで作成。２でもいいけど待ちを減らしたいので３
 		/// </summary>
 		static constexpr int FRAME_COUNT = 3;
+	private:
+
 
 		/// <summary>
 		/// 各フレームごとに必要な情報をまとめた構造体

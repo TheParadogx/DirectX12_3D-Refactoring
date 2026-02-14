@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<d3dx12/d3d12.h>
+#include<d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
 
@@ -29,7 +29,7 @@ namespace Ecse
 
 	// 同期デバッグ
 	using Fence = ComPtr<ID3D12Fence>;
-	using Debug = ComPtr<ID3D12Debug5>;
+	using Debug5 = ComPtr<ID3D12Debug5>;
 
 	//	デバック
 	using DebugDevice = ComPtr<ID3D12DebugDevice2>;

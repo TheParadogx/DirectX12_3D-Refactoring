@@ -81,7 +81,7 @@ namespace Ecse::Graphics
 	/// <returns>true:成功</returns>
 	bool DX12::Initialize(HWND WindowHandle, UINT Width, UINT Height)
 	{
-#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		//	デバック時だけリソース検知などを有効に
 		DebugLayerOn();
 #endif
@@ -238,12 +238,48 @@ namespace Ecse::Graphics
 	}
 
 	/// <summary>
+	/// Dx12デバイスの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12Device* DX12::GetDevice()
+	{
+		return mDevice.Get();
+	}
+
+	/// <summary>
+	/// Dx12コマンドリストの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12GraphicsCommandList* DX12::GetCommandList()
+	{
+		return mCmdList.Get();
+	}
+
+	/// <summary>
+	/// Dx12コマンドアロケーターの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12CommandAllocator* DX12::GetCommandAllocator()
+	{
+		return mFrames[mFrameIndex].Allocator.Get();
+	}
+
+	/// <summary>
+	/// Dx12コマンドキューの取得
+	/// </summary>
+	/// <returns></returns>
+	ID3D12CommandQueue* DX12::GetCommandQueue()
+	{
+		return mCmdQueue.Get();
+	}
+
+	/// <summary>
 	/// デバッグレイヤーの起動
 	/// </summary>
 	void DX12::DebugLayerOn()
 	{
 		// Debug5のインターフェースで起動
-		Debug debugLayer = nullptr;
+		Debug5 debugLayer = nullptr;
 
 		HRESULT hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer));
 		if (SUCCEEDED(hr))
@@ -301,7 +337,7 @@ namespace Ecse::Graphics
 		}
 
 		//	Debugデバイスの取得
-#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		if (FAILED(mDevice.As(&mDebugDevice)))
 		{
 			ECSE_LOG(System::ELogLevel::Warning, "DirectX12: Failed to get DebugDevice interface.");
@@ -319,7 +355,7 @@ namespace Ecse::Graphics
 		UINT factoryFlags = 0;
 
 		//	デバイス作成時やリソース解放時の詳細なエラーチェックが可能にするための機能の有効化
-#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
 		// CreateDXGIFactory2を使用することで、デバッグフラグを指定した生成が可能
