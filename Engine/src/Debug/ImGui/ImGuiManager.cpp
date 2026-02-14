@@ -4,12 +4,22 @@
 #include<System/Window/Window.hpp>
 #include<Graphics/DX12/DX12.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
+#include<Graphics/GraphicsDescriptorHeap/GDescriptorHeap.hpp>
 
 #include<ImGui/imgui_impl_win32.h>
 #include<ImGui/imgui_impl_dx12.h>
 
 namespace Ecse::Debug
 {
+    ImGuiManager::ImGuiManager()
+        :mHeap(nullptr)
+        , mContext(nullptr)
+        , mIsInitialized(false)
+    {
+    }
+
+    ImGuiManager::~ImGuiManager() = default;
+
     /// <summary>
     /// 初期化
     /// </summary>
@@ -46,13 +56,107 @@ namespace Ecse::Debug
         // Win32のバックエンド初期化
         if (ImGui_ImplWin32_Init(hwnd) == false)
         {
-            ECSE_LOG(System::ELogLevel::Fatal, "ImGui: Failed to init Win32 backend.");
+            ECSE_LOG(System::ELogLevel::Fatal, "Failed to init Win32 backend.");
             return false;
         }
 
-        //  ディスクリプタを1枠確保
+        //  ディスクリプタを1枠確保（フォント用）
+        mHeap = std::make_unique<Graphics::GDescriptorHeap>();
+        if (mHeap->Create(1) == false)
+        {
+            ECSE_LOG(System::ELogLevel::Fatal, "Failed to allocate Descriptor slot.");
+            return false;
+        }
 
+        // Dx12バックエンド
+        ImGui_ImplDX12_InitInfo initInfo = {};
+        initInfo.Device = dx12->GetDevice();
+        initInfo.CommandQueue = dx12->GetCommandQueue();
+        initInfo.NumFramesInFlight = dx12->FRAME_COUNT;
+        initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+        initInfo.DSVFormat = DXGI_FORMAT_D32_FLOAT; // 未使用なら DXGI_FORMAT_UNKNOWN でも可
+
+        // RAIIクラスからハンドルの取得
+        initInfo.SrvDescriptorHeap = gdhManager->GetNativeHeap();
+        initInfo.LegacySingleSrvCpuDescriptor = mHeap->GetCpuHandle();
+        initInfo.LegacySingleSrvGpuDescriptor = mHeap->GetGpuHandle();
+
+        if (ImGui_ImplDX12_Init(&initInfo) == false)
+        {
+            ECSE_LOG(System::ELogLevel::Fatal, "Failed to init DX12 backend.");
+            return false;
+        }
+
+        mIsInitialized = true;
+        ECSE_LOG(System::ELogLevel::Log, "Initialize Success.");
         return true;
+    }
+
+    /// <summary>
+    ///フレーム開始 
+    /// </summary>
+    void ImGuiManager::NewFrame()
+    {
+        ImGui_ImplDX12_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+    }
+
+    /// <summary>
+    /// フレームの終了・描画
+    /// </summary>
+    void ImGuiManager::EndFrame()
+    {
+        //  描画データの作成
+        ImGui::Render();
+
+        auto dx12 = System::ServiceLocator::Get<Graphics::DX12>();
+        auto gdhManager = System::ServiceLocator::Get<Graphics::GDescriptorHeapManager>();
+
+        //  描画に使用するコマンドリストの取得
+        auto cmdList = dx12->GetCommandList();
+
+        // ImGuiを描画するためにディスクリプタヒープをセット
+        // DX12ではSetDescriptorHeapsは最後にセットしたものが有効になるため、描画直前に呼ぶ
+        ID3D12DescriptorHeap* heaps[] = { gdhManager->GetNativeHeap() };
+        cmdList->SetDescriptorHeaps(_countof(heaps), heaps);
+
+        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), cmdList);
+
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+    }
+
+    /// <summary>
+    /// 解放
+    /// </summary>
+    void ImGuiManager::Shutdown()
+    {
+        if (mIsInitialized == false)return;
+
+        //  バックエンドの終了
+        ImGui_ImplDX12_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+
+        if (mContext != nullptr)
+        {
+            ImGui::DestroyContext(mContext);
+            mContext = nullptr;
+        }
+
+        // RAIIオブジェクトをリセット（ディスクリプタ枠の返却）
+        if (mHeap)
+        {
+            mHeap.reset();
+        }
+
+        mIsInitialized = false;
+        ECSE_LOG(System::ELogLevel::Log, "ImGuiManager Shutdown.");
     }
 
 }

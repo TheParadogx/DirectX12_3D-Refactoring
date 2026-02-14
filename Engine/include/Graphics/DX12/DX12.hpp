@@ -128,12 +128,15 @@ namespace Ecse::Graphics
 		/// <returns>true:成功</returns>
 		bool InitializeFence();
 
-	private:
+	public:
+
 		/// <summary>
 		/// バッファの数
-		/// 今回はトリプルバッファで作成。２でもいい
+		/// 今回はトリプルバッファで作成。２でもいいけど待ちを減らしたいので３
 		/// </summary>
 		static constexpr int FRAME_COUNT = 3;
+	private:
+
 
 		/// <summary>
 		/// 各フレームごとに必要な情報をまとめた構造体

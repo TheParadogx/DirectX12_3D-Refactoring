@@ -7,8 +7,9 @@
 #include<System/Log/Logger.hpp>
 #include<System/EngineConfig.hpp>
 #include<Graphics/DX12/DX12.hpp>
-
+#include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
+
 
 namespace Ecse::System
 {
@@ -28,6 +29,7 @@ namespace Ecse::System
 	{
 
 		using namespace Graphics;
+		using namespace Debug;
 
 		if (mIsInitialized == true) return false;
 
@@ -53,6 +55,11 @@ namespace Ecse::System
 		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
 		if (gdh->Initialize() == false) return false;
 
+
+		// ImGui
+		if (Debug::ImGuiManager::Create() == false) return false;
+		mpImGui = ServiceLocator::Get<ImGuiManager>();
+		if (mpImGui->Initialize() == false) return false;
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
@@ -98,6 +105,7 @@ namespace Ecse::System
 
 		ECSE_LOG(ELogLevel::Log, "Engine Shutdown.");
 
+		if(mpImGui->IsCreated()) mpImGui->Release();
 		Window::Release();
 		mIsInitialized == false;
 	}
@@ -106,14 +114,13 @@ namespace Ecse::System
 	{
 		mpDX12->BegineRendering();
 		mpDX12->SetViewPort(0, 0, mpWindow->GetWidth(), mpWindow->GetHeight());
-
-		// Renderer等もここに
+		mpImGui->NewFrame();
 	}
 
 	void Engine::EndFrame()
 	{
 		// ImGuiのRenderなどもここに呼ぶ
-
+		mpImGui->EndFrame();
 		mpDX12->Flip();
 	}
 }

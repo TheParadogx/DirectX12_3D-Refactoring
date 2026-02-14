@@ -3,6 +3,7 @@
 #include<memory>
 #include<System/Service/ServiceProvider.hpp>
 #include<ImGui/imgui.h>
+#include<Utility/Export/Export.hpp>
 
 namespace Ecse::Graphics
 {
@@ -11,10 +12,13 @@ namespace Ecse::Graphics
 
 namespace Ecse::Debug
 {
-	class ImGuiManager : public System::ServiceProvider<ImGuiManager>
+	class ENGINE_API ImGuiManager : public System::ServiceProvider<ImGuiManager>
 	{
 		ECSE_SERVICE_ACCESS(ImGuiManager);
 	public:
+        ImGuiManager();
+        virtual ~ImGuiManager();
+
         /// <summary>
         /// 初期化
         /// </summary>
@@ -29,7 +33,7 @@ namespace Ecse::Debug
         /// <summary>
         /// フレームの終了・描画
         /// </summary>
-        void Render();
+        void EndFrame();
 
         /// <summary>
         /// 解放
@@ -44,11 +48,11 @@ namespace Ecse::Debug
         /// <summary>
         /// ImGuiのコンテキスト
         /// </summary>
-        ImGuiContext* mContext = nullptr;
+        ImGuiContext* mContext;
 
         /// <summary>
         /// 初期化しているかどうか
         /// </summary>
-        bool mIsInitialized = false;
+        bool mIsInitialized;
 	};
 }

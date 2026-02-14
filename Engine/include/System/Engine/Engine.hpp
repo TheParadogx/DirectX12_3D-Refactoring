@@ -8,6 +8,10 @@ namespace Ecse::Graphics
 	class DX12;
 }
 
+namespace Ecse::Debug
+{
+	class ImGuiManager;
+}
 
 namespace Ecse::System
 {
@@ -59,11 +63,14 @@ namespace Ecse::System
 		/// ウィンドウ
 		/// </summary>
 		Window* mpWindow;
-
 		/// <summary>
 		/// DX12
 		/// </summary>
 		Graphics::DX12* mpDX12;
+		/// <summary>
+		/// ImGui
+		/// </summary>
+		Debug::ImGuiManager* mpImGui;
 
 		/// <summary>
 		/// 初期化を複数回通さないためのフラグ
