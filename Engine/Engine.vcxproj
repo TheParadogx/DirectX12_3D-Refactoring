@@ -79,7 +79,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;$(ProjectDir)External/Plugin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <UseStandardPreprocessor>false</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -98,7 +99,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;$(ProjectDir)External/Plugin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <UseStandardPreprocessor>false</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -115,13 +117,18 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;$(ProjectDir)External/Plugin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <UseStandardPreprocessor>false</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\Plugin\DirectXTex\x64\$(Configuration);$(ProjectDir)External\Plugin\mimalloc\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTex.lib;mimalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -134,15 +141,24 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include/Core;$(ProjectDir)External/Plugin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <UseStandardPreprocessor>false</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\Plugin\DirectXTex\x64\$(Configuration);$(ProjectDir)External\Plugin\mimalloc\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTex.lib;mimalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Graphics\Color\Color.hpp" />
+    <ClInclude Include="include\Graphics\DX12\DX12.hpp" />
+    <ClInclude Include="include\System\EngineConfig.hpp" />
+    <ClInclude Include="include\System\Engine\Engine.hpp" />
     <ClInclude Include="External\Plugin\ImGui\imconfig.h" />
     <ClInclude Include="External\Plugin\ImGui\imgui.h" />
     <ClInclude Include="External\Plugin\ImGui\ImGuizmo.h" />
@@ -153,9 +169,21 @@
     <ClInclude Include="External\Plugin\ImGui\imstb_rectpack.h" />
     <ClInclude Include="External\Plugin\ImGui\imstb_textedit.h" />
     <ClInclude Include="External\Plugin\ImGui\imstb_truetype.h" />
+    <ClInclude Include="include\System\Engine\EngineContext.hpp" />
+    <ClInclude Include="include\System\Log\Logger.hpp" />
+    <ClInclude Include="include\System\Service\IService.hpp" />
+    <ClInclude Include="include\System\Window\WindowSetting.hpp" />
+    <ClInclude Include="include\Utility\Types\EcseTypes.hpp" />
     <ClInclude Include="include\Core\pch.h" />
+    <ClInclude Include="include\Utility\Export\Export.hpp" />
+    <ClInclude Include="include\System\Service\ServiceLocator.hpp" />
+    <ClInclude Include="include\System\Service\ServiceProvider.hpp" />
+    <ClInclude Include="include\System\Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Color\Color.cpp" />
+    <ClCompile Include="src\Graphics\DX12\DX12.cpp" />
+    <ClCompile Include="src\System\Engine\Engine.cpp" />
     <ClCompile Include="External\Plugin\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -198,12 +226,21 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\System\Log\Logger.cpp" />
+    <ClCompile Include="src\System\ServiceLocator\ServiceLocator.cpp" />
     <ClCompile Include="src\Core\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\System\Window\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <SubType>
+      </SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
