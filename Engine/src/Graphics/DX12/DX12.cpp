@@ -81,7 +81,7 @@ namespace Ecse::Graphics
 	/// <returns>true:成功</returns>
 	bool DX12::Initialize(HWND WindowHandle, UINT Width, UINT Height)
 	{
-#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		//	デバック時だけリソース検知などを有効に
 		DebugLayerOn();
 #endif
@@ -301,7 +301,7 @@ namespace Ecse::Graphics
 		}
 
 		//	Debugデバイスの取得
-#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		if (FAILED(mDevice.As(&mDebugDevice)))
 		{
 			ECSE_LOG(System::ELogLevel::Warning, "DirectX12: Failed to get DebugDevice interface.");
@@ -319,7 +319,7 @@ namespace Ecse::Graphics
 		UINT factoryFlags = 0;
 
 		//	デバイス作成時やリソース解放時の詳細なエラーチェックが可能にするための機能の有効化
-#if defined(_DEBUG) || defined(ECSE_DEV_TOOL_ENABLED)
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
 		// CreateDXGIFactory2を使用することで、デバッグフラグを指定した生成が可能

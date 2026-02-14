@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include<System/Log/Logger.hpp>
+#include<System/EngineConfig.hpp>
 
 namespace Ecse::System
 {
@@ -16,6 +17,8 @@ namespace Ecse::System
 	/// </summary>
 	void Logger::OnCreate()
 	{
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
+
 		if (AllocConsole() == true)
 		{
 			FILE* fp = nullptr;
@@ -26,6 +29,7 @@ namespace Ecse::System
 			std::setlocale(LC_ALL, "japanese");
 		}
 		std::cout << "Logger Online." << std::endl;
+#endif
 	}
 
 	/// <summary>
@@ -33,8 +37,11 @@ namespace Ecse::System
 	/// </summary>
 	void Logger::OnDestroy()
 	{
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		std::cout << "Logger Shutdown." << std::endl;
 		FreeConsole();
+#endif
+
 	}
 
 	/// <summary>
