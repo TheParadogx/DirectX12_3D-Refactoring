@@ -26,7 +26,6 @@ namespace Ecse::System
 	/// <returns>true:成功</returns>
 	bool Engine::Initialize(const EngineContext& Context)
 	{
-
 		using namespace Graphics;
 		using namespace Debug;
 
@@ -126,7 +125,6 @@ namespace Ecse::System
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		mpImGui->EndFrame();
 #endif
-
 		mpDX12->Flip();
 	}
 }

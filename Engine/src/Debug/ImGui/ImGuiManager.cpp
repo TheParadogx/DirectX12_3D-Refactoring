@@ -158,5 +158,14 @@ namespace Ecse::Debug
         ECSE_LOG(System::ELogLevel::Log, "ImGuiManager Shutdown.");
     }
 
+    /// <summary>
+    /// 外部からデバッグUI関数を登録する
+    /// </summary>
+    /// <param name="guiFunc"></param>
+    void ImGuiManager::AddDebugUI(std::function<void()> guiFunc)
+    {
+        mDebugUIFunctions.push_back(guiFunc);
+    }
+
 }
 
