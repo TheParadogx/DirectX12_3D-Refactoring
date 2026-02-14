@@ -44,7 +44,13 @@ namespace Ecse::Debug
         ImGui::StyleColorsDark();
 
         // Win32のバックエンド初期化
+        if (ImGui_ImplWin32_Init(hwnd) == false)
+        {
+            ECSE_LOG(System::ELogLevel::Fatal, "ImGui: Failed to init Win32 backend.");
+            return false;
+        }
 
+        //  ディスクリプタを1枠確保
 
         return true;
     }
