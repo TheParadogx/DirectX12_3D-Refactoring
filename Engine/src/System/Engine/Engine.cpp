@@ -6,6 +6,7 @@
 #include<System/Window/Window.hpp>
 #include<System/Log/Logger.hpp>
 #include<System/EngineConfig.hpp>
+#include<Graphics/DX12/DX12.hpp>
 
 namespace Ecse::System
 {
@@ -23,6 +24,9 @@ namespace Ecse::System
 	/// <returns>true:成功</returns>
 	bool Engine::Initialize(const EngineContext& Context)
 	{
+
+		using namespace Graphics;
+
 		if (mIsInitialized == true) return false;
 
 		// ログ
@@ -33,11 +37,23 @@ namespace Ecse::System
 		//	ウィンドウ
 		if (Window::Create() == false)
 		{
-			ECSE_LOG(ELogLevel::Fatal, "Failed Window Create.");
+			ECSE_LOG(ELogLevel::Fatal, "Failed CreateWindow .");
 			return false;
 		}
 		mpWindow = ServiceLocator::Get<Window>();
 		if (mpWindow == nullptr || mpWindow->Initialize(Context.WinSetting) == false)
+		{
+			return false;
+		}
+
+		//	DX12
+		if (DX12::Create() == false)
+		{
+			ECSE_LOG(ELogLevel::Fatal, "Failed CreateDX12 .");
+			return false;
+		}
+		mpDX12 = ServiceLocator::Get<DX12>();
+		if (mpDX12 == nullptr || mpDX12->Initialize(mpWindow->GetHWND(), mpWindow->GetWidth(), mpWindow->GetHeight()) == false)
 		{
 			return false;
 		}
@@ -70,6 +86,15 @@ namespace Ecse::System
 			return false;
 		}
 
+		this->NewFrame();
+
+		// 状態更新
+
+		//	描画
+
+		this->EndFrame();
+
+
 
 		return true;
 	}
@@ -82,6 +107,21 @@ namespace Ecse::System
 
 		Window::Release();
 		mIsInitialized == false;
+	}
+
+	void Engine::NewFrame()
+	{
+		mpDX12->BegineRendering();
+		mpDX12->SetViewPort(0, 0, mpWindow->GetWidth(), mpWindow->GetHeight());
+
+		// Renderer等もここに
+	}
+
+	void Engine::EndFrame()
+	{
+		// ImGuiのRenderなどもここに呼ぶ
+
+		mpDX12->Flip();
 	}
 }
 

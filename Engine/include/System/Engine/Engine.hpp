@@ -3,6 +3,12 @@
 #include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceProvider.hpp>
 
+namespace Ecse::Graphics
+{
+	class DX12;
+}
+
+
 namespace Ecse::System
 {
 	class Window;
@@ -38,10 +44,26 @@ namespace Ecse::System
 		void Shutdown();
 
 	private:
+		/// <summary>
+		/// フレームの開始処理
+		/// </summary>
+		void NewFrame();
 
+		/// <summary>
+		/// フレームの終了処理
+		/// </summary>
+		void EndFrame();
 
 	private:
+		/// <summary>
+		/// ウィンドウ
+		/// </summary>
 		Window* mpWindow;
+
+		/// <summary>
+		/// DX12
+		/// </summary>
+		Graphics::DX12* mpDX12;
 
 		/// <summary>
 		/// 初期化を複数回通さないためのフラグ
