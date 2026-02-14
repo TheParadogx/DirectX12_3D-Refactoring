@@ -10,7 +10,6 @@
 #include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 
-
 namespace Ecse::System
 {
 	void Engine::OnCreate()
@@ -55,10 +54,13 @@ namespace Ecse::System
 		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
 		if (gdh->Initialize() == false) return false;
 
+
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		// ImGui
 		if (Debug::ImGuiManager::Create() == false) return false;
 		mpImGui = ServiceLocator::Get<ImGuiManager>();
 		if (mpImGui->Initialize() == false) return false;
+#endif
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
@@ -113,13 +115,18 @@ namespace Ecse::System
 	{
 		mpDX12->BegineRendering();
 		mpDX12->SetViewPort(0, 0, mpWindow->GetWidth(), mpWindow->GetHeight());
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		mpImGui->NewFrame();
+#endif
 	}
 
 	void Engine::EndFrame()
 	{
 		// ImGuiのRenderなどもここに呼ぶ
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		mpImGui->EndFrame();
+#endif
+
 		mpDX12->Flip();
 	}
 }
