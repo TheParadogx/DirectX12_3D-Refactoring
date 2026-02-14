@@ -55,7 +55,6 @@ namespace Ecse::System
 		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
 		if (gdh->Initialize() == false) return false;
 
-
 		// ImGui
 		if (Debug::ImGuiManager::Create() == false) return false;
 		mpImGui = ServiceLocator::Get<ImGuiManager>();
