@@ -141,6 +141,100 @@ namespace Ecse::Graphics
 	/// </summary>
 	void DX12::BegineRendering()
 	{
+		//	次の描画するべきバックバッファのインデックス
+		mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
+
+		//	次に使うフレームのリソースが解放されているかどうかを見る。ストール防止
+		if (mFence->GetCompletedValue() < mFrames[mFrameIndex].FenceValue)
+		{
+			mFence->SetEventOnCompletion(mFrames[mFrameIndex].FenceValue, mWaitForGPUEventHandle);
+			WaitForSingleObject(mWaitForGPUEventHandle, INFINITE);
+		}
+
+		//	コマンド記録の準備
+		mFrames[mFrameIndex].Allocator->Reset();
+		mCmdList->Reset(mFrames[mFrameIndex].Allocator.Get(), nullptr);
+
+		//	リソースバリア
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Transition.pResource = mFrames[mFrameIndex].BackBuffer.Get();
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		mCmdList->ResourceBarrier(1, &barrier);
+
+		//	レンダーターゲットの設定
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
+		rtvHandle.ptr += mFrameIndex * mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+		mCmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+
+		//	レンダーターゲットのクリア
+		mCmdList->ClearRenderTargetView(rtvHandle, mColor.GetRawPointer(), 0, nullptr);
+		mCmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	}
+
+	/// <summary>
+	/// 画面のフリップ
+	/// </summary>
+	void DX12::Flip()
+	{
+		//	リソースバリア
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Transition.pResource = mFrames[mFrameIndex].BackBuffer.Get();
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		mCmdList->ResourceBarrier(1, &barrier);
+
+		//	命令の確定と送信
+		mCmdList->Close();
+		ID3D12CommandList* ppCommandLists[] = { mCmdList.Get() };
+		mCmdQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+		//	画面の切り替え
+		mSwapChain->Present(1, 0);
+
+		//	現在のフレームに完了すべきフェンス値を入れる
+		mNextFenceValue++;
+		mFrames[mFrameIndex].FenceValue = mNextFenceValue;
+		mCmdQueue->Signal(mFence.Get(), mNextFenceValue);
+	}
+
+	/// <summary>
+	/// GPUの処理待ち
+	/// </summary>
+	void DX12::WaitForGPU()
+	{
+		//	現在のフェンス値でSignalを送ってその値まで待機する
+		mNextFenceValue++;
+		if (FAILED(mCmdQueue->Signal(mFence.Get(), mNextFenceValue)))
+		{
+			return;
+		}
+
+		//	GPUがこの値になるまでCPUをブロック
+		if (mFence->GetCompletedValue() < mNextFenceValue)
+		{
+			mFence->SetEventOnCompletion(mNextFenceValue, mWaitForGPUEventHandle);
+			WaitForSingleObject(mWaitForGPUEventHandle, INFINITE);
+		}
+
+	}
+
+	/// <summary>
+	/// ビューポートとシザー矩形の設定
+	/// </summary>
+	void DX12::SetViewPort(float Width, float Height, float x, float y)
+	{
+		D3D12_VIEWPORT viewport = { x, y, Width, Height, 0.0f, 1.0f };
+		D3D12_RECT scissor = { (LONG)x, (LONG)y, (LONG)(x + Width), (LONG)(y + Height) };
+
+		mCmdList->RSSetViewports(1, &viewport);
+		mCmdList->RSSetScissorRects(1, &scissor);
 	}
 
 	/// <summary>
