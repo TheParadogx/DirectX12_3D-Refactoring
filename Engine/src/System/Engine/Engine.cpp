@@ -90,6 +90,9 @@ namespace Ecse::System
 
 		// 状態更新
 
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
+		mpImGui->Update();
+#endif
 		//	描画
 
 		this->EndFrame();
@@ -107,7 +110,7 @@ namespace Ecse::System
 
 		if(mpImGui->IsCreated()) mpImGui->Release();
 		Window::Release();
-		mIsInitialized == false;
+		mIsInitialized = false;
 	}
 
 	void Engine::NewFrame()

@@ -36,6 +36,11 @@ namespace Ecse::Debug
         void NewFrame();
 
         /// <summary>
+        /// 状態更新
+        /// </summary>
+        void Update();
+
+        /// <summary>
         /// フレームの終了・描画
         /// </summary>
         void EndFrame();

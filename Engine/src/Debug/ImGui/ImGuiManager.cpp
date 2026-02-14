@@ -103,6 +103,17 @@ namespace Ecse::Debug
     }
 
     /// <summary>
+    /// 状態更新
+    /// </summary>
+    void ImGuiManager::Update()
+    {
+        for (auto& func : mDebugUIFunctions)
+        {
+            func();
+        }
+    }
+
+    /// <summary>
     /// フレームの終了・描画
     /// </summary>
     void ImGuiManager::EndFrame()
