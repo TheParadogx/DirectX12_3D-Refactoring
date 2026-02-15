@@ -4,12 +4,14 @@
 #include<filesystem>
 #include<DirectX12MA/D3D12MemAlloc.h>
 
+#include<System/Resource/IResource.hpp>
+
 namespace Ecse::Graphics
 {
 	/// <summary>
 	/// テクスチャのリソースのクラス
 	/// </summary>
-	class Texture
+	class Texture : public System::IResource
 	{
 	public:
 		Texture();
@@ -20,7 +22,7 @@ namespace Ecse::Graphics
 		/// </summary>
 		/// <param name="FilePath">画像のファイルパス</param>
 		/// <returns>true:成功</returns>
-		bool Create(const std::filesystem::path& FilePath);
+		bool Create(const std::filesystem::path& FilePath)override;
 		/// <summary>
 		/// リソースの解放
 		/// </summary>
