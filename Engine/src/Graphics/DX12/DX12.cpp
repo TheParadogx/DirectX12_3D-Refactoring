@@ -18,6 +18,7 @@ namespace Ecse::Graphics
 		mRtvHeap  = nullptr;
 		mDsvHeap = nullptr;
 		mFence = nullptr;
+		mMACmdAlloc = nullptr;
 		mDebugDevice = nullptr;
 		mWaitForGPUEventHandle = nullptr;
 		mNextFenceValue = 1;
@@ -60,6 +61,8 @@ namespace Ecse::Graphics
 		//	同期・ファクトリ
 		mFence.Reset();
 		mFactory.Reset();
+
+		mMACmdAlloc.Reset();
 
 		//	デバイスとメモリリーク
 		if (mDebugDevice != nullptr)
@@ -274,6 +277,15 @@ namespace Ecse::Graphics
 	}
 
 	/// <summary>
+	/// D3D12MAアロケーターの取得
+	/// </summary>
+	/// <returns></returns>
+	D3D12MA::Allocator* DX12::GetMAAllocator()
+	{
+		return mMACmdAlloc.Get();
+	}
+
+	/// <summary>
 	/// デバッグレイヤーの起動
 	/// </summary>
 	void DX12::DebugLayerOn()
@@ -325,6 +337,19 @@ namespace Ecse::Graphics
 			if (SUCCEEDED(hr))
 			{
 				ECSE_LOG(System::ELogLevel::Log, "Success CreateDevice.");
+
+				// D3D12Maアロケーターの作成
+				D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
+				allocatorDesc.pDevice = mDevice.Get();
+				allocatorDesc.pAdapter = adapter.Get();
+
+				hr = D3D12MA::CreateAllocator(&allocatorDesc, &mMACmdAlloc);
+				if (FAILED(hr))
+				{
+					ECSE_LOG(System::ELogLevel::Fatal, "Failed D3D12MA::CreateAllocator.");
+					return false;
+				}
+
 				break;
 			}
 		}

@@ -4,6 +4,7 @@
 #include<System/Service/ServiceProvider.hpp>
 #include<Utility/Types/EcseTypes.hpp>
 #include<Graphics/Color/Color.hpp>
+#include<DirectX12MA/D3D12MemAlloc.h>
 
 #include<array>
 
@@ -83,6 +84,11 @@ namespace Ecse::Graphics
 		/// <returns></returns>
 		ID3D12CommandQueue* GetCommandQueue();
 
+		/// <summary>
+		/// D3D12MAアロケーターの取得
+		/// </summary>
+		/// <returns></returns>
+		D3D12MA::Allocator* GetMAAllocator();
 	private:
 		/// <summary>
 		/// デバッグレイヤーの起動
@@ -155,6 +161,10 @@ namespace Ecse::Graphics
 			/// このフレームがGPUで完了したかを確認するためのフェンス値
 			/// </summary>
 			UINT64 FenceValue = 0;
+			/// <summary>
+			/// このフレーム専用のアップロード・プール（データ転送用）
+			/// </summary>
+			MAPool UploadPool = nullptr;
 		};
 
 		/// <summary>
@@ -177,7 +187,10 @@ namespace Ecse::Graphics
 		/// 書き終えたコマンドリストをGPUへ送り出す
 		/// </summary>
 		CmdQueue mCmdQueue;
-
+		/// <summary>
+		/// D3D12MAのアロケーター
+		/// </summary>
+		MAAllocator mMACmdAlloc;
 		/// <summary>
 		/// 各フレームごとのリソース
 		/// </summary>
