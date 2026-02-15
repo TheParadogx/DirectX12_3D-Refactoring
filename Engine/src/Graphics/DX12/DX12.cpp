@@ -286,6 +286,15 @@ namespace Ecse::Graphics
 	}
 
 	/// <summary>
+	/// D3D12MAアップロード用のプールの取得
+	/// </summary>
+	/// <returns></returns>
+	D3D12MA::Pool* DX12::GetMAUploadPool()
+	{
+		return mFrames[mFrameIndex].UploadPool.Get();
+	}
+
+	/// <summary>
 	/// デバッグレイヤーの起動
 	/// </summary>
 	void DX12::DebugLayerOn()

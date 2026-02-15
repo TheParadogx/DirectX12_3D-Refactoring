@@ -89,6 +89,12 @@ namespace Ecse::Graphics
 		/// </summary>
 		/// <returns></returns>
 		D3D12MA::Allocator* GetMAAllocator();
+
+		/// <summary>
+		/// D3D12MAアップロード用のプールの取得
+		/// </summary>
+		/// <returns></returns>
+		D3D12MA::Pool* GetMAUploadPool();
 	private:
 		/// <summary>
 		/// デバッグレイヤーの起動

@@ -20,8 +20,11 @@ namespace Ecse
 	using CmdList = ComPtr<ID3D12GraphicsCommandList6>;
 	using CmdQueue = ComPtr<ID3D12CommandQueue>;
 	using CmdAlloc = ComPtr<ID3D12CommandAllocator>;
+
+	// D3D12MA
 	using MAAllocator = ComPtr<D3D12MA::Allocator>;
 	using MAPool = ComPtr<D3D12MA::Pool>;
+	using MAAllocation = ComPtr<D3D12MA::Allocation>;
 
 	// リソース・パイプライン
 	using Resource = ComPtr<ID3D12Resource>;

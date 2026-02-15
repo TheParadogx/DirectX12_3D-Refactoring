@@ -2,6 +2,7 @@
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapInfo.hpp>
 #include<Utility/Types/EcseTypes.hpp>
 #include<filesystem>
+#include<DirectX12MA/D3D12MemAlloc.h>
 
 namespace Ecse::Graphics
 {
@@ -55,14 +56,18 @@ namespace Ecse::Graphics
 		ID3D12Resource* GetResource() const;
 	private:
 		/// <summary>
+		/// リソース
+		/// </summary>
+		Resource mResource;
+		/// <summary>
+		/// メモリ割り当て情報
+		/// </summary>
+		MAAllocation mAllocation;
+
+		/// <summary>
 		/// 割り当てられたヒープの情報
 		/// </summary>
 		GDescritorHeapInfo mHeapInfo;
-
-		/// <summary>
-		/// リソース
-		/// </summary>
-		Resource mReource;
 
 		/// <summary>
 		/// テクスチャ横幅
