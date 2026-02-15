@@ -1,0 +1,90 @@
+﻿#pragma once
+
+#include<Utility/Export/Export.hpp>
+#include<System/Service/ServiceProvider.hpp>
+
+namespace Ecse::Graphics
+{
+	class DX12;
+}
+
+namespace Ecse::Debug
+{
+	class ImGuiManager;
+}
+
+namespace Ecse::ECS
+{
+	class EntityManager;
+}
+
+namespace Ecse::System
+{
+	class Window;
+	struct EngineContext;
+
+	/// <summary>
+	/// エンジン全体の管理クラス
+	/// </summary>
+	class ENGINE_API Engine :public ServiceProvider<Engine>
+	{
+		ECSE_SERVICE_ACCESS(Engine);
+
+	protected:
+		void OnCreate()override;
+	public:
+		/// <summary>
+		/// エンジン全体の初期化
+		/// OSやGraphicsなど全て
+		/// </summary>
+		/// <param name="Context">初期化に必要な情報</param>
+		/// <returns>true:成功</returns>
+		bool Initialize(const EngineContext& Context);
+
+		/// <summary>
+		/// メインループ
+		/// </summary>
+		/// <returns>true:続行 false:終了</returns>
+		bool Run();
+
+		/// <summary>
+		/// エンジンの終了処理
+		/// </summary>
+		void Shutdown();
+
+	private:
+		/// <summary>
+		/// フレームの開始処理
+		/// </summary>
+		void NewFrame();
+
+		/// <summary>
+		/// フレームの終了処理
+		/// </summary>
+		void EndFrame();
+
+	private:
+		/// <summary>
+		/// ウィンドウ
+		/// </summary>
+		Window* mpWindow;
+		/// <summary>
+		/// DX12
+		/// </summary>
+		Graphics::DX12* mpDX12;
+		/// <summary>
+		/// ImGui
+		/// </summary>
+		Debug::ImGuiManager* mpImGui;
+		/// <summary>
+		/// ECSの管理
+		/// </summary>
+		ECS::EntityManager* mpEntityManager;
+		/// <summary>
+		/// 初期化を複数回通さないためのフラグ
+		/// </summary>
+		bool mIsInitialized;
+
+	};
+}
+
