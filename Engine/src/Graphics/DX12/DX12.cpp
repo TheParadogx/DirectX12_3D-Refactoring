@@ -46,6 +46,7 @@ namespace Ecse::Graphics
 		{
 			frame.BackBuffer.Reset();  // バックバッファ
 			frame.Allocator.Reset();   // アロケータ
+			frame.UploadPool.Reset();	//	プール
 		}
 
 		//	ビュー・ヒープ
@@ -153,7 +154,6 @@ namespace Ecse::Graphics
 			mFence->SetEventOnCompletion(mFrames[mFrameIndex].FenceValue, mWaitForGPUEventHandle);
 			WaitForSingleObject(mWaitForGPUEventHandle, INFINITE);
 		}
-
 		//	コマンド記録の準備
 		mFrames[mFrameIndex].Allocator->Reset();
 		mCmdList->Reset(mFrames[mFrameIndex].Allocator.Get(), nullptr);
@@ -425,6 +425,17 @@ namespace Ecse::Graphics
 			if (FAILED(hr))
 			{
 				ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateCommandAllocator." + std::to_string(i));
+				return false;
+			}
+
+			//	D3D12MA Poolの作成
+			D3D12MA::POOL_DESC poolDecs = {};
+			poolDecs.HeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+			poolDecs.Flags = D3D12MA::POOL_FLAG_ALGORITHM_LINEAR;
+			hr = mMACmdAlloc->CreatePool(&poolDecs, &mFrames[i].UploadPool);
+			if (FAILED(hr))
+			{
+				ECSE_LOG(System::ELogLevel::Fatal, "Failed Create D3D12MA Pool for Frame: " + std::to_string(i));
 				return false;
 			}
 		}
