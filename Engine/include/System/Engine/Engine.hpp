@@ -13,6 +13,11 @@ namespace Ecse::Debug
 	class ImGuiManager;
 }
 
+namespace Ecse::ECS
+{
+	class EntityManager;
+}
+
 namespace Ecse::System
 {
 	class Window;
@@ -71,7 +76,10 @@ namespace Ecse::System
 		/// ImGui
 		/// </summary>
 		Debug::ImGuiManager* mpImGui;
-
+		/// <summary>
+		/// ECSの管理
+		/// </summary>
+		ECS::EntityManager* mpEntityManager;
 		/// <summary>
 		/// 初期化を複数回通さないためのフラグ
 		/// </summary>

@@ -4,6 +4,8 @@
 #include<System/Service/ServiceProvider.hpp>
 #include<ImGui/imgui.h>
 #include<Utility/Export/Export.hpp>
+#include<vector>
+#include<functional>
 
 namespace Ecse::Graphics
 {
@@ -12,6 +14,9 @@ namespace Ecse::Graphics
 
 namespace Ecse::Debug
 {
+	/// <summary>
+	/// ImGuiの一括管理
+	/// </summary>
 	class ENGINE_API ImGuiManager : public System::ServiceProvider<ImGuiManager>
 	{
 		ECSE_SERVICE_ACCESS(ImGuiManager);
@@ -31,6 +36,11 @@ namespace Ecse::Debug
         void NewFrame();
 
         /// <summary>
+        /// 状態更新
+        /// </summary>
+        void Update();
+
+        /// <summary>
         /// フレームの終了・描画
         /// </summary>
         void EndFrame();
@@ -39,7 +49,19 @@ namespace Ecse::Debug
         /// 解放
         /// </summary>
         void Shutdown();
+
+        /// <summary>
+        /// 外部からデバッグUI関数を登録する
+        /// </summary>
+        /// <param name="guiFunc"></param>
+        void AddDebugUI(std::function<void()> guiFunc);
+
 	private:
+        /// <summary>
+        /// デバックUI用の処理を呼び出す関数群
+        /// </summary>
+        std::vector<std::function<void()>> mDebugUIFunctions;
+
         /// <summary>
         /// ImGui専用のディスクリプタを管理するオブジェクト
         /// </summary>

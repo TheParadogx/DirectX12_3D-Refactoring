@@ -155,7 +155,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ECS\Entity\EntityManager.hpp" />
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
+    <ClInclude Include="include\ECS\Tag\SceneTags.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeap.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeapManager.hpp" />
     <ClInclude Include="include\Graphics\Color\Color.hpp" />
@@ -185,6 +187,7 @@
     <ClInclude Include="include\System\Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ECS\Entity\EntityManager.cpp" />
     <ClCompile Include="src\Debug\ImGui\ImGuiManager.cpp" />
     <ClCompile Include="src\Graphics\GraphicsDescriptorHeap\GDescriptorHeap.cpp" />
     <ClCompile Include="src\Graphics\GraphicsDescriptorHeap\GDescriptorHeapManager.cpp" />

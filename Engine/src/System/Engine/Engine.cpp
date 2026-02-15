@@ -9,6 +9,7 @@
 #include<Graphics/DX12/DX12.hpp>
 #include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
+#include<ECS/Entity/EntityManager.hpp>
 
 namespace Ecse::System
 {
@@ -26,7 +27,6 @@ namespace Ecse::System
 	/// <returns>true:成功</returns>
 	bool Engine::Initialize(const EngineContext& Context)
 	{
-
 		using namespace Graphics;
 		using namespace Debug;
 
@@ -62,6 +62,11 @@ namespace Ecse::System
 		if (mpImGui->Initialize() == false) return false;
 #endif
 
+		//	EntityManager
+		if (ECS::EntityManager::Create() == false) return false;
+		mpEntityManager = ServiceLocator::Get<ECS::EntityManager>();
+		if (mpEntityManager->Initialize() == false) return false;
+
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
 
@@ -91,11 +96,15 @@ namespace Ecse::System
 
 		// 状態更新
 
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
+		mpImGui->Update();
+#endif
 		//	描画
 
 		this->EndFrame();
 
-
+		//	エンティティの削除
+		mpEntityManager->Update();
 
 		return true;
 	}
@@ -108,7 +117,7 @@ namespace Ecse::System
 
 		if(mpImGui->IsCreated()) mpImGui->Release();
 		Window::Release();
-		mIsInitialized == false;
+		mIsInitialized = false;
 	}
 
 	void Engine::NewFrame()
@@ -126,7 +135,6 @@ namespace Ecse::System
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		mpImGui->EndFrame();
 #endif
-
 		mpDX12->Flip();
 	}
 }

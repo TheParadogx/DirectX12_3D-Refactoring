@@ -103,6 +103,17 @@ namespace Ecse::Debug
     }
 
     /// <summary>
+    /// 状態更新
+    /// </summary>
+    void ImGuiManager::Update()
+    {
+        for (auto& func : mDebugUIFunctions)
+        {
+            func();
+        }
+    }
+
+    /// <summary>
     /// フレームの終了・描画
     /// </summary>
     void ImGuiManager::EndFrame()
@@ -156,6 +167,15 @@ namespace Ecse::Debug
 
         mIsInitialized = false;
         ECSE_LOG(System::ELogLevel::Log, "ImGuiManager Shutdown.");
+    }
+
+    /// <summary>
+    /// 外部からデバッグUI関数を登録する
+    /// </summary>
+    /// <param name="guiFunc"></param>
+    void ImGuiManager::AddDebugUI(std::function<void()> guiFunc)
+    {
+        mDebugUIFunctions.push_back(guiFunc);
     }
 
 }
