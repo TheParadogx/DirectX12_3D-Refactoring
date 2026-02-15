@@ -95,6 +95,12 @@ namespace Ecse::Graphics
 		/// </summary>
 		/// <returns></returns>
 		D3D12MA::Pool* GetMAUploadPool();
+
+		/// <summary>
+		/// 今のフレームのインデックス取得
+		/// </summary>
+		/// <returns></returns>
+		UINT GetCurrentFrameIndex()const;
 	private:
 		/// <summary>
 		/// デバッグレイヤーの起動

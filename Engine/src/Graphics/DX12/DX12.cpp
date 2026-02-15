@@ -294,6 +294,11 @@ namespace Ecse::Graphics
 		return mFrames[mFrameIndex].UploadPool.Get();
 	}
 
+	UINT DX12::GetCurrentFrameIndex()const
+	{
+		return mFrameIndex;
+	}
+
 	/// <summary>
 	/// デバッグレイヤーの起動
 	/// </summary>
