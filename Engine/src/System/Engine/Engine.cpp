@@ -9,6 +9,7 @@
 #include<Graphics/DX12/DX12.hpp>
 #include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
+#include<ECS/Entity/EntityManager.hpp>
 
 namespace Ecse::System
 {
@@ -61,6 +62,11 @@ namespace Ecse::System
 		if (mpImGui->Initialize() == false) return false;
 #endif
 
+		//	EntityManager
+		if (ECS::EntityManager::Create() == false) return false;
+		mpEntityManager = ServiceLocator::Get<ECS::EntityManager>();
+		if (mpEntityManager->Initialize() == false) return false;
+
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
 
@@ -97,7 +103,8 @@ namespace Ecse::System
 
 		this->EndFrame();
 
-
+		//	エンティティの削除
+		mpEntityManager->Update();
 
 		return true;
 	}
