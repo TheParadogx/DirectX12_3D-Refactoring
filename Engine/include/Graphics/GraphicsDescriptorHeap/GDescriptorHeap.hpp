@@ -18,6 +18,10 @@ namespace Ecse::Graphics
 		GDescriptorHeap(const GDescriptorHeap&) = delete;
 		GDescriptorHeap& operator=(const GDescriptorHeap&) = delete;
 
+		// ムーブはいいよ
+		GDescriptorHeap(GDescriptorHeap&&) noexcept = default;
+		GDescriptorHeap& operator=(GDescriptorHeap&&) noexcept = default;
+
 		/// <summary>
 		/// ヒープ領域の確保
 		/// </summary>

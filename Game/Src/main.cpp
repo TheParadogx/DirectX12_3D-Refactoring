@@ -28,10 +28,8 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	{
 		return -2;
 	}
-
 	while (engine->Run())
 	{
-
 	}
 
 	engine->Shutdown();

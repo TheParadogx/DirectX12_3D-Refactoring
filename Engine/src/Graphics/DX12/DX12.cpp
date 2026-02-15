@@ -18,6 +18,7 @@ namespace Ecse::Graphics
 		mRtvHeap  = nullptr;
 		mDsvHeap = nullptr;
 		mFence = nullptr;
+		mMACmdAlloc = nullptr;
 		mDebugDevice = nullptr;
 		mWaitForGPUEventHandle = nullptr;
 		mNextFenceValue = 1;
@@ -45,6 +46,7 @@ namespace Ecse::Graphics
 		{
 			frame.BackBuffer.Reset();  // バックバッファ
 			frame.Allocator.Reset();   // アロケータ
+			frame.UploadPool.Reset();	//	プール
 		}
 
 		//	ビュー・ヒープ
@@ -60,6 +62,8 @@ namespace Ecse::Graphics
 		//	同期・ファクトリ
 		mFence.Reset();
 		mFactory.Reset();
+
+		mMACmdAlloc.Reset();
 
 		//	デバイスとメモリリーク
 		if (mDebugDevice != nullptr)
@@ -150,7 +154,6 @@ namespace Ecse::Graphics
 			mFence->SetEventOnCompletion(mFrames[mFrameIndex].FenceValue, mWaitForGPUEventHandle);
 			WaitForSingleObject(mWaitForGPUEventHandle, INFINITE);
 		}
-
 		//	コマンド記録の準備
 		mFrames[mFrameIndex].Allocator->Reset();
 		mCmdList->Reset(mFrames[mFrameIndex].Allocator.Get(), nullptr);
@@ -274,6 +277,29 @@ namespace Ecse::Graphics
 	}
 
 	/// <summary>
+	/// D3D12MAアロケーターの取得
+	/// </summary>
+	/// <returns></returns>
+	D3D12MA::Allocator* DX12::GetMAAllocator()
+	{
+		return mMACmdAlloc.Get();
+	}
+
+	/// <summary>
+	/// D3D12MAアップロード用のプールの取得
+	/// </summary>
+	/// <returns></returns>
+	D3D12MA::Pool* DX12::GetMAUploadPool()
+	{
+		return mFrames[mFrameIndex].UploadPool.Get();
+	}
+
+	UINT DX12::GetCurrentFrameIndex()const
+	{
+		return mFrameIndex;
+	}
+
+	/// <summary>
 	/// デバッグレイヤーの起動
 	/// </summary>
 	void DX12::DebugLayerOn()
@@ -325,6 +351,19 @@ namespace Ecse::Graphics
 			if (SUCCEEDED(hr))
 			{
 				ECSE_LOG(System::ELogLevel::Log, "Success CreateDevice.");
+
+				// D3D12Maアロケーターの作成
+				D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
+				allocatorDesc.pDevice = mDevice.Get();
+				allocatorDesc.pAdapter = adapter.Get();
+
+				hr = D3D12MA::CreateAllocator(&allocatorDesc, &mMACmdAlloc);
+				if (FAILED(hr))
+				{
+					ECSE_LOG(System::ELogLevel::Fatal, "Failed D3D12MA::CreateAllocator.");
+					return false;
+				}
+
 				break;
 			}
 		}
@@ -400,6 +439,17 @@ namespace Ecse::Graphics
 			if (FAILED(hr))
 			{
 				ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateCommandAllocator." + std::to_string(i));
+				return false;
+			}
+
+			//	D3D12MA Poolの作成
+			D3D12MA::POOL_DESC poolDecs = {};
+			poolDecs.HeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+			poolDecs.Flags = D3D12MA::POOL_FLAG_ALGORITHM_LINEAR;
+			hr = mMACmdAlloc->CreatePool(&poolDecs, &mFrames[i].UploadPool);
+			if (FAILED(hr))
+			{
+				ECSE_LOG(System::ELogLevel::Fatal, "Failed Create D3D12MA Pool for Frame: " + std::to_string(i));
 				return false;
 			}
 		}
