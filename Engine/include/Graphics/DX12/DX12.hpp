@@ -23,7 +23,6 @@ namespace Ecse::Graphics
 		/// 初期化（実質コンストラクタ）
 		/// </summary>
 		void OnCreate()override;
-
 		/// <summary>
 		/// 終了処理（実質デストラクタ）
 		/// </summary>

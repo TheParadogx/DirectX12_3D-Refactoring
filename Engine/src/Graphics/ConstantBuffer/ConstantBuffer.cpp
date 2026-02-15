@@ -5,8 +5,7 @@
 namespace Ecse::Graphics
 {
 	ConstantBuffer::ConstantBuffer()
-		:mFrames()
-		, mActualSize(0)
+		: mActualSize(0)
 		, mAlignedSize(0)
 	{
 	}
@@ -34,7 +33,11 @@ namespace Ecse::Graphics
 
 		//	フレーム数作成
 		uint32_t frameCount = dx12->FRAME_COUNT;
-		mFrames.resize(frameCount);
+		mFrames.clear();
+		mFrames.reserve(frameCount);
+		for (uint32_t i = 0; i < frameCount; ++i) {
+			mFrames.emplace_back();
+		}
 
 		mActualSize = Size;
 		mAlignedSize = (Size + 0xff) & ~0xff; //256境界に
