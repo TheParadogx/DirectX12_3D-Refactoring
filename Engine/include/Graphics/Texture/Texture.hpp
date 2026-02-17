@@ -6,12 +6,14 @@
 
 #include<System/Resource/IResource.hpp>
 
+#include<Utility/Export/Export.hpp>
+
 namespace Ecse::Graphics
 {
 	/// <summary>
 	/// テクスチャのリソースのクラス
 	/// </summary>
-	class Texture : public System::IResource
+	class ENGINE_API Texture : public System::IResource
 	{
 	public:
 		Texture();

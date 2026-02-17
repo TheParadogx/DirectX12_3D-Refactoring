@@ -7,6 +7,8 @@
 #include<mutex>
 #include<System/Log/Logger.hpp>
 #include"IResource.hpp"
+#include<Utility/Export/Export.hpp>
+
 
 namespace Ecse::System
 {
@@ -19,7 +21,7 @@ namespace Ecse::System
 	/// <summary>
 	/// 各リソースを管理するクラス
 	/// </summary>
-	class ResourceManager : public ServiceProvider<ResourceManager>
+	class ENGINE_API ResourceManager : public ServiceProvider<ResourceManager>
 	{
 	public:
 		/// <summary>
