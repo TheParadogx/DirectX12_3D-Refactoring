@@ -161,6 +161,7 @@
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
     <ClInclude Include="include\ECS\Tag\SceneTags.hpp" />
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp" />
+    <ClInclude Include="include\Graphics\Renderer\Renderer.hpp" />
     <ClInclude Include="src\Graphics\Data\GraphicsData.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeap.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeapManager.hpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Graphics\Shader\ShaderManager.cpp" />
     <ClCompile Include="src\Graphics\Sprite\Pipeline\SpritePipeline.cpp" />
     <ClCompile Include="src\Graphics\Sprite\Sprite.cpp" />

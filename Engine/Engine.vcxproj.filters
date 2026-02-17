@@ -132,6 +132,9 @@
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\Renderer\Renderer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
@@ -204,6 +207,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Shader\ShaderManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Renderer\Renderer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
