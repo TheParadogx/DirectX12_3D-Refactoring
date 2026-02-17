@@ -2,7 +2,7 @@
 #include "SpritePipeline.hpp"
 
 #include<Graphics/DX12/DX12.hpp>
-
+#include<Graphics/Shader/ShaderManager.hpp>
 
 
 namespace Ecse::Graphics
@@ -101,6 +101,7 @@ namespace Ecse::Graphics
 
 		// ルートパラメーター
 		CD3DX12_ROOT_PARAMETER1 rootParams[2];
+		// 処理速度が気になりだしたら動的CBに変え
 		// 0:CBV (b0)
 		rootParams[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_ALL);
 		// 1: DescriptorTable (t0)
@@ -141,16 +142,65 @@ namespace Ecse::Graphics
 	/// <returns></returns>
 	bool SpritePipeline::CreatePipeline()
 	{
-		
+		auto shaderManager = System::ServiceLocator::Get<ShaderManager>();
+		auto VS = shaderManager->GetShader("Assets/Shader/VS_Texture.hlsl", "main", "vs_5_0");
+		auto PS = shaderManager->GetShader("Assets/Shader/PS_Texture.hlsl", "main", "ps_5_0");
+
+		if (VS == nullptr || PS == nullptr)
+		{
+			ECSE_LOG(System::ELogLevel::Error, "Failed GetShader.");
+			return false;
+		}
+
 		// インプットレイアウト（明示的に12byte目からを指定します）
+		// // RootSignature layout:
+		// b0 : SpriteConstantBuffer (WVP, Color, Ind)
+		// t0 : SpriteTexture
 		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		};
 
 		// パイプラインステート構築
+		CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 
+		CD3DX12_RASTERIZER_DESC rasterDesc(D3D12_DEFAULT);
+		rasterDesc.CullMode = D3D12_CULL_MODE_NONE; // 両面描画（スプライトの反転等に対応）
 
+		CD3DX12_DEPTH_STENCIL_DESC depthDesc(D3D12_DEFAULT);
+		depthDesc.DepthEnable = FALSE; // 2Dなので深度テストは基本オフ
+
+		// PSOの設定
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.pRootSignature = mRootSignature.Get();
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(VS.Get());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(PS.Get());
+		psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+		psoDesc.BlendState = blendDesc;
+		psoDesc.RasterizerState = rasterDesc;
+		psoDesc.DepthStencilState = depthDesc;
+
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.SampleDesc.Count = 1;
+
+		// PSOの作成
+		auto device = System::ServiceLocator::Get<DX12>()->GetDevice();
+		HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPipelineState));
+
+		if (FAILED(hr))
+		{
+			ECSE_LOG(System::ELogLevel::Error, "Failed Create PSO.");
+			return false;
+		}
+
+		// デバッカー用に名前つけ
+		mPipelineState->SetName(L"Ecse::SpritePipelinePSO");
 
 		return true;
 	}

@@ -210,10 +210,10 @@
   <ItemGroup>
     <None Include="README.md" />
     <None Include="packages.config" />
-    <None Include="Assets\SpriteShader.hlsli" />
+    <None Include="Assets\Shader\SpriteShader.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Assets\VS_Texture.hlsl" />
-    <FxCompile Include="Assets\PS_Texture.hlsl" />
+    <FxCompile Include="Assets\Shader\VS_Texture.hlsl" />
+    <FxCompile Include="Assets\Shader\PS_Texture.hlsl" />
   </ItemGroup>
 </Project>

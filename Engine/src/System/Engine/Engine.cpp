@@ -10,6 +10,7 @@
 #include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<ECS/Entity/EntityManager.hpp>
+#include<Graphics/Shader/ShaderManager.hpp>
 
 namespace Ecse::System
 {
@@ -66,6 +67,10 @@ namespace Ecse::System
 		if (ECS::EntityManager::Create() == false) return false;
 		mpEntityManager = ServiceLocator::Get<ECS::EntityManager>();
 		if (mpEntityManager->Initialize() == false) return false;
+
+		// ShaderManager
+		if (Graphics::ShaderManager::Create() == false) return false;
+
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
