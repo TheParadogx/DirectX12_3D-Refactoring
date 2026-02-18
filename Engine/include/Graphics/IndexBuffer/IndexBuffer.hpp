@@ -74,7 +74,7 @@ namespace Ecse::Graphics
 		D3D12_INDEX_BUFFER_VIEW mBufferView;
 
 		/// <summary>
-		/// バッファのポインタ
+		/// リソース本体
 		/// </summary>
 		Resource mBufferResource;
 

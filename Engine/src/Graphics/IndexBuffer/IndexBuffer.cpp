@@ -9,7 +9,13 @@ namespace Ecse::Graphics
 		, mBufferView()
 		, mBufferSize(0)
 		, mMapped(nullptr)
+		, mFormat()
 	{
+	}
+
+	IndexBuffer::~IndexBuffer()
+	{
+		Release();
 	}
 
 	/// <summary>

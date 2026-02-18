@@ -156,6 +156,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ECS\Conponent\Sprite\SpriteComponent.hpp" />
+    <ClInclude Include="include\ECS\Conponent\Transform\TransformComponent.hpp" />
     <ClInclude Include="include\Graphics\ConstantBuffer\ConstantBuffer.hpp" />
     <ClInclude Include="include\ECS\Entity\EntityManager.hpp" />
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
@@ -163,6 +165,8 @@
     <ClInclude Include="include\Graphics\IndexBuffer\IndexBuffer.hpp" />
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp" />
     <ClInclude Include="include\Graphics\Renderer\Renderer.hpp" />
+    <ClInclude Include="include\Graphics\VertexBuffer\VertexBuffer.hpp" />
+    <ClInclude Include="src\Graphics\Sprite\Renderer\SpriteRenderer.hpp" />
     <ClInclude Include="src\Graphics\Data\GraphicsData.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeap.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeapManager.hpp" />
@@ -199,6 +203,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Sprite\Renderer\SpriteRenderer.cpp" />
     <ClCompile Include="src\Graphics\IndexBuffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Graphics\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Graphics\Shader\ShaderManager.cpp" />
@@ -217,6 +222,7 @@
     <ClCompile Include="src\Graphics\GraphicsDescriptorHeap\GDescriptorHeapManager.cpp" />
     <ClCompile Include="src\Graphics\Color\Color.cpp" />
     <ClCompile Include="src\Graphics\DX12\DX12.cpp" />
+    <ClCompile Include="src\Graphics\VertexBuffer\VertexBuffer.cpp" />
     <ClCompile Include="src\System\Engine\Engine.cpp" />
     <ClCompile Include="External\Plugin\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

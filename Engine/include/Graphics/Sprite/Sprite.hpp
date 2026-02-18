@@ -19,32 +19,7 @@ namespace Ecse::Graphics
 		Sprite();
 		virtual ~Sprite();
 
-		/// <summary>
-		/// 初期化
-		/// </summary>
-		/// <param name="Texture"></param>
-		/// <returns>true:成功</returns>
-		bool Create(Texture* Texture);
 
-		/// <summary>
-		/// 描画エントリ（GPUに上げる前まで済ませる。）
-		/// </summary>
-		void Draw();
-
-		/*
-		* アクセサ
-		*/
-		DEFINE_VEC2_PROPERTY(Positiopn, mPosition);
-		DEFINE_VEC2_PROPERTY(Scale, mScale);
-		DEFINE_VEC2_PROPERTY(Pivot, mPivot);
-
-		DEFINE_PROPERTY(float, Angle, mAngle);
-		DEFINE_PROPERTY(float, Intensity, mIntensity);
-		DEFINE_PROPERTY(Graphics::Color, Color, mColor);
-
-		DirectX::XMFLOAT2 GetSize() const;
-		Texture* GetTexture() const;
-		ConstantBuffer* GetCB() const;
 	private:
 		/// <summary>
 		/// 色
@@ -60,10 +35,6 @@ namespace Ecse::Graphics
 		/// </summary>
 		Texture* mTexture;
 
-		/// <summary>
-		/// 座標
-		/// </summary>
-		DirectX::XMFLOAT2 mPosition;
 		/// <summary>
 		/// スケール
 		/// </summary>

@@ -11,7 +11,7 @@ VStoPS main(VertexInput input)
     output.UV = input.UV;
     
     // 色情報をピクセルシェーダーへ渡す
-    output.Color = MaterialColor;
-
+    output.Color = input.Color * MaterialColor;
+    
     return output;
 }

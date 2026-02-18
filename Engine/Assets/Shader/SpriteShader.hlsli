@@ -4,6 +4,7 @@ struct VertexInput
 {
     float3 Position : POSITION; // 12byte
     float2 UV : TEXCOORD; // 8byte
+    float4 Color : COLOR;
 };
 
 // 頂点からピクセルへの出力
