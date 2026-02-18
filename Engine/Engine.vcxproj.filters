@@ -144,10 +144,10 @@
     <ClInclude Include="src\Graphics\Sprite\Renderer\SpriteRenderer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\ECS\Conponent\Transform\TransformComponent.hpp">
+    <ClInclude Include="include\ECS\Component\Transform\TransformComponent.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\ECS\Conponent\Sprite\SpriteComponent.hpp">
+    <ClInclude Include="include\ECS\Component\Sprite\SpriteComponent.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -234,6 +234,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Sprite\Renderer\SpriteRenderer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ECS\Component\Sprite\SpriteComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

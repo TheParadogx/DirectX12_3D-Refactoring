@@ -156,8 +156,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\ECS\Conponent\Sprite\SpriteComponent.hpp" />
-    <ClInclude Include="include\ECS\Conponent\Transform\TransformComponent.hpp" />
+    <ClInclude Include="include\ECS\Component\Sprite\SpriteComponent.hpp" />
+    <ClInclude Include="include\ECS\Component\Transform\TransformComponent.hpp" />
     <ClInclude Include="include\Graphics\ConstantBuffer\ConstantBuffer.hpp" />
     <ClInclude Include="include\ECS\Entity\EntityManager.hpp" />
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
@@ -203,6 +203,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ECS\Component\Sprite\SpriteComponent.cpp" />
     <ClCompile Include="src\Graphics\Sprite\Renderer\SpriteRenderer.cpp" />
     <ClCompile Include="src\Graphics\IndexBuffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Graphics\Renderer\Renderer.cpp" />

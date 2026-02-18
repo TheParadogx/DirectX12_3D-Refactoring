@@ -13,7 +13,7 @@ namespace Ecse::ECS
 	/// <summary>
 	/// 2D座標系用
 	/// </summary>
-	struct Transform2D
+	struct ENGINE_API Transform2D
 	{
 		// 座標
 		DirectX::XMFLOAT3 Position = {0,0,0};
