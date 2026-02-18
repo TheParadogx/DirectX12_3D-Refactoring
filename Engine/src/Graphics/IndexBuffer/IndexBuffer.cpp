@@ -10,7 +10,6 @@ namespace Ecse::Graphics
 		, mBufferSize(0)
 		, mMapped(nullptr)
 	{
-
 	}
 
 	/// <summary>
