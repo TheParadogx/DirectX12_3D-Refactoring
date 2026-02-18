@@ -88,7 +88,7 @@ namespace Ecse::Graphics
 				return { current, (int)Size };
 			}
 
-			// 【ここが重要】衝突した場所の「次」まで count を進める
+			// 衝突した場所の次まで count を進める
 			// 0番目から探して2番目がダメなら、次は3番目から探せば良い
 			count += (conflictIndexInRequest + 1);
 		}
