@@ -30,7 +30,7 @@ namespace Ecse::Graphics
 		auto manager = System::ServiceLocator::Get<GDescriptorHeapManager>();
 		if (manager == nullptr)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed GetGDescriptorHeapManager");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed GetGDescriptorHeapManager");
 			return false;
 		}
 

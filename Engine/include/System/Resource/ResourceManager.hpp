@@ -36,7 +36,7 @@ namespace Ecse::System
 
 			if (std::filesystem::exists(FilePath) == false) 
 			{
-				ECSE_LOG(ELogLevel::Error, "File not found: {}", FilePath.string());
+				ECSE_LOG(eLogLevel::Error, "File not found: {}", FilePath.string());
 				return nullptr;
 			}
 
@@ -59,12 +59,12 @@ namespace Ecse::System
 			{
 				T* ptr = res.get();
 				cache[key] = std::move(res);
-				ECSE_LOG(ELogLevel::Info, "Resource Loaded: {}", key);
+				ECSE_LOG(eLogLevel::Info, "Resource Loaded: {}", key);
 				return ptr;
 			}
 
 			// 5. ロード失敗時のログ
-			ECSE_LOG(ELogLevel::Error, "Failed to create resource from: {}", key);
+			ECSE_LOG(eLogLevel::Error, "Failed to create resource from: {}", key);
 			return nullptr;
 		}
 

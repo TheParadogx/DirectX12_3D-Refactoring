@@ -36,7 +36,7 @@ namespace Ecse::System
 		// ログ
 		Logger::Create();
 
-		ECSE_LOG(ELogLevel::Log, "Engine Initialize.");
+		ECSE_LOG(eLogLevel::Log, "Engine Initialize.");
 
 
 		//	短くしたら見やすいのか見にくいのか分らなくなってきた。
@@ -118,7 +118,7 @@ namespace Ecse::System
 	{
 		if (mIsInitialized == false) return;
 
-		ECSE_LOG(ELogLevel::Log, "Engine Shutdown.");
+		ECSE_LOG(eLogLevel::Log, "Engine Shutdown.");
 
 		if(mpImGui->IsCreated()) mpImGui->Release();
 		Window::Release();

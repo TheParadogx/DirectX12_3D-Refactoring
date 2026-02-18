@@ -120,7 +120,7 @@ namespace Ecse::Graphics
 
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed SerializeRootSignature");
+			ECSE_LOG(System::eLogLevel::Error, "Failed SerializeRootSignature");
 			return false;
 		}
 
@@ -129,7 +129,7 @@ namespace Ecse::Graphics
 			signatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed CreateRootSignature");
+			ECSE_LOG(System::eLogLevel::Error, "Failed CreateRootSignature");
 			return false;
 		}
 
@@ -148,7 +148,7 @@ namespace Ecse::Graphics
 
 		if (VS == nullptr || PS == nullptr)
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed GetShader.");
+			ECSE_LOG(System::eLogLevel::Error, "Failed GetShader.");
 			return false;
 		}
 
@@ -195,7 +195,7 @@ namespace Ecse::Graphics
 
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed Create PSO.");
+			ECSE_LOG(System::eLogLevel::Error, "Failed Create PSO.");
 			return false;
 		}
 
@@ -215,14 +215,14 @@ namespace Ecse::Graphics
 		ret = this->CreateRootSignature();
 		if (ret == false)
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed CreateRootSignature.");
+			ECSE_LOG(System::eLogLevel::Error, "Failed CreateRootSignature.");
 			return false;
 		}
 
 		ret = this->CreatePipeline();
 		if (ret == false)
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed CreatePipeline.");
+			ECSE_LOG(System::eLogLevel::Error, "Failed CreatePipeline.");
 			return false;
 		}
 

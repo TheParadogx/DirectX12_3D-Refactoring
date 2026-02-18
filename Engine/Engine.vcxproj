@@ -160,6 +160,7 @@
     <ClInclude Include="include\ECS\Entity\EntityManager.hpp" />
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
     <ClInclude Include="include\ECS\Tag\SceneTags.hpp" />
+    <ClInclude Include="include\Graphics\IndexBuffer\IndexBuffer.hpp" />
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp" />
     <ClInclude Include="include\Graphics\Renderer\Renderer.hpp" />
     <ClInclude Include="src\Graphics\Data\GraphicsData.hpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\IndexBuffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Graphics\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Graphics\Shader\ShaderManager.cpp" />
     <ClCompile Include="src\Graphics\Sprite\Pipeline\SpritePipeline.cpp" />

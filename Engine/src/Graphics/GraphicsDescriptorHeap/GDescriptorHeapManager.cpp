@@ -30,7 +30,7 @@ namespace Ecse::Graphics
 		HRESULT hr = device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&mHeap));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateDescriptorHeap.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateDescriptorHeap.");
 			return false;
 		}
 
@@ -46,7 +46,7 @@ namespace Ecse::Graphics
 			mIsUse[i] = false;
 		}
 		mSearchOffset = 0;
-		ECSE_LOG(System::ELogLevel::Log, "DescriptorHeapManager: Initialized with " + std::to_string(MAX_DESCRIPTOR) + " slots.");
+		ECSE_LOG(System::eLogLevel::Log, "DescriptorHeapManager: Initialized with " + std::to_string(MAX_DESCRIPTOR) + " slots.");
 
 
 		return true;
@@ -93,7 +93,7 @@ namespace Ecse::Graphics
 			count += (conflictIndexInRequest + 1);
 		}
 
-		ECSE_LOG(System::ELogLevel::Error, "DescriptorHeapManager: Out of descriptors!");
+		ECSE_LOG(System::eLogLevel::Error, "DescriptorHeapManager: Out of descriptors!");
 		return { -1, 0 };
 	}
 

@@ -74,7 +74,7 @@ namespace Ecse::Graphics
 		if (FAILED(hr)) 
 		{
 
-			ECSE_LOG(Ecse::System::ELogLevel::Error, "Failed CreateShader.");
+			ECSE_LOG(Ecse::System::eLogLevel::Error, "Failed CreateShader.");
 			return nullptr;
 		}
 

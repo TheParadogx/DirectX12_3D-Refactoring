@@ -15,7 +15,7 @@ namespace Ecse::System
 	/// <summary>
 	/// Debug出力のレベル定義
 	/// </summary>
-	enum class ELogLevel : uint8_t
+	enum class eLogLevel : uint8_t
 	{
 		/// <summary>
 		/// 通常ログ 
@@ -77,7 +77,7 @@ namespace Ecse::System
 		/// <summary>
 		/// 色のセット
 		/// </summary>
-		void SetTextColor(ELogLevel Level);
+		void SetTextColor(eLogLevel Level);
 		/// <summary>
 		/// ログの表示
 		/// </summary>
@@ -85,7 +85,7 @@ namespace Ecse::System
 		/// <param name="Line">__LINE__</param>
 		/// <param name="Level">ログの出力レベル</param>
 		/// <param name="Message">出力テキスト</param>
-		void LogInternal(const char* File, int Line, ELogLevel Level, const std::string& Message);
+		void LogInternal(const char* File, int Line, eLogLevel Level, const std::string& Message);
 
 	public:
 
@@ -97,7 +97,7 @@ namespace Ecse::System
 		/// <param name="Level">ログの出力レベル</param>
 		/// <param name="...args">可変引数</param>
 		template<typename... Args>
-		void Output(ELogLevel Level, std::string_view Fmt, const std::source_location Location, Args&&... args)
+		void Output(eLogLevel Level, std::string_view Fmt, const std::source_location Location, Args&&... args)
 		{
 			try
 			{
@@ -106,7 +106,7 @@ namespace Ecse::System
 			}
 			catch (const std::format_error& e)
 			{
-				LogInternal(Location.file_name(), static_cast<int>(Location.line()), ELogLevel::Error, std::string("Format Error: ") + e.what());
+				LogInternal(Location.file_name(), static_cast<int>(Location.line()), eLogLevel::Error, std::string("Format Error: ") + e.what());
 			}
 		}
 
