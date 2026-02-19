@@ -147,6 +147,9 @@
     <ClInclude Include="include\ECS\Component\Sprite\SpriteComponent.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\StructuredBuffer\StructuredBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
@@ -233,6 +236,9 @@
     <ClCompile Include="src\ECS\Component\Sprite\SpriteComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\StructuredBuffer\StructuredBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -240,7 +246,7 @@
     <None Include="Assets\Shader\SpriteShader.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Assets\Shader\VS_Texture.hlsl" />
     <FxCompile Include="Assets\Shader\PS_Texture.hlsl" />
+    <FxCompile Include="Assets\Shader\VS_Texture.hlsl" />
   </ItemGroup>
 </Project>

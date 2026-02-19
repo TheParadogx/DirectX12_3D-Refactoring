@@ -1,14 +1,23 @@
 ﻿#pragma once
 
 #include<Utility/Types/EcseTypes.hpp>
+#include<memory>
+#include<vector>
+#include<entt/entt.hpp>
+
+namespace Ecse::ECS
+{
+	struct Transform2D;
+	struct Sprite;
+}
 
 namespace Ecse::Graphics
 {
 
 	class VertexBuffer;
-	class IndexBuffer;
+	class StructuredBuffer;
 	class SpritePipeline;
-	class Sprite;
+	struct SpriteShaderData;
 
 	/// <summary>
 	/// スプライトの描画管理
@@ -16,55 +25,84 @@ namespace Ecse::Graphics
 	class SpriteRenderer
 	{
 		/// <summary>
-		/// 板ポリゴンの作成
+		/// 表示用の行列計算
 		/// </summary>
+		/// <param name="tr">トランスフォーム</param>
+		/// <param name="sp">スプライト</param>
 		/// <returns></returns>
-		bool CreatePolygon();
+		SpriteShaderData CalculateShaderData(const ECS::Transform2D& tr, const ECS::Sprite& sp);
+
 	public:
 		SpriteRenderer();
-		virtual ~SpriteRenderer();
+		virtual ~SpriteRenderer() = default;
+
 
 		/// <summary>
-		/// PSOの作成と共通バッファの構築
+		/// 初期化
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>true:成功</returns>
 		bool Initialize();
+		
+		/// <summary>
+		/// 前回の命令予約を削除
+		/// </summary>
+		void Begin();
 
 		/// <summary>
-		/// フレーム開始の準備
+		/// データとテクスチャのGPUハンドルを受け取る 
 		/// </summary>
-		/// <param name="CmdList"></param>
-		void Begin(ID3D12GraphicsCommandList* CmdList);
+		/// <param name="data"></param>
+		/// <param name="textureHandle"></param>
+		void Draw(const SpriteShaderData& data, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
 
 		/// <summary>
-		/// 描画実行
+		/// 命令の発行（実描画）
 		/// </summary>
-		/// <param name="CmdList"></param>
-		/// <param name="sprite"></param>
-		void Draw(ID3D12GraphicsCommandList* CmdList, const Sprite& Sprite);
+		/// <param name="cmdList"></param>
+		void End(ID3D12GraphicsCommandList* cmdList);
 
 		/// <summary>
-		/// フレームの終了
+		/// viewを使って必要なコンポーネントを持っているオブジェクトだけを描画する
 		/// </summary>
-		/// <param name="CmdList"></param>
-		void End(ID3D12GraphicsCommandList* CmdList);
-
-
-		/// <summary>
-		/// 後でenttのviewからspriteを取得して描画をするメソッドを作成します。
-		/// </summary>
+		/// <param name="registry"></param>
+		void UpdateAndDraw(entt::registry& registry);
 
 	private:
 		/// <summary>
-		/// 板ポリゴン用の共通リソース
+		/// 1フレームの最大数 
 		/// </summary>
-		std::unique_ptr<VertexBuffer> mSharedVB;
-		std::unique_ptr<IndexBuffer>  mSharedIB;
+		static constexpr uint32_t MAX_SPRITE_COUNT = 4096;
 
 		/// <summary>
-		/// Sprite用のパイプライン
+		/// Sprite用パイプライン
 		/// </summary>
 		std::unique_ptr<SpritePipeline> mPipeline;
+		/// <summary>
+		/// SpriteShaderDataをシェーダに送るためのバッファ
+		/// </summary>
+		std::unique_ptr<StructuredBuffer> mInstanceBuffer;
+		/// <summary>
+		/// 頂点バッファ
+		/// </summary>
+		std::unique_ptr<VertexBuffer> mVB;
+
+		/// <summary>
+		/// 1回のDrawCallのデータ
+		/// </summary>
+		struct DrawCall {
+			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle;
+			uint32_t instanceCount;
+			uint32_t startIndex;
+		};
+
+		/// <summary>
+		/// 頂点バッファに送るデータ
+		/// </summary>
+		std::vector<SpriteShaderData> mReservedData;
+		/// <summary>
+		/// DrawCallの全データ
+		/// </summary>
+		std::vector<DrawCall> mDrawCalls;
 	};
 
 }

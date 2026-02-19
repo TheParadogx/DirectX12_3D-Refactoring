@@ -95,19 +95,21 @@ namespace Ecse::Graphics
 	/// <returns>true:成功</returns>
 	bool SpritePipeline::CreateRootSignature()
 	{
-		// t0:テクスチャ
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+		// 0: StructuredBuffer 用 (t1)
+		CD3DX12_DESCRIPTOR_RANGE1 rangeBuffer;
+		rangeBuffer.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1
 
-		// ルートパラメーター
+		// 1: Texture 用 (t0)
+		CD3DX12_DESCRIPTOR_RANGE1 rangeTex;
+		rangeTex.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
+
 		CD3DX12_ROOT_PARAMETER1 rootParams[2];
-		// 処理速度が気になりだしたら動的CBに変え
-		// 0:CBV (b0)
-		rootParams[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_ALL);
-		// 1: DescriptorTable (t0)
-		rootParams[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+		// 0: DescriptorTable (t1) - インスタンスデータ
+		rootParams[0].InitAsDescriptorTable(1, &rangeBuffer, D3D12_SHADER_VISIBILITY_ALL);
+		// 1: DescriptorTable (t0) - テクスチャ
+		rootParams[1].InitAsDescriptorTable(1, &rangeTex, D3D12_SHADER_VISIBILITY_PIXEL);
 
-		//	 静的サンプラー
+		// 静的サンプラー (s0)
 		CD3DX12_STATIC_SAMPLER_DESC sampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
 
 		// シグネチャ作成
@@ -159,7 +161,6 @@ namespace Ecse::Graphics
 		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		};
 
 		// パイプラインステート構築

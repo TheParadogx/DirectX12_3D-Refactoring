@@ -1,17 +1,19 @@
 ﻿#include "SpriteShader.hlsli"
 
-VStoPS main(VertexInput input)
+VStoPS main(VertexInput input, uint instID : SV_InstanceID)
 {
     VStoPS output = (VStoPS) 0;
 
-    // 1x1の板頂点を、CPUで計算した行列(SRT * Proj)で変換
-    output.Position = mul(float4(input.Position, 1.0f), WVP);
+    // 自分のインスタンス用のデータを取得
+    SpriteInstanceData data = gInstanceData[instID];
 
-    // UVはそのまま渡す
+    // 変換
+    output.Position = mul(float4(input.Position, 1.0f), data.WVP);
     output.UV = input.UV;
     
-    // 色情報をピクセルシェーダーへ渡す
-    output.Color = input.Color * MaterialColor;
+    // インスタンスごとの色と光度を渡す
+    output.Color = data.Color;
+    output.Intensity = data.Intensity;
     
     return output;
 }
