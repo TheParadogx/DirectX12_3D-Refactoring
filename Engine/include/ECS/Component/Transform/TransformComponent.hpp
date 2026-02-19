@@ -16,7 +16,7 @@ namespace Ecse::ECS
 	struct ENGINE_API Transform2D
 	{
 		// 座標
-		DirectX::XMFLOAT3 Position = {0,0,0};
+		DirectX::XMFLOAT2 Position = {0,0};
 		// 全体倍率
 		DirectX::XMFLOAT2 Scale = {1,1};
 		// 回転

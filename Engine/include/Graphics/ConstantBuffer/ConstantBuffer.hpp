@@ -41,6 +41,21 @@ namespace Ecse::Graphics
 		/// GPUハンドルの取得
 		/// </summary>
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle() const;
+
+		/// <summary>
+		/// Map済みのポインタからオフセット分ずらしたアドレスの取得
+		/// </summary>
+		/// <param name="Offset"></param>
+		/// <returns></returns>
+		void* GetMappedPtr(size_t Offset = 0);
+
+		/// <summary>
+		/// 先頭からオフセット分ずらした仮想アドレスを返す
+		/// </summary>
+		/// <param name="offset"></param>
+		/// <returns></returns>
+		D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress(size_t Offset = 0);
+
 	private:
 		// フレームごとのリソースセット
 		struct FrameResource {

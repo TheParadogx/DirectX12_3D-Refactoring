@@ -123,5 +123,30 @@ namespace Ecse::Graphics
 		return mFrames[index].Heap.GetGpuHandle();
 	}
 
+
+	/// <summary>
+	/// Map済みのポインタからオフセット分ずらしたアドレスの取得
+	/// </summary>
+	/// <param name="Offset"></param>
+	/// <returns></returns>
+	void* ConstantBuffer::GetMappedPtr(size_t Offset)
+	{
+		uint32_t index = System::ServiceLocator::Get<DX12>()->GetCurrentFrameIndex();
+		// Map済みポインタから、指定されたオフセット分ずらしたアドレスを返す
+		return static_cast<uint8_t*>(mFrames[index].MappedData) + Offset;
+	}
+
+	/// <summary>
+	/// 先頭からオフセット分ずらした仮想アドレスを返す
+	/// </summary>
+	/// <param name="offset"></param>
+	/// <returns></returns>
+	D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGPUAddress(size_t Offset)
+	{
+		uint32_t index = System::ServiceLocator::Get<DX12>()->GetCurrentFrameIndex();
+		// リソースの先頭アドレス + オフセットを返す
+		return mFrames[index].Resource->GetGPUVirtualAddress() + Offset;
+	}
+
 }
 

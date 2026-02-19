@@ -12,7 +12,6 @@ namespace Ecse::ECS
 		, Size(0,0)
 		, DrawScale(1,1)
 		, Flip(1,1)
-		, CB(nullptr)
 		, Texture(nullptr)
 		, Intensity(1)
 		, IsVisible(true)
@@ -22,10 +21,10 @@ namespace Ecse::ECS
 		{
 			Size = { Texture->GetWidth(),Texture->GetHeight()};
 		}
-		if (CB == nullptr)
-		{
-			CB = std::make_unique<Graphics::ConstantBuffer>();
-			CB->Create(sizeof(Graphics::SpriteShaderData));
-		}
+	}
+
+	void Sprite::SetLayer(RenderLayer Base, int Offset)
+	{
+		Layer = static_cast<int>(Base) + Offset;
 	}
 }

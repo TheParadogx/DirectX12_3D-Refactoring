@@ -3,7 +3,6 @@
 #include<Graphics/Sprite/Pipeline/SpritePipeline.hpp>
 #include<Graphics/VertexBuffer/VertexBuffer.hpp>
 #include<Graphics/IndexBuffer/IndexBuffer.hpp>
-#include<Graphics/Sprite/Sprite.hpp>
 #include<Graphics/Data/GraphicsData.hpp>
 
 namespace Ecse::Graphics
