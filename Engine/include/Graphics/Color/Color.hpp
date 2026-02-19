@@ -1,9 +1,10 @@
 ﻿#pragma once
 
+#include<Utility/Export/Export.hpp>
 
 namespace Ecse::Graphics
 {
-	struct Color
+	struct ENGINE_API Color
 	{
 
 		Color() noexcept : r(1.0f), g(1.0f), b(1.0f), a(1.0f) {}

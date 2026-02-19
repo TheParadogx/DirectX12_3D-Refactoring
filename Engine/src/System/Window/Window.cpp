@@ -43,7 +43,7 @@ namespace Ecse::System
         mIsQuitRequested = false;
         mIsCursorVisible = true;
 
-        ECSE_LOG(ELogLevel::Log, "Window Created.");
+        ECSE_LOG(eLogLevel::Log, "Window Created.");
     }
 
     void Window::OnDestroy()
@@ -51,7 +51,7 @@ namespace Ecse::System
         if (mHandle != nullptr)
         {
             ::UnregisterClass(mWindowClass.lpszClassName, mWindowClass.hInstance);
-            ECSE_LOG(ELogLevel::Log, "Window Deleted.");
+            ECSE_LOG(eLogLevel::Log, "Window Deleted.");
         }
     }
 
@@ -85,7 +85,7 @@ namespace Ecse::System
         //  ウィンドウの登録
         if (::RegisterClassExW(&mWindowClass) == FALSE)
         {
-            ECSE_LOG(ELogLevel::Fatal, "Failed Register WindowClass.");
+            ECSE_LOG(eLogLevel::Fatal, "Failed Register WindowClass.");
             return false;
         }
 
@@ -128,7 +128,7 @@ namespace Ecse::System
 
         if (mHandle == nullptr)
         {
-            ECSE_LOG(ELogLevel::Fatal, "Failed Create WindowHandle.");
+            ECSE_LOG(eLogLevel::Fatal, "Failed Create WindowHandle.");
             return false;
         }
 
@@ -142,7 +142,7 @@ namespace Ecse::System
         //  カーソルの初期状態
         SetCursorVisible(Setting.ShowCursor);
 
-        ECSE_LOG(ELogLevel::Log, "Window Created Successfully: {}x{}", mWidth, mHeight);
+        ECSE_LOG(eLogLevel::Log, "Window Created Successfully: {}x{}", mWidth, mHeight);
 
         return true;
     }

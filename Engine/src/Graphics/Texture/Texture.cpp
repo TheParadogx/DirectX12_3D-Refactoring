@@ -36,7 +36,7 @@ namespace Ecse::Graphics
 		//	ファイルの存在判定
 		if (fs::exists(FilePath) == false || fs::is_regular_file(FilePath) == false)
 		{
-			ECSE_LOG(System::ELogLevel::Error, "NotExists Texture. : " + FilePath.string());
+			ECSE_LOG(System::eLogLevel::Error, "NotExists Texture. : " + FilePath.string());
 			return false;
 		}
 		
@@ -84,7 +84,7 @@ namespace Ecse::Graphics
 		}
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Fialed LoadTexture.");
+			ECSE_LOG(System::eLogLevel::Error, "Fialed LoadTexture.");
 			return false;
 		}
 
@@ -114,7 +114,7 @@ namespace Ecse::Graphics
 			nullptr, &mAllocation, IID_PPV_ARGS(&mResource));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed Create for TextureResource.");
+			ECSE_LOG(System::eLogLevel::Error, "Failed Create for TextureResource.");
 			return false;
 		}
 
@@ -134,7 +134,7 @@ namespace Ecse::Graphics
 			nullptr, &uploadAlloc, IID_PPV_ARGS(&uploadRes));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Error, "Failed Create for UploadBufferResource.");
+			ECSE_LOG(System::eLogLevel::Error, "Failed Create for UploadBufferResource.");
 			return false;
 		}
 

@@ -33,7 +33,7 @@ namespace Ecse::Debug
 
         if (dx12 == nullptr || gdhManager == nullptr || window == nullptr)
         {
-            ECSE_LOG(System::ELogLevel::Fatal, "Failed Services not find.");
+            ECSE_LOG(System::eLogLevel::Fatal, "Failed Services not find.");
             return false;
         }
 
@@ -56,7 +56,7 @@ namespace Ecse::Debug
         // Win32のバックエンド初期化
         if (ImGui_ImplWin32_Init(hwnd) == false)
         {
-            ECSE_LOG(System::ELogLevel::Fatal, "Failed to init Win32 backend.");
+            ECSE_LOG(System::eLogLevel::Fatal, "Failed to init Win32 backend.");
             return false;
         }
 
@@ -64,7 +64,7 @@ namespace Ecse::Debug
         mHeap = std::make_unique<Graphics::GDescriptorHeap>();
         if (mHeap->Create(1) == false)
         {
-            ECSE_LOG(System::ELogLevel::Fatal, "Failed to allocate Descriptor slot.");
+            ECSE_LOG(System::eLogLevel::Fatal, "Failed to allocate Descriptor slot.");
             return false;
         }
 
@@ -83,12 +83,12 @@ namespace Ecse::Debug
 
         if (ImGui_ImplDX12_Init(&initInfo) == false)
         {
-            ECSE_LOG(System::ELogLevel::Fatal, "Failed to init DX12 backend.");
+            ECSE_LOG(System::eLogLevel::Fatal, "Failed to init DX12 backend.");
             return false;
         }
 
         mIsInitialized = true;
-        ECSE_LOG(System::ELogLevel::Log, "Initialize Success.");
+        ECSE_LOG(System::eLogLevel::Log, "Initialize Success.");
         return true;
     }
 
@@ -166,7 +166,7 @@ namespace Ecse::Debug
         }
 
         mIsInitialized = false;
-        ECSE_LOG(System::ELogLevel::Log, "ImGuiManager Shutdown.");
+        ECSE_LOG(System::eLogLevel::Log, "ImGuiManager Shutdown.");
     }
 
     /// <summary>

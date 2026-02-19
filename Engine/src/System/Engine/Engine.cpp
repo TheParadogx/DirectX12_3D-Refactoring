@@ -10,6 +10,7 @@
 #include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<ECS/Entity/EntityManager.hpp>
+#include<Graphics/Shader/ShaderManager.hpp>
 
 namespace Ecse::System
 {
@@ -35,7 +36,7 @@ namespace Ecse::System
 		// ログ
 		Logger::Create();
 
-		ECSE_LOG(ELogLevel::Log, "Engine Initialize.");
+		ECSE_LOG(eLogLevel::Log, "Engine Initialize.");
 
 
 		//	短くしたら見やすいのか見にくいのか分らなくなってきた。
@@ -66,6 +67,10 @@ namespace Ecse::System
 		if (ECS::EntityManager::Create() == false) return false;
 		mpEntityManager = ServiceLocator::Get<ECS::EntityManager>();
 		if (mpEntityManager->Initialize() == false) return false;
+
+		// ShaderManager
+		if (Graphics::ShaderManager::Create() == false) return false;
+
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
@@ -113,7 +118,7 @@ namespace Ecse::System
 	{
 		if (mIsInitialized == false) return;
 
-		ECSE_LOG(ELogLevel::Log, "Engine Shutdown.");
+		ECSE_LOG(eLogLevel::Log, "Engine Shutdown.");
 
 		if(mpImGui->IsCreated()) mpImGui->Release();
 		Window::Release();

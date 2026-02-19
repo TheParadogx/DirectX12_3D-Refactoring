@@ -47,19 +47,19 @@ namespace Ecse::System
 	/// <summary>
 	/// 色のセット
 	/// </summary>
-	void Logger::SetTextColor(ELogLevel Level)
+	void Logger::SetTextColor(eLogLevel Level)
 	{
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		WORD color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE; // デフォルトは白
 
 		switch (Level) {
-		case ELogLevel::Warning:
+		case eLogLevel::Warning:
 			color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; // Yellow
 			break;
-		case ELogLevel::Error:
+		case eLogLevel::Error:
 			color = FOREGROUND_RED | FOREGROUND_INTENSITY; // Red
 			break;
-		case ELogLevel::Fatal:
+		case eLogLevel::Fatal:
 			color = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 			break;
 		}
@@ -73,7 +73,7 @@ namespace Ecse::System
 	/// <param name="Line">__LINE__</param>
 	/// <param name="Level">ログの出力レベル</param>
 	/// <param name="Message">出力テキスト</param>
-	void Logger::LogInternal(const char* File, int Line, ELogLevel Level, const std::string& Message)
+	void Logger::LogInternal(const char* File, int Line, eLogLevel Level, const std::string& Message)
 	{
 		std::lock_guard lock(sLogMutex);
 
@@ -82,22 +82,22 @@ namespace Ecse::System
 		OutputDebugStringA(debugMsg.c_str());
 		
 		//	エラー以外は色を変える
-		if (Level != ELogLevel::Log) {
+		if (Level != eLogLevel::Log) {
 			SetTextColor(Level);
 		}
 
 		//	ログレベルのlabel
 		std::string label = "";
 		switch (Level) {
-		case ELogLevel::Warning: 
+		case eLogLevel::Warning: 
 			label = "[Warning]"; 
 			break;
 
-		case ELogLevel::Error:   
+		case eLogLevel::Error:   
 			label = "[Error]"; 
 			break;
 
-		case ELogLevel::Fatal:   
+		case eLogLevel::Fatal:   
 			label = "[FATAL]"; 
 			break;
 		default:                 
@@ -108,14 +108,14 @@ namespace Ecse::System
 		// コンソールに表示
 		std::cout << label << Message << std::endl;
 
-		if (Level != ELogLevel::Log) {
+		if (Level != eLogLevel::Log) {
 			std::cout << "  -> " << File << "(" << Line<< ")" << std::endl;
 			// 色を戻す
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 		}
 
 		//	Fatalの時は実行を止める+メッセージボックス
-		if (Level == ELogLevel::Fatal) {
+		if (Level == eLogLevel::Fatal) {
 			std::string fatalDetail = std::format("{}\n\nLocation: {}({})", Message, File, Line);
 			MessageBoxA(nullptr, fatalDetail.c_str(), "Fatal Error", MB_ICONERROR);
 			DebugBreak();

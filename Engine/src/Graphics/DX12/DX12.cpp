@@ -73,7 +73,7 @@ namespace Ecse::Graphics
 		}
 		mDevice.Reset();
 
-		ECSE_LOG(System::ELogLevel::Log, "DX12: OnDestroy completed.");
+		ECSE_LOG(System::eLogLevel::Log, "DX12: OnDestroy completed.");
 	}
 
 	/// <summary>
@@ -93,14 +93,14 @@ namespace Ecse::Graphics
 		//	ファクトリー初期化
 		if (InitializeFactory() == false)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed InitializeFactory.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeFactory.");
 			return false;
 		}
 
 		//	デバイス初期化
 		if (InitializeDevice() == false)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed InitializeDevice.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeDevice.");
 			return false;
 
 		}
@@ -108,7 +108,7 @@ namespace Ecse::Graphics
 		//	スワップチェイン初期化
 		if (InitializeSwapChain(WindowHandle, Width, Height) == false)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed InitializeSwapChain.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeSwapChain.");
 			return false;
 
 		}
@@ -116,7 +116,7 @@ namespace Ecse::Graphics
 		//	バックバッファ用ヒープ初期化
 		if (InitializeBackBufferHeap() == false)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed InitializeBackBufferHeap.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeBackBufferHeap.");
 			return false;
 
 		}
@@ -124,7 +124,7 @@ namespace Ecse::Graphics
 		//	深度バッファ用ヒープ初期化
 		if (InitializeDepthHeap(Width, Height) == false)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed InitializeDepthHeap.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeDepthHeap.");
 			return false;
 
 		}
@@ -132,7 +132,7 @@ namespace Ecse::Graphics
 		//	フェンスの初期化
 		if (InitializeFence() == false)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed InitializeFence.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeFence.");
 			return false;
 
 		}
@@ -312,7 +312,7 @@ namespace Ecse::Graphics
 		{
 			debugLayer->EnableDebugLayer();
 			debugLayer->SetEnableAutoName(TRUE);
-			ECSE_LOG(System::ELogLevel::Log, "EnableDebugLayer(ID3D12Debug5).");
+			ECSE_LOG(System::eLogLevel::Log, "EnableDebugLayer(ID3D12Debug5).");
 		}
 		//	D3D12GetDebugInterfaceで失敗する可能性があるらしいので一応復旧処理も入れておきます。
 		else
@@ -322,7 +322,7 @@ namespace Ecse::Graphics
 			if (SUCCEEDED(hr))
 			{
 				debugBasic->EnableDebugLayer();
-				ECSE_LOG(System::ELogLevel::Log, "EnableDebugLayer(Basic).");
+				ECSE_LOG(System::eLogLevel::Log, "EnableDebugLayer(Basic).");
 			}
 		}
 
@@ -350,7 +350,7 @@ namespace Ecse::Graphics
 
 			if (SUCCEEDED(hr))
 			{
-				ECSE_LOG(System::ELogLevel::Log, "Success CreateDevice.");
+				ECSE_LOG(System::eLogLevel::Log, "Success CreateDevice.");
 
 				// D3D12Maアロケーターの作成
 				D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
@@ -360,7 +360,7 @@ namespace Ecse::Graphics
 				hr = D3D12MA::CreateAllocator(&allocatorDesc, &mMACmdAlloc);
 				if (FAILED(hr))
 				{
-					ECSE_LOG(System::ELogLevel::Fatal, "Failed D3D12MA::CreateAllocator.");
+					ECSE_LOG(System::eLogLevel::Fatal, "Failed D3D12MA::CreateAllocator.");
 					return false;
 				}
 
@@ -371,7 +371,7 @@ namespace Ecse::Graphics
 		// デバイスが作れなかったら終了
 		if (mDevice == nullptr)
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateDevice. No compatible GPU found.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateDevice. No compatible GPU found.");
 			return false;
 		}
 
@@ -379,7 +379,7 @@ namespace Ecse::Graphics
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED 
 		if (FAILED(mDevice.As(&mDebugDevice)))
 		{
-			ECSE_LOG(System::ELogLevel::Warning, "DirectX12: Failed to get DebugDevice interface.");
+			ECSE_LOG(System::eLogLevel::Warning, "DirectX12: Failed to get DebugDevice interface.");
 		}
 #endif
 		return true;
@@ -401,7 +401,7 @@ namespace Ecse::Graphics
 		const HRESULT hr = CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&mFactory));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateDXGIFactory2.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateDXGIFactory2.");
 			return false;
 		}
 
@@ -428,7 +428,7 @@ namespace Ecse::Graphics
 		hr = mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCmdQueue));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateCommandQueue.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateCommandQueue.");
 			return false;
 		}
 
@@ -438,7 +438,7 @@ namespace Ecse::Graphics
 			hr = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mFrames[i].Allocator));
 			if (FAILED(hr))
 			{
-				ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateCommandAllocator." + std::to_string(i));
+				ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateCommandAllocator." + std::to_string(i));
 				return false;
 			}
 
@@ -449,7 +449,7 @@ namespace Ecse::Graphics
 			hr = mMACmdAlloc->CreatePool(&poolDecs, &mFrames[i].UploadPool);
 			if (FAILED(hr))
 			{
-				ECSE_LOG(System::ELogLevel::Fatal, "Failed Create D3D12MA Pool for Frame: " + std::to_string(i));
+				ECSE_LOG(System::eLogLevel::Fatal, "Failed Create D3D12MA Pool for Frame: " + std::to_string(i));
 				return false;
 			}
 		}
@@ -458,7 +458,7 @@ namespace Ecse::Graphics
 		hr = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mFrames[0].Allocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateCommandList.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateCommandList.");
 			return false;
 		}
 
@@ -493,7 +493,7 @@ namespace Ecse::Graphics
 
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateSwapChainForHwnd.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateSwapChainForHwnd.");
 			return false;
 		}
 
@@ -522,7 +522,7 @@ namespace Ecse::Graphics
 		HRESULT hr = mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRtvHeap));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "CreateDescriptorHeap (RTV)");
+			ECSE_LOG(System::eLogLevel::Fatal, "CreateDescriptorHeap (RTV)");
 			return false;
 		}
 
@@ -538,7 +538,7 @@ namespace Ecse::Graphics
 			hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mFrames[i].BackBuffer));
 			if (FAILED(hr))
 			{
-				ECSE_LOG(System::ELogLevel::Fatal, "Failed GetBackBuffer.");
+				ECSE_LOG(System::eLogLevel::Fatal, "Failed GetBackBuffer.");
 				return false;
 			}
 
@@ -569,7 +569,7 @@ namespace Ecse::Graphics
 		HRESULT hr = mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&mDsvHeap));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "CreateDescriptorHeap (DSV)");
+			ECSE_LOG(System::eLogLevel::Fatal, "CreateDescriptorHeap (DSV)");
 			return false;
 		}
 
@@ -606,7 +606,7 @@ namespace Ecse::Graphics
 		);
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateDepthBuffer.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateDepthBuffer.");
 			return false;
 		}
 
@@ -628,7 +628,7 @@ namespace Ecse::Graphics
 		hr = mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::ELogLevel::Fatal, "Failed CreateFence.");
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed CreateFence.");
 			return false;
 		}
 

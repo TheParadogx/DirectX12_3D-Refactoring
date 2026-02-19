@@ -15,7 +15,7 @@ namespace Ecse::System
 	/// <summary>
 	/// Debug出力のレベル定義
 	/// </summary>
-	enum class ELogLevel : uint8_t
+	enum class ENGINE_API eLogLevel : uint8_t
 	{
 		/// <summary>
 		/// 通常ログ 
@@ -45,7 +45,7 @@ namespace Ecse::System
 	/// <summary>
 	/// コンソールの文字の色変えるための定義
 	/// </summary>
-	enum class EConsoleTextColor : uint8_t
+	enum class ENGINE_API EConsoleTextColor : uint8_t
 	{
 		Red = 0x01,
 		Blue = 0x02,
@@ -77,7 +77,7 @@ namespace Ecse::System
 		/// <summary>
 		/// 色のセット
 		/// </summary>
-		void SetTextColor(ELogLevel Level);
+		void SetTextColor(eLogLevel Level);
 		/// <summary>
 		/// ログの表示
 		/// </summary>
@@ -85,7 +85,7 @@ namespace Ecse::System
 		/// <param name="Line">__LINE__</param>
 		/// <param name="Level">ログの出力レベル</param>
 		/// <param name="Message">出力テキスト</param>
-		void LogInternal(const char* File, int Line, ELogLevel Level, const std::string& Message);
+		void LogInternal(const char* File, int Line, eLogLevel Level, const std::string& Message);
 
 	public:
 
@@ -97,7 +97,7 @@ namespace Ecse::System
 		/// <param name="Level">ログの出力レベル</param>
 		/// <param name="...args">可変引数</param>
 		template<typename... Args>
-		void Output(ELogLevel Level, std::string_view Fmt, const std::source_location Location, Args&&... args)
+		void Output(eLogLevel Level, std::string_view Fmt, const std::source_location Location, Args&&... args)
 		{
 			try
 			{
@@ -106,7 +106,7 @@ namespace Ecse::System
 			}
 			catch (const std::format_error& e)
 			{
-				LogInternal(Location.file_name(), static_cast<int>(Location.line()), ELogLevel::Error, std::string("Format Error: ") + e.what());
+				LogInternal(Location.file_name(), static_cast<int>(Location.line()), eLogLevel::Error, std::string("Format Error: ") + e.what());
 			}
 		}
 
@@ -122,25 +122,18 @@ namespace Ecse::System
 * ifとelseの間にマクロを展開すると内側のif分に結びつく可能性があるのでdo whileにします。
 */
 
-#ifndef ECSE_LOG
 #ifdef _DEBUG
-// デバッグビルド：全てを記録
-#define ECSE_LOG(level, format, ...) \
-        do { \
-            if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
-                logger->Output(level, format,std::source_location::current(), ##__VA_ARGS__); \
-            } \
-        } while (0)
+#define ECSE_LOG_ENABLED(level) true
 #else
-#define ELOG_LEVEL ::Ecse::System::ELogLevel::Error
-// リリースビルド：Error 以上だけをコンパイル対象にする
+// リリース時は Error 以上のみ有効
+#define ECSE_LOG_ENABLED(level) (level >= ::Ecse::System::eLogLevel::Error)
+#endif
+
 #define ECSE_LOG(level, format, ...) \
-        do { \
-            if constexpr (level >= ELOG_LEVEL ) { \
-                if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
-                    logger->Output(level, format,std::source_location::current(), ##__VA_ARGS__); \
-                } \
+    do { \
+        if constexpr (ECSE_LOG_ENABLED(level)) { \
+            if (auto* logger = ::Ecse::System::ServiceLocator::Get<::Ecse::System::Logger>()) { \
+                logger->Output(level, format, std::source_location::current(), ##__VA_ARGS__); \
             } \
-        } while (0)
-#endif
-#endif
+        } \
+    } while (0)

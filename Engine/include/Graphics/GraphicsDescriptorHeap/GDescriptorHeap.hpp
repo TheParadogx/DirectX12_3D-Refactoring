@@ -2,13 +2,15 @@
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapInfo.hpp>
 #include<cstdint>
 #include <d3d12.h>
+#include<Utility/Export/Export.hpp>
+
 
 namespace Ecse::Graphics
 {
 	/// <summary>
 	/// ディスクリプタヒープの1枠（または連続した枠）を管理するRAIIクラス
 	/// </summary>
-	class GDescriptorHeap
+	class ENGINE_API GDescriptorHeap
 	{
 	public:
 		GDescriptorHeap();
