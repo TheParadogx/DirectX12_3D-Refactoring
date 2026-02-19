@@ -61,7 +61,7 @@ namespace Ecse::Graphics
 		data.Color = sp.Color;
 		data.Intensity = sp.Intensity;
 
-		return SpriteShaderData();
+		return data;
 	}
 
 
