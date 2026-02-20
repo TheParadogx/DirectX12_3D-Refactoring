@@ -184,32 +184,30 @@ namespace Ecse::Graphics
 		auto view = registry.view<Transform2D, Sprite>();
 		struct RenderItem {
 			const Transform2D* transform;
-			const Sprite* sprite;
+			const Sprite* psprite;
 		};
 		std::vector<RenderItem> items;
 		items.reserve(view.size_hint());
 
-
 		view.each([&](auto entity, Transform2D& transform, Sprite&sprite) 
 			{
-				const auto& sprite = view.get<Sprite>(entity);
 				if (!sprite.IsVisible || !sprite.Texture) return;
-				items.push_back({ &view.get<Transform2D>(entity), &sprite });
+				items.push_back({ &transform ,&sprite });
 			});
 
 		// layer順にソート
 		std::sort(items.begin(), items.end(), [](const RenderItem& a, const RenderItem& b) {
-			return a.sprite->Layer < b.sprite->Layer;
+			return a.psprite->Layer < b.psprite->Layer;
 			});
 
 
 		// ソートされた順番にDrawを発行
 		for (const auto& item : items) {
 			// WVP行列の計算（後述）
-			SpriteShaderData shaderData = CalculateShaderData(*item.transform, *item.sprite);
+			SpriteShaderData shaderData = CalculateShaderData(*item.transform, *item.psprite);
 
 			// 前に作った Draw メソッドを呼ぶ
-			this->Draw(shaderData, item.sprite->Texture->GetGpuHandle());
+			this->Draw(shaderData, item.psprite->Texture->GetGpuHandle());
 		}
 
 	}
