@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "SpritePipeline.hpp"
 
 #include<Graphics/DX12/DX12.hpp>
@@ -97,17 +97,17 @@ namespace Ecse::Graphics
 	{
 		// 0: StructuredBuffer 用 (t1)
 		CD3DX12_DESCRIPTOR_RANGE1 rangeBuffer;
-		rangeBuffer.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1
+		rangeBuffer.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
 
 		// 1: Texture 用 (t0)
 		CD3DX12_DESCRIPTOR_RANGE1 rangeTex;
-		rangeTex.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
+		rangeTex.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1
 
 		CD3DX12_ROOT_PARAMETER1 rootParams[2];
-		// 0: DescriptorTable (t1) - インスタンスデータ
+		// Index 0 に t0 を割り当て。VSでも使うので VISIBILITY_ALL。
 		rootParams[0].InitAsDescriptorTable(1, &rangeBuffer, D3D12_SHADER_VISIBILITY_ALL);
-		// 1: DescriptorTable (t0) - テクスチャ
-		rootParams[1].InitAsDescriptorTable(1, &rangeTex, D3D12_SHADER_VISIBILITY_PIXEL);
+		// Index 1 に t1 を割り当て。
+		rootParams[1].InitAsDescriptorTable(1, &rangeTex, D3D12_SHADER_VISIBILITY_ALL);
 
 		// 静的サンプラー (s0)
 		CD3DX12_STATIC_SAMPLER_DESC sampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
@@ -145,8 +145,8 @@ namespace Ecse::Graphics
 	bool SpritePipeline::CreatePipeline()
 	{
 		auto shaderManager = System::ServiceLocator::Get<ShaderManager>();
-		auto VS = shaderManager->GetShader("Assets/Shader/VS_Texture.hlsl", "main", "vs_5_0");
-		auto PS = shaderManager->GetShader("Assets/Shader/PS_Texture.hlsl", "main", "ps_5_0");
+		auto VS = shaderManager->GetShader("EngineAssets/Shader/VS_Texture.hlsl", "main", "vs_5_0");
+		auto PS = shaderManager->GetShader("EngineAssets/Shader/PS_Texture.hlsl", "main", "ps_5_0");
 
 		if (VS == nullptr || PS == nullptr)
 		{

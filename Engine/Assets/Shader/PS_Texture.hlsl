@@ -1,4 +1,4 @@
-﻿#include "SpriteShader.hlsli"
+#include "SpriteShader.hlsli"
 
 float4 main(VStoPS input) : SV_Target
 {
@@ -16,5 +16,6 @@ float4 main(VStoPS input) : SV_Target
     // 届いた光度を適用
     finalColor.rgb *= input.Intensity;
     
+    //return float4(1, 0, 0, 1);
     return finalColor;
 }

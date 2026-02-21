@@ -31,7 +31,7 @@ namespace Ecse::ECS
 		// 色
 		Graphics::Color Color = Graphics::Color::White;
 		// 基準点
-		DirectX::XMFLOAT2 Pivot = {0.5,0.5};
+		DirectX::XMFLOAT2 Pivot = {0.0,0.0};
 		// サイズ
 		DirectX::XMFLOAT2 Size = {0,0};
 		// 表示倍率
@@ -49,7 +49,6 @@ namespace Ecse::ECS
 		// 表示フラグ（true:表示 false:非表示）
 		bool IsVisible = true;
 
-		Sprite() = default;
 		Sprite(Graphics::Texture* Texture);
 
 		/// <summary>
