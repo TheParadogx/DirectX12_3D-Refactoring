@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include <initguid.h>
 #include<Graphics/DX12/DX12.hpp>
 #include<System/EngineConfig.hpp>
 
@@ -25,6 +26,10 @@ namespace Ecse::Graphics
 		mFrameIndex = 0;
 		mColor = Color::Gray;
 		mFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		mUploadAllocator = nullptr;
+		mUploadCmdList = nullptr;
+		mUploadFenceValue = 0;
+		mUploadEvent = nullptr;
 	}
 
 	/// <summary>
@@ -40,6 +45,10 @@ namespace Ecse::Graphics
 		{
 			CloseHandle(mWaitForGPUEventHandle);
 		}
+		if (mUploadEvent != nullptr)
+		{
+			CloseHandle(mUploadEvent);
+		}
 
 		//	フレームごとのインスタンス破棄
 		for (auto& frame : mFrames)
@@ -48,6 +57,9 @@ namespace Ecse::Graphics
 			frame.Allocator.Reset();   // アロケータ
 			frame.UploadPool.Reset();	//	プール
 		}
+		mUploadAllocator.Reset();
+		mUploadCmdList.Reset();
+
 
 		//	ビュー・ヒープ
 		mDepthBuffer.Reset();
@@ -61,6 +73,7 @@ namespace Ecse::Graphics
 
 		//	同期・ファクトリ
 		mFence.Reset();
+		mUploadFence.Reset();
 		mFactory.Reset();
 
 		mMACmdAlloc.Reset();
@@ -105,6 +118,13 @@ namespace Ecse::Graphics
 
 		}
 
+		// アップロード系初期化
+		if (InitializeUploadContext() == false)
+		{
+			ECSE_LOG(System::eLogLevel::Fatal, "Failed InitializeUploadContext.");
+			return false;
+		}
+
 		//	スワップチェイン初期化
 		if (InitializeSwapChain(WindowHandle, Width, Height) == false)
 		{
@@ -143,7 +163,7 @@ namespace Ecse::Graphics
 	/// <summary>
 	/// 描画開始
 	/// </summary>
-	void DX12::BegineRendering()
+	void DX12::BeginRendering()
 	{
 		//	次の描画するべきバックバッファのインデックス
 		mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
@@ -297,6 +317,75 @@ namespace Ecse::Graphics
 	UINT DX12::GetCurrentFrameIndex()const
 	{
 		return mFrameIndex;
+	}
+
+	/// <summary>
+	/// GPUにテクスチャリソース転送する。
+	/// </summary>
+	/// <param name="pResource"></param>
+	/// <param name="subresources"></param>
+	/// <returns></returns>
+	bool DX12::UploadTextureData(ID3D12Resource* pResource, const std::vector<D3D12_SUBRESOURCE_DATA>& subresources)
+	{
+		if (pResource == nullptr || subresources.empty()) return false;
+
+		// 即時動機なので現状は問題ないけど非同期にできない状態だから
+		// その時は仕様を変更しないといけない。
+		mUploadAllocator->Reset();
+		mUploadCmdList->Reset(mUploadAllocator.Get(), nullptr);
+
+		// 必要な中間バッファサイズを計算
+		const UINT numSub = static_cast<UINT>(subresources.size());
+		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(pResource, 0, numSub);
+
+		// 中間バッファの作成
+		// D3D12MAを使用して高速に。
+		D3D12MA::ALLOCATION_DESC uploadAllocDesc = {};
+		uploadAllocDesc.HeapType = D3D12_HEAP_TYPE_UPLOAD;
+
+		Resource uploadRes;
+		MAAllocation uploadAlloc;
+		auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+
+		HRESULT hr = mMACmdAlloc->CreateResource(
+			&uploadAllocDesc,
+			&uploadBufferDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			&uploadAlloc,
+			IID_PPV_ARGS(&uploadRes));
+
+		if (FAILED(hr)) {
+			ECSE_LOG(System::eLogLevel::Error, "DX12: Failed to create upload staging buffer.");
+			return false;
+		}
+
+		// データを中間バッファ経由でVRAMリソースへコピー
+		UpdateSubresources(mUploadCmdList.Get(), pResource, uploadRes.Get(), 0, 0, numSub, subresources.data());
+
+		// 転送完了後、ピクセルシェーダーで読める状態へ遷移させる
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			pResource,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		mUploadCmdList->ResourceBarrier(1, &barrier);
+
+		// 実行、動機
+		mUploadCmdList->Close();
+		ID3D12CommandList* ppCommandLists[] = { mUploadCmdList.Get() };
+		mCmdQueue->ExecuteCommandLists(1, ppCommandLists);
+
+		// 専用フェンスで完了を待機
+		mUploadFenceValue++;
+		mCmdQueue->Signal(mUploadFence.Get(), mUploadFenceValue);
+
+		if (mUploadFence->GetCompletedValue() < mUploadFenceValue)
+		{
+			mUploadFence->SetEventOnCompletion(mUploadFenceValue, mUploadEvent);
+			WaitForSingleObject(mUploadEvent, INFINITE);
+		}
+
+		return true;
 	}
 
 	/// <summary>
@@ -648,6 +737,39 @@ namespace Ecse::Graphics
 			mFrames[i].FenceValue = 0;
 		}
 
+		return true;
+	}
+
+	/// <summary>
+	/// アップロード用のリスト、アロケーター初期化
+	/// </summary>
+	/// <returns></returns>
+	bool DX12::InitializeUploadContext()
+	{
+		HRESULT hr = S_OK;
+
+		// 専用アロケータの作成
+		hr = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mUploadAllocator));
+		if (FAILED(hr)) return false;
+
+		// 専用リストの作成
+		hr = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mUploadAllocator.Get(), nullptr, IID_PPV_ARGS(&mUploadCmdList));
+		if (FAILED(hr)) return false;
+
+		// 最初は記録しないので閉じておく
+		mUploadCmdList->Close();
+
+		// 専用フェンスの作成
+		hr = mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mUploadFence));
+		if (FAILED(hr)) return false;
+
+		mUploadFenceValue = 0;
+
+		// 同期用イベントの作成
+		mUploadEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (mUploadEvent == nullptr) return false;
+
+		ECSE_LOG(System::eLogLevel::Log, "DX12: InitializeUploadContext success.");
 		return true;
 	}
 

@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include<ECS/Component/Sprite/SpriteComponent.hpp>
 #include<Graphics/ConstantBuffer/ConstantBuffer.hpp>
 #include<Graphics/Texture/Texture.hpp>
@@ -8,7 +8,7 @@ namespace Ecse::ECS
 {
 	Sprite::Sprite(Graphics::Texture* Texture)
 		:Color(Graphics::Color::White)
-		, Pivot(0.5f,0.5f)
+		, Pivot(0.0f,0.0f)
 		, Size(0,0)
 		, DrawScale(1,1)
 		, Flip(1,1)

@@ -51,21 +51,39 @@ namespace Ecse::Graphics
 	/// <returns></returns>
 	Blob ShaderManager::CompileShader(std::string_view FileName, std::string_view EntryPoint, std::string_view Target)
 	{
-		wchar_t wideFileName[MAX_PATH];
-		MultiByteToWideChar(CP_UTF8, 0, FileName.data(), static_cast<int>(FileName.size()), wideFileName, MAX_PATH);
-		wideFileName[FileName.size()] = L'\0';
+
+		// UTF-8 -> UTF-16 変換
+		std::string fileNameStr(FileName);
+		int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, fileNameStr.c_str(), -1, nullptr, 0);
+		if (sizeNeeded <= 0) return nullptr;
+
+		std::wstring wideFileName(sizeNeeded, 0);
+		MultiByteToWideChar(CP_UTF8, 0, fileNameStr.c_str(), -1, wideFileName.data(), sizeNeeded);
+		// MultiByteToWideCharは末尾の\0を含めたサイズを返すため、wstringのサイズを調整
+		if (!wideFileName.empty() && wideFileName.back() == L'\0') {
+			wideFileName.pop_back();
+		}
+
+		std::string entryStr(EntryPoint);
+		std::string targetStr(Target);
+
+		UINT flags = 0;
+#ifdef _DEBUG
+		flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+		flags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
+#endif
 
 		Ecse::Blob shader = nullptr;
 		Ecse::Blob error = nullptr;
 
-		// コンパイル
 		HRESULT hr = D3DCompileFromFile(
-			wideFileName,
+			wideFileName.c_str(),
 			nullptr,
-			D3D_COMPILE_STANDARD_FILE_INCLUDE,
-			EntryPoint.data(), // entryPoint も string_view で受け取る
-			Target.data(),      // target も string_view
-			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // 将来的にカスタムHandlerへ拡張
+			entryStr.c_str(),
+			targetStr.c_str(),
+			flags,
 			0,
 			shader.GetAddressOf(),
 			error.GetAddressOf()
@@ -73,8 +91,17 @@ namespace Ecse::Graphics
 
 		if (FAILED(hr)) 
 		{
-
-			ECSE_LOG(Ecse::System::eLogLevel::Error, "Failed CreateShader.");
+			if (error) {
+				std::string errorMessage(
+					static_cast<const char*>(error->GetBufferPointer()),
+					error->GetBufferSize()
+				);
+				ECSE_LOG(Ecse::System::eLogLevel::Error, std::format("Shader Compile Error: \n{}", errorMessage));
+			}
+			else {
+				// ファイルが見つからない等のエラー
+				ECSE_LOG(Ecse::System::eLogLevel::Error, std::format("D3DCompileFromFile failed. HR: 0x{:08X} Path: {}", (uint32_t)hr, fileNameStr));
+			}
 			return nullptr;
 		}
 

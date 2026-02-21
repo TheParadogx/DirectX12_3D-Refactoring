@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "SpriteRenderer.hpp"
 #include<Graphics/Sprite/Pipeline/SpritePipeline.hpp>
 #include<Graphics/VertexBuffer/VertexBuffer.hpp>
@@ -7,6 +7,7 @@
 #include<Graphics/DX12/DX12.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<Graphics/Texture/Texture.hpp>
+#include<System/Window/Window.hpp>
 
 #include<ECS/Component/Transform/TransformComponent.hpp>
 #include<ECS/Component/Sprite/SpriteComponent.hpp>
@@ -23,40 +24,36 @@ namespace Ecse::Graphics
 	{
 		using namespace DirectX;
 
+		auto window = System::ServiceLocator::Get<System::Window>();
+		float vWidth = static_cast<float>(window->GetVirtualWidth());
+		float vHeight = static_cast<float>(window->GetVirtualHeight());
+
 		SpriteShaderData data;
 
-		// 基本サイズ
 		float baseW = (sp.Size.x > 0.0f) ? sp.Size.x : sp.Texture->GetWidth();
 		float baseH = (sp.Size.y > 0.0f) ? sp.Size.y : sp.Texture->GetHeight();
-
-		// 表示倍率を適用
 		float w = baseW * sp.DrawScale.x;
 		float h = baseH * sp.DrawScale.y;
 
-		// ピボット
-		XMMATRIX pivotTrans = XMMatrixTranslation(
-			(0.5f - sp.Pivot.x) * w,
-			(sp.Pivot.y - 0.5f) * h,
-			0.0f
-		);
+		// 基準点
+		XMMATRIX mPivot = XMMatrixTranslation(-sp.Pivot.x, -sp.Pivot.y, 0.0f);
 
 		// スケール
-		XMMATRIX scale = XMMatrixScaling(w * sp.Flip.x, h * sp.Flip.y, 1.0f);
+		XMMATRIX mScale = XMMatrixScaling(w * sp.Flip.x, h * sp.Flip.y, 1.0f);
 
 		// 回転
-		XMMATRIX rot = XMMatrixRotationZ(tr.Rotation);
+		XMMATRIX mRot = XMMatrixRotationZ(tr.Rotation);
 
-		// 配置
-		XMMATRIX trans = XMMatrixTranslation(tr.Position.x, tr.Position.y, 0.0f);
+		// 配置（Position）
+		XMMATRIX mTrans = XMMatrixTranslation(tr.Position.x, tr.Position.y, 0.0f);
 
-		// 行列の合成
-		XMMATRIX world = pivotTrans * scale * rot * trans;
+		// 合成順: Pivot -> Scale -> Rotation -> Translation
+		XMMATRIX world = mPivot * mScale * mRot * mTrans;
 
-		// ビュー・プロジェクション
-		// カメラを作成したらここにカメラの行列をかける
+		// 投影 (Y軸は上が0、下がHeight)
+		XMMATRIX projection = XMMatrixOrthographicOffCenterLH(0.0f, vWidth, vHeight, 0.0f, 0.0f, 1.0f);
 
-		// 転置して格納（シェーダーの行優先に対応させるため）
-		XMStoreFloat4x4(&data.WVP, XMMatrixTranspose(world));
+		XMStoreFloat4x4(&data.WVP, XMMatrixTranspose(world * projection));
 
 		data.Color = sp.Color;
 		data.Intensity = sp.Intensity;
@@ -72,6 +69,11 @@ namespace Ecse::Graphics
 		, mReservedData()
 		, mDrawCalls()
 	{ 
+	}
+
+	SpriteRenderer::~SpriteRenderer()
+	{
+
 	}
 
 	/// <summary>
@@ -91,10 +93,10 @@ namespace Ecse::Graphics
 
 		// 共通頂点データ
 		SpriteVertex vertices[] = {
-			{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f } }, // 左上
-			{ {  0.5f,  0.5f, 0.0f }, { 1.0f, 0.0f } }, // 右上
-			{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } }, // 左下
-			{ {  0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f } }, // 右下
+			{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } }, // 左上
+			{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } }, // 右上
+			{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } }, // 左下
+			{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } }, // 右下
 		};
 
 		// 頂点バッファ
@@ -180,16 +182,15 @@ namespace Ecse::Graphics
 	/// <param name="registry"></param>
 	void SpriteRenderer::UpdateAndDraw(entt::registry& registry)
 	{
-		using namespace ECS;
-		auto view = registry.view<Transform2D, Sprite>();
+		auto view = registry.view<ECS::Transform2D, ECS::Sprite>();
 		struct RenderItem {
-			const Transform2D* transform;
-			const Sprite* psprite;
+			const ECS::Transform2D* transform;
+			const ECS::Sprite* psprite;
 		};
 		std::vector<RenderItem> items;
 		items.reserve(view.size_hint());
 
-		view.each([&](auto entity, Transform2D& transform, Sprite&sprite) 
+		view.each([&](auto entity, ECS::Transform2D& transform, ECS::Sprite&sprite)
 			{
 				if (!sprite.IsVisible || !sprite.Texture) return;
 				items.push_back({ &transform ,&sprite });
