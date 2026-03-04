@@ -108,6 +108,10 @@ namespace Ecse::Graphics
 		/// アニメーションのマップ
 		/// </summary>
 		std::unordered_map<std::string, Animation> mAnimations;
+		/// <summary>
+		/// ボーン名とインデックスのバインド
+		/// </summary>
+		std::unordered_map<std::string, int> mBoneIndexMap;
 
 		/// <summary>
 		/// 頂点バッファ
