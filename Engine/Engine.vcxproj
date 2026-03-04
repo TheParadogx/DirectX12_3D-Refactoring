@@ -162,6 +162,7 @@
     <ClInclude Include="include\ECS\Entity\EntityManager.hpp" />
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
     <ClInclude Include="include\ECS\Tag\SceneTags.hpp" />
+    <ClInclude Include="include\Graphics\FBX\Resource\FbxResource.hpp" />
     <ClInclude Include="include\Graphics\IndexBuffer\IndexBuffer.hpp" />
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp" />
     <ClInclude Include="include\Graphics\Renderer\Renderer.hpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\FBX\Resource\FbxResource.cpp" />
     <ClCompile Include="src\Graphics\StructuredBuffer\StructuredBuffer.cpp" />
     <ClCompile Include="src\ECS\Component\Sprite\SpriteComponent.cpp" />
     <ClCompile Include="src\Graphics\Sprite\Renderer\SpriteRenderer.cpp" />
