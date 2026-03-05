@@ -11,7 +11,7 @@
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<ECS/Entity/EntityManager.hpp>
 #include<Graphics/Shader/ShaderManager.hpp>
-#include<System/Resource/ResourceManager.hpp>
+#include<Graphics/Texture/Manager/TextureManager.hpp>
 
 #include<Graphics/Sprite/Renderer/SpriteRenderer.hpp>
 #include<Graphics/Texture/Texture.hpp>
@@ -105,8 +105,8 @@ namespace Ecse::System
 		PrintCurrentDir();
 
 		// Resource
-		if (System::ResourceManager::Create() == false) return false;
-
+		if (Graphics::TextureManager::Create() == false) return false;
+		mpTextureManager = ServiceLocator::Get<Graphics::TextureManager>();
 
 		if (sRenderer.Initialize() == false) return false;
 
@@ -158,6 +158,9 @@ namespace Ecse::System
 
 
 		this->EndFrame();
+
+		mpDX12->WaitForGPU();
+		mpTextureManager->HotReload();
 
 		//	エンティティの削除
 		mpEntityManager->Update();

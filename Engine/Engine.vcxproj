@@ -167,6 +167,7 @@
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp" />
     <ClInclude Include="include\Graphics\Renderer\Renderer.hpp" />
     <ClInclude Include="include\Graphics\StructuredBuffer\StructuredBuffer.hpp" />
+    <ClInclude Include="include\Graphics\Texture\Manager\TextureManager.hpp" />
     <ClInclude Include="include\Graphics\VertexBuffer\VertexBuffer.hpp" />
     <ClInclude Include="src\Graphics\Sprite\Renderer\SpriteRenderer.hpp" />
     <ClInclude Include="src\Graphics\Data\GraphicsData.hpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Texture\TextureManager.cpp" />
     <ClCompile Include="src\Graphics\FBX\Resource\FbxResource.cpp" />
     <ClCompile Include="src\Graphics\StructuredBuffer\StructuredBuffer.cpp" />
     <ClCompile Include="src\ECS\Component\Sprite\SpriteComponent.cpp" />

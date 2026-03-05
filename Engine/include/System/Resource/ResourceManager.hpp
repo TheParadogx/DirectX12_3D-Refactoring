@@ -31,41 +31,27 @@ namespace Ecse::System
 		/// <param name="FilePath"></param>
 		/// <returns></returns>
 		template<IsResource T>
-		static T* Load(const std::filesystem::path& FilePath)
+		static T* Load(const std::filesystem::path& path)
 		{
+			auto key = std::filesystem::weakly_canonical(path).string();
 
-			if (std::filesystem::exists(FilePath) == false) 
-			{
-				ECSE_LOG(eLogLevel::Error, "File not found: {}", FilePath.string());
-				return nullptr;
-			}
-
-			// 相対パス取得
-			std::string key = std::filesystem::absolute(FilePath).generic_string();
-			std::lock_guard<std::mutex> lock(sMutex);
 			auto& cache = GetCache<T>();
+			auto& mutex = GetMutex<T>();
 
-			//	検索
-			auto it = cache.find(key);
-			if (it != cache.end()) 
-			{
-				// あれば返す
+			std::lock_guard lock(mutex);
+
+			if (auto it = cache.find(key); it != cache.end())
 				return it->second.get();
-			}
 
-			// 新規ロード
 			auto res = std::make_unique<T>();
-			if (res->Create(FilePath)) 
-			{
-				T* ptr = res.get();
-				cache[key] = std::move(res);
-				ECSE_LOG(eLogLevel::Info, "Resource Loaded: {}", key);
-				return ptr;
-			}
 
-			// 5. ロード失敗時のログ
-			ECSE_LOG(eLogLevel::Error, "Failed to create resource from: {}", key);
-			return nullptr;
+			if (!res->Create(path))
+				return nullptr;
+
+			auto ptr = res.get();
+			cache.emplace(key, std::move(res));
+
+			return ptr;
 		}
 
 

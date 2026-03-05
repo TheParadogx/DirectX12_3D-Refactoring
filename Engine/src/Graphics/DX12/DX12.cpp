@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include <initguid.h>
 #include<Graphics/DX12/DX12.hpp>
 #include<System/EngineConfig.hpp>

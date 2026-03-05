@@ -6,6 +6,7 @@
 namespace Ecse::Graphics
 {
 	class DX12;
+	class TextureManager;
 }
 
 namespace Ecse::Debug
@@ -62,7 +63,6 @@ namespace Ecse::System
 		/// フレームの終了処理
 		/// </summary>
 		void EndFrame();
-
 	private:
 		/// <summary>
 		/// ウィンドウ
@@ -80,6 +80,12 @@ namespace Ecse::System
 		/// ECSの管理
 		/// </summary>
 		ECS::EntityManager* mpEntityManager;
+
+		/// <summary>
+		/// テクスチャリソース管理
+		/// </summary>
+		Graphics::TextureManager* mpTextureManager;
+
 		/// <summary>
 		/// 初期化を複数回通さないためのフラグ
 		/// </summary>

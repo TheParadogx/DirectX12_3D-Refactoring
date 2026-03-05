@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include<Graphics/Shader/ShaderManager.hpp>
 
 namespace Ecse::Graphics
@@ -49,7 +49,7 @@ namespace Ecse::Graphics
 	/// <param name="EntryPoint">エントリー名</param>
 	/// <param name="Target">バージョン</param>
 	/// <returns></returns>
-	Blob ShaderManager::CompileShader(std::string_view FileName, std::string_view EntryPoint, std::string_view Target)
+	const Blob& ShaderManager::CompileShader(std::string_view FileName, std::string_view EntryPoint, std::string_view Target)
 	{
 
 		// UTF-8 -> UTF-16 変換
