@@ -19,7 +19,7 @@
 #include<ECS/Component/Sprite/SpriteComponent.hpp>
 
 static Ecse::Graphics::SpriteRenderer sRenderer;
-static Ecse::Graphics::Texture sTexture;
+static Ecse::Graphics::Texture* spTex;
 
 void CreateText()
 {
@@ -32,7 +32,7 @@ void CreateText()
 	auto& trans = registry.emplace<ECS::Transform2D>(entity);
 	//trans.Position = { 100,100 };
 
-	auto& sprite = registry.emplace<ECS::Sprite>(entity,&sTexture);
+	auto& sprite = registry.emplace<ECS::Sprite>(entity, spTex);
 	sprite.Size = { 1920,1080 };
 }
 
@@ -110,7 +110,7 @@ namespace Ecse::System
 
 		if (sRenderer.Initialize() == false) return false;
 
-		sTexture.Create("Assets/Test/test.png");
+		spTex = mpTextureManager->GetOrLoad("Assets/Test/test.png");
 
 		CreateText();
 
@@ -159,8 +159,8 @@ namespace Ecse::System
 
 		this->EndFrame();
 
-		mpDX12->WaitForGPU();
-		mpTextureManager->HotReload();
+		//mpDX12->WaitForGPU();
+		//mpTextureManager->HotReload();
 
 		//	エンティティの削除
 		mpEntityManager->Update();

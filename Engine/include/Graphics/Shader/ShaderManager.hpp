@@ -41,7 +41,7 @@ namespace Ecse::Graphics
 		/// <param name="EntryPoint">エントリー名</param>
 		/// <param name="Target">バージョン</param>
 		/// <returns></returns>
-		const Blob& CompileShader(std::string_view FileName, std::string_view EntryPoint, std::string_view Target);
+		Blob CompileShader(std::string_view FileName, std::string_view EntryPoint, std::string_view Target);
 
 		/// <summary>
 		/// シェーダーのコレクション

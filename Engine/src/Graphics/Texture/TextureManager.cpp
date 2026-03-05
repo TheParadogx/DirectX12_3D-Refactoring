@@ -51,6 +51,8 @@ namespace Ecse::Graphics
 
 	/// <summary>
 	/// ホットリロード
+	/// 現状は、CRVの指し示す先が変わってないからアクセス違反になっている。
+	/// 正直今のところテクスチャのホットリロードは必要としてないからほしくなったら実装する。
 	/// </summary>
 	void TextureManager::HotReload()
 	{
