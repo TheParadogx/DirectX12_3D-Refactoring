@@ -13,6 +13,9 @@
 namespace Ecse::Graphics
 {
 	class Texture;
+	class IndexBuffer;
+	class VertexBuffer;
+
 	/// <summary>
 	/// Fbxの共通化するリソース管理
 	/// </summary>
@@ -75,6 +78,12 @@ namespace Ecse::Graphics
 		/// </summary>
 		void Release();
 
+		/// <summary>
+		/// バッファのセット
+		/// </summary>
+		/// <param name="CmdList"></param>
+		void SetBuffers(ID3D12GraphicsCommandList* CmdList) const;
+
 		/*
 		* ゲッター
 		* 各情報へのアクセス
@@ -85,8 +94,8 @@ namespace Ecse::Graphics
 
 		std::span<const std::vector<DirectX::XMFLOAT4X4>> GetAnimationKeyFrames(const std::string& name) const;
 
-		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const { return mVBView; }
-		D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const { return mIBView; }
+		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const;
+		D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const;
 	private:
 		/// <summary>
 		/// 専用binからfbxの情報を読み込む
@@ -122,7 +131,13 @@ namespace Ecse::Graphics
 		/// </summary>
 		Resource mIB;
 
-		D3D12_VERTEX_BUFFER_VIEW mVBView = {};
-		D3D12_INDEX_BUFFER_VIEW mIBView = {};
+		/// <summary>
+		/// 頂点バッファ　
+		/// </summary>
+		std::unique_ptr<VertexBuffer> mVB;
+		/// <summary>
+		/// インデックスバッファ
+		/// </summary>
+		std::unique_ptr<IndexBuffer> mIB;
 	};
 }

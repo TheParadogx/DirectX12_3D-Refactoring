@@ -68,6 +68,8 @@ namespace Ecse::Graphics
 		/// <returns></returns>
 		size_t GetStride() const;
 
+		const D3D12_VERTEX_BUFFER_VIEW& GetView() { return mBufferView; }
+
 	private:
 		/// <summary>
 		/// キャッシュされたバッファビュー

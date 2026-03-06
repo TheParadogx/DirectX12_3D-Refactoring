@@ -20,4 +20,17 @@ namespace Ecse::Graphics
        float Intensity; // 光度 4
        float Padding[3];           // 12byte
     };
+
+	/// <summary>
+	/// FBXの頂点構造体
+	/// </summary>
+	struct SkeletalMeshVertex {
+		DirectX::XMFLOAT3 Position;
+		DirectX::XMFLOAT3 Normal;
+		DirectX::XMFLOAT2 UV;
+		DirectX::XMFLOAT3 Tangent;
+		int32_t  BoneIndices[4];
+		float    BoneWeights[4];
+	};
+
 }
