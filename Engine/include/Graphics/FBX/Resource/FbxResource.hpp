@@ -123,15 +123,6 @@ namespace Ecse::Graphics
 		std::unordered_map<std::string, int> mBoneIndexMap;
 
 		/// <summary>
-		/// 頂点バッファ
-		/// </summary>
-		Resource mVB;
-		/// <summary>
-		/// インデックスバッファ
-		/// </summary>
-		Resource mIB;
-
-		/// <summary>
 		/// 頂点バッファ　
 		/// </summary>
 		std::unique_ptr<VertexBuffer> mVB;

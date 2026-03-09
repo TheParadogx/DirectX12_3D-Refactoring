@@ -162,6 +162,9 @@
     <ClInclude Include="include\ECS\Component\Camera\CameraComponent.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="src\ECS\Component\Camera\CameraComponent.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
