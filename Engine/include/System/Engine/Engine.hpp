@@ -60,6 +60,16 @@ namespace Ecse::System
 		void NewFrame();
 
 		/// <summary>
+		/// 状態更新
+		/// </summary>
+		void Update();
+
+		/// <summary>
+		/// 描画処理
+		/// </summary>
+		void Render();
+
+		/// <summary>
 		/// フレームの終了処理
 		/// </summary>
 		void EndFrame();

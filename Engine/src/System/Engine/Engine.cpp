@@ -17,6 +17,7 @@
 #include<Graphics/Texture/Texture.hpp>
 #include<ECS/Component/Transform/TransformComponent.hpp>
 #include<ECS/Component/Sprite/SpriteComponent.hpp>
+#include<System/Camera/CameraSystem.hpp>
 
 static Ecse::Graphics::SpriteRenderer sRenderer;
 static Ecse::Graphics::Texture* spTex;
@@ -143,24 +144,15 @@ namespace Ecse::System
 		this->NewFrame();
 
 		// 状態更新
-
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		mpImGui->Update();
 #endif
+
+		Update();
+
 		//	描画
+		Render();
 
-		auto list = mpDX12->GetCommandList();
-		auto& reg = mpEntityManager->GetRegistry();
-
-		sRenderer.Begin();
-		sRenderer.UpdateAndDraw(reg);
-		sRenderer.End(list);
-
-
-		this->EndFrame();
-
-		//mpDX12->WaitForGPU();
-		//mpTextureManager->HotReload();
 
 		//	エンティティの削除
 		mpEntityManager->Update();
@@ -191,6 +183,32 @@ namespace Ecse::System
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		mpImGui->NewFrame();
 #endif
+	}
+
+
+	/// <summary>
+	/// 状態更新
+	/// </summary>
+	void Engine::Update()
+	{
+		SYS::CameraSystem::Update(mpEntityManager->GetRegistry());
+	}
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	void Engine::Render()
+	{
+		auto list = mpDX12->GetCommandList();
+		auto& reg = mpEntityManager->GetRegistry();
+
+		sRenderer.Begin();
+		sRenderer.UpdateAndDraw(reg);
+		sRenderer.End(list);
+
+
+		this->EndFrame();
+
 	}
 
 	void Engine::EndFrame()

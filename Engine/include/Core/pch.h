@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef PCH_H
 #define PCH_H
@@ -85,5 +85,8 @@
 #include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceLocator.hpp>
 #include<System/Log/Logger.hpp>
+
+// alias
+#include<Utility/Using/NamespaceAlias.hpp>
 
 #endif //PCH_H

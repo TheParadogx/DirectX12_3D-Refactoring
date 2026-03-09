@@ -156,6 +156,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\System\Camera\CameraSystem.hpp" />
     <ClInclude Include="include\ECS\Component\Camera\CameraComponent.hpp" />
     <ClInclude Include="include\ECS\Component\FBX\FbxComponent.hpp" />
     <ClInclude Include="include\ECS\Component\Sprite\SpriteComponent.hpp" />
@@ -171,7 +172,7 @@
     <ClInclude Include="include\Graphics\StructuredBuffer\StructuredBuffer.hpp" />
     <ClInclude Include="include\Graphics\Texture\Manager\TextureManager.hpp" />
     <ClInclude Include="include\Graphics\VertexBuffer\VertexBuffer.hpp" />
-    <ClInclude Include="src\ECS\Component\Camera\CameraComponent.hpp" />
+    <ClInclude Include="include\Utility\Using\NamespaceAlias.hpp" />
     <ClInclude Include="src\Graphics\Sprite\Renderer\SpriteRenderer.hpp" />
     <ClInclude Include="src\Graphics\Data\GraphicsData.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeap.hpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Camera\CameraSystem.cpp" />
     <ClCompile Include="src\ECS\Component\FBX\FbxComponent.cpp" />
     <ClCompile Include="src\Graphics\Texture\TextureManager.cpp" />
     <ClCompile Include="src\Graphics\FBX\Resource\FbxResource.cpp" />
