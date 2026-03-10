@@ -12,29 +12,70 @@
 #include<ECS/Entity/EntityManager.hpp>
 #include<Graphics/Shader/ShaderManager.hpp>
 #include<Graphics/Texture/Manager/TextureManager.hpp>
+#include<System/Animation/FbxAnimationSystem.hpp>
 
 #include<Graphics/Sprite/Renderer/SpriteRenderer.hpp>
 #include<Graphics/Texture/Texture.hpp>
 #include<ECS/Component/Transform/TransformComponent.hpp>
 #include<ECS/Component/Sprite/SpriteComponent.hpp>
+#include<ECS/Component/Camera/CameraComponent.hpp>
 #include<System/Camera/CameraSystem.hpp>
+
+#include<Graphics/FBX/Resource/FbxResource.hpp>
+#include<ECS/Component/FBX/FbxComponent.hpp>
+#include<Graphics/FBX/Renderer/FbxRenderer.hpp>
 
 static Ecse::Graphics::SpriteRenderer sRenderer;
 static Ecse::Graphics::Texture* spTex;
 
-void CreateText()
+static Ecse::Graphics::FbxRenderer sFbxRenderer;
+static GFX::FbxResource spFbxRes;
+
+void CreateTest()
 {
 	using namespace Ecse;
-	auto manager= System::ServiceLocator::Get<ECS::EntityManager>();
-	auto& registry = manager->GetRegistry();
-	auto entity = manager->CreateEntity();
-	
-	// 座標
-	auto& trans = registry.emplace<ECS::Transform2D>(entity);
-	//trans.Position = { 100,100 };
 
-	auto& sprite = registry.emplace<ECS::Sprite>(entity, spTex);
-	sprite.Size = { 1920,1080 };
+	auto manager = System::ServiceLocator::Get<ECS::EntityManager>();
+	auto& registry = manager->GetRegistry();
+
+	// スプライト
+	{
+		//auto entity = manager->CreateEntity();
+
+		//// 座標
+		//auto& trans = registry.emplace<ECS::Transform2D>(entity);
+		////trans.Position = { 100,100 };
+
+		//auto& sprite = registry.emplace<ECS::Sprite>(entity, spTex);
+		//sprite.Size = { 1920,1080 };
+	}
+
+	// かめら　
+	{
+		auto entity = manager->CreateEntity();
+		auto& trans = registry.emplace<ECS::Transform3D>(entity);
+		auto& cam = registry.emplace<ECS::CameraComponent>(entity);
+		registry.emplace<ECS::MainCameraTag>(entity);
+	}
+
+	// Fbxモデルのデバック
+	{
+		bool ret = false;
+		ret = spFbxRes.Create("Assets/TestFbx/Faul_model.bin");
+
+
+		auto entity = manager->CreateEntity();
+		auto& trans = registry.emplace<ECS::Transform3D>(entity);
+		trans.Position = { 0,0,5 };
+		DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0, 0);
+		DirectX::XMStoreFloat4(&trans.Rotation, q);
+		float scale = 0.01f;
+		trans.Scale = { scale,scale,scale };
+
+		auto& fbx = registry.emplace<ECS::FbxComponent>(entity);
+		fbx.SetResource(&spFbxRes);
+	}
+
 }
 
 namespace Ecse::System
@@ -110,10 +151,11 @@ namespace Ecse::System
 		mpTextureManager = ServiceLocator::Get<Graphics::TextureManager>();
 
 		if (sRenderer.Initialize() == false) return false;
+		if (sFbxRenderer.Initialize() == false) return false;
 
 		spTex = mpTextureManager->GetOrLoad("Assets/Test/test.png");
 
-		CreateText();
+		CreateTest();
 
 		// 全ての初期化正常終了後にフラグを立てる
 		mIsInitialized = true;
@@ -191,7 +233,9 @@ namespace Ecse::System
 	/// </summary>
 	void Engine::Update()
 	{
-		SYS::CameraSystem::Update(mpEntityManager->GetRegistry());
+		auto& reg = mpEntityManager->GetRegistry();
+		SYS::CameraSystem::Update(reg);
+		SYS::FbxAnimationSystem::Update(reg, 0.016);	//	今は固定値で更新しているが、実際は前フレームからの経過時間を入れるべき。後で作ります。
 	}
 
 	/// <summary>
@@ -206,6 +250,7 @@ namespace Ecse::System
 		sRenderer.UpdateAndDraw(reg);
 		sRenderer.End(list);
 
+		sFbxRenderer.Render(reg, list, mpDX12->GetCurrentFrameIndex(), SYS::CameraSystem::GetMainCameraViewProj(reg));
 
 		this->EndFrame();
 

@@ -15,5 +15,6 @@ float4 PSMain(PSInput input) : SV_TARGET
 
     float4 texColor = gTexture.Sample(gSampler, input.UV);
     
-    return float4(texColor.rgb * diffuse, texColor.a);
+    return float4(1,1,1,1);
+    //return float4(texColor.rgb * diffuse, texColor.a);
 }

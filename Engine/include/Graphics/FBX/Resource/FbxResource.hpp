@@ -84,6 +84,8 @@ namespace Ecse::Graphics
 		/// <param name="CmdList"></param>
 		void SetBuffers(ID3D12GraphicsCommandList* CmdList) const;
 
+		std::vector<DirectX::XMFLOAT4X4> GetDefaultBoneTransforms() const;
+
 		/*
 		* ゲッター
 		* 各情報へのアクセス

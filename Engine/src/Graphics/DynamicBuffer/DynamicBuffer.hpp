@@ -96,7 +96,6 @@ namespace Ecse::Graphics
 		/// フレームのリソースを必要なサイズに合わせて拡張する
         /// </summary>
         void GrowFrame(FrameResource& frame, size_t requiredSize);
-
         /// <summary>
 		/// フレームのリソースにデータをコピーして、GPU仮想アドレスを返す
         /// </summary>

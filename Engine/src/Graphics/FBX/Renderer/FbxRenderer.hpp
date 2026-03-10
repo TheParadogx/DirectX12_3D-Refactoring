@@ -3,11 +3,15 @@
 #include <memory>
 #include <vector>
 #include <entt/entt.hpp>
+#include<DirectXMath.h>
+#include<Graphics/DynamicBuffer/DynamicBuffer.hpp>
+#include<Graphics/FBX/Pipeline/FbxPipeline.hpp>
+
 
 namespace Ecse::Graphics
 {
 	class FbxPipeline;
-	class ConstantBuffer;
+	class DynamicBuffer;
 
 	/// <summary>
 	/// FBXモデルのレンダリング管理
@@ -15,28 +19,41 @@ namespace Ecse::Graphics
 	class FbxRenderer
 	{
 	public:
-		FbxRenderer();
-		virtual ~FbxRenderer();
+		// 定数バッファの構造体定義
+		struct SceneConstant {
+			DirectX::XMFLOAT4X4 viewProjection;
+		};
 
+		struct MeshConstant {
+			DirectX::XMFLOAT4X4 world;
+		};
+
+		static constexpr uint32_t MAX_BONES = 128;
+		struct BoneConstant {
+			DirectX::XMFLOAT4X4 bones[MAX_BONES];
+		};
+
+		FbxRenderer() = default;
+		virtual ~FbxRenderer() = default;
+
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <returns></returns>
 		bool Initialize();
+		bool Initialize(ID3D12Device* device, uint32_t frameCount);
 
 		/// <summary>
-		/// 描画予約の開始
+		/// 表示
 		/// </summary>
-		void Begin();
-
-		/// <summary>
-		/// registryを走査して描画が必要なモデルをリストに登録
-		/// </summary>
-		void UpdateAndDraw(entt::registry& registry);
-
-		/// <summary>
-		/// 溜まった予約リストをもとに、実際にGPUへコマンドを発行
-		/// </summary>
-		void End(ID3D12GraphicsCommandList* cmdList);
+		void Render(entt::registry& registry, ID3D12GraphicsCommandList* cmdList, uint32_t frameIndex, const DirectX::XMMATRIX& viewProj);
 
 	private:
+		// パイプライン状態の管理
+		std::unique_ptr<FbxPipeline> mPipeline;
 
+		// 動的定数バッファの管理
+		std::unique_ptr<DynamicBuffer> mConstantBuffer;
 	};
 }
 

@@ -50,7 +50,7 @@ namespace Ecse::Graphics
     {
         size_t newSize = Align(requiredSize);
 
-        Microsoft::WRL::ComPtr<ID3D12Resource> newResource;
+        Resource newResource;
 
         auto desc = CD3DX12_RESOURCE_DESC::Buffer(newSize);
         auto heap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -67,7 +67,6 @@ namespace Ecse::Graphics
         }
 
         uint8_t* mapped = nullptr;
-
         D3D12_RANGE readRange{ 0,0 };
 
         if (FAILED(newResource->Map(
@@ -78,10 +77,15 @@ namespace Ecse::Graphics
             throw std::runtime_error("DynamicBuffer: Map failed");
         }
 
+        // 旧データコピー
+        if (frame.mappedData && frame.offset > 0)
+        {
+            std::memcpy(mapped, frame.mappedData, frame.offset);
+        }
+
         frame.resource = newResource;
         frame.mappedData = mapped;
         frame.capacity = newSize;
-        frame.offset = 0;
         frame.gpuBase = newResource->GetGPUVirtualAddress();
     }
 

@@ -54,4 +54,21 @@ namespace Ecse::System
 
 		return true;
 	}
+
+	/// <summary>
+	/// メインカメラのViewとProjectionを掛け合わせた行列を取得する
+	/// </summary>
+	/// <param name="registry"></param>
+	/// <returns></returns>
+	DirectX::XMMATRIX CameraSystem::GetMainCameraViewProj(entt::registry& registry)
+	{
+		DirectX::XMMATRIX view, proj;
+
+		if (!GetMainCameraMatrices(registry, view, proj))
+		{
+			return DirectX::XMMatrixIdentity();
+		}
+
+		return view * proj;
+	}
 }

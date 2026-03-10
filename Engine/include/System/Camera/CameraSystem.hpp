@@ -22,5 +22,12 @@ namespace Ecse::System
             entt::registry& Registry,
             DirectX::XMMATRIX& OutView,
             DirectX::XMMATRIX& OutProj);
+
+        /// <summary>
+		/// メインカメラのViewとProjectionを掛け合わせた行列を取得する
+        /// </summary>
+        /// <param name="registry"></param>
+        /// <returns></returns>
+        static DirectX::XMMATRIX GetMainCameraViewProj(entt::registry& registry);
 	};
 }

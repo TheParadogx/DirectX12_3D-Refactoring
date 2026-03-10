@@ -42,6 +42,16 @@ namespace Ecse::Graphics
 		if (mIB) mIB->Set(CmdList);
 	}
 
+	std::vector<DirectX::XMFLOAT4X4> FbxResource::GetDefaultBoneTransforms() const
+	{
+		// 全ボーン数分の単位行列を返す
+		std::vector<DirectX::XMFLOAT4X4> identities(mBones.size());
+		for (auto& mat : identities) {
+			DirectX::XMStoreFloat4x4(&mat, DirectX::XMMatrixIdentity());
+		}
+		return identities;
+	}
+
 	std::span<const std::vector<DirectX::XMFLOAT4X4>> FbxResource::GetAnimationKeyFrames(const std::string& name) const
 	{
 		auto it = mAnimations.find(name);

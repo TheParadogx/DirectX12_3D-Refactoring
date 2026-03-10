@@ -1,18 +1,18 @@
 // 定数バッファ
 
-cbuffer SceneConstant : register(b0)
+cbuffer SceneConstant : register(b3)
 {
     matrix ViewProjection;
 };
 
-cbuffer MeshConstant : register(b1)
+cbuffer MeshConstant : register(b4)
 {
     matrix World;
 };
 
-cbuffer BoneConstant : register(b2)
+cbuffer BoneConstant : register(b5)
 {
-    matrix BoneTransforms[256];
+    matrix BoneTransforms[128];
 };
 
 // 入出力構造体
