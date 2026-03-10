@@ -45,7 +45,7 @@ namespace Ecse::ECS {
         /// 計算済みの最終スキニング行列配列
         /// 演算効率を重視し、ストレージ型ではなく計算型の XMMATRIX を保持
         /// </summary>
-        std::vector<DirectX::XMMATRIX> BoneTransforms;
+        std::vector<DirectX::XMFLOAT4X4> BoneTransforms;
 
         /// <summary>
         /// リソースをセットし、ボーン数に合わせて行列配列を初期化する

@@ -23,6 +23,6 @@ void Ecse::ECS::FbxComponent::SetResource(const Graphics::FbxResource* res)
     // 単位行列で初期化
     const DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
     for (auto& m : BoneTransforms) {
-        m = identity;
+        DirectX::XMStoreFloat4x4(&m, DirectX::XMMatrixIdentity());
     }
 }
