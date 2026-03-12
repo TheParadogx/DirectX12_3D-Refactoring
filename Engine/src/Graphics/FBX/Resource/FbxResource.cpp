@@ -211,4 +211,34 @@ namespace Ecse::Graphics
             XMStoreFloat4x4(&outTransforms[i], bind * world);
         }
     }
+
+    /// <summary>
+    /// アニメーションのブレンド計算
+    /// </summary>
+    /// <param name="poseA"></param>
+    /// <param name="poseB"></param>
+    /// <param name="t"></param>
+    /// <param name="outTransforms"></param>
+    void FbxResource::BlendPoses(const std::vector<DirectX::XMFLOAT4X4>& poseA, const std::vector<DirectX::XMFLOAT4X4>& poseB, float t, std::vector<DirectX::XMFLOAT4X4>& outTransforms) const
+    {
+        size_t boneCount = poseA.size();
+        outTransforms.resize(boneCount);
+
+        for (size_t i = 0; i < boneCount; ++i)
+        {
+            XMMATRIX mA = XMLoadFloat4x4(&poseA[i]);
+            XMMATRIX mB = XMLoadFloat4x4(&poseB[i]);
+
+            XMVECTOR sA, rA, pA, sB, rB, pB;
+            XMMatrixDecompose(&sA, &rA, &pA, mA);
+            XMMatrixDecompose(&sB, &rB, &pB, mB);
+
+            XMVECTOR s = XMVectorLerp(sA, sB, t);
+            XMVECTOR p = XMVectorLerp(pA, pB, t);
+            XMVECTOR r = XMQuaternionSlerp(rA, rB, t);
+
+            XMStoreFloat4x4(&outTransforms[i],
+                XMMatrixScalingFromVector(s) * XMMatrixRotationQuaternion(r) * XMMatrixTranslationFromVector(p));
+        }
+    }
 }

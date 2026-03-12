@@ -81,10 +81,28 @@ namespace Ecse::Graphics
         // ボーンを持っているか（スキニングが必要か）
         bool HasBones() const { return !mBones.empty(); }
 
-
+        /// <summary>
+		/// キーフレーム間の補間を行い、指定時間のボーン行列を計算して出力
+        /// </summary>
+        /// <param name="animName"></param>
+        /// <param name="time"></param>
+        /// <param name="outTransforms"></param>
         void ComputeAnimationTransforms(
             const std::string& animName,
             float time,
+            std::vector<DirectX::XMFLOAT4X4>& outTransforms) const;
+
+        /// <summary>
+		/// アニメーションのブレンド計算
+        /// </summary>
+        /// <param name="poseA"></param>
+        /// <param name="poseB"></param>
+        /// <param name="t"></param>
+        /// <param name="outTransforms"></param>
+        void BlendPoses(
+            const std::vector<DirectX::XMFLOAT4X4>& poseA,
+            const std::vector<DirectX::XMFLOAT4X4>& poseB,
+            float t,
             std::vector<DirectX::XMFLOAT4X4>& outTransforms) const;
 
     private:
