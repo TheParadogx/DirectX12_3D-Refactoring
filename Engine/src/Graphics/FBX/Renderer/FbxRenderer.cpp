@@ -55,19 +55,20 @@ namespace Ecse::Graphics
                 cmdList->SetGraphicsRootConstantBufferView(1, mConstantBuffer->Upload(frameIndex, mesh));
 
                 // --- Slot 2: Bone Constant (b5) ---
-                if (mesh.isSkinned)
-                {
+                if (mesh.isSkinned) {
                     BoneConstant boneData{};
-                    // コンポーネントが空ならリソースのTポーズを使用
-                    const auto& sourceBones = fbx.BoneTransforms.empty()
-                        ? fbx.Resource->GetDefaultBoneTransforms()
-                        : fbx.BoneTransforms;
 
-                    uint32_t copyCount = std::min((uint32_t)sourceBones.size(), MAX_BONES);
-                    for (uint32_t i = 0; i < copyCount; ++i)
-                    {
-                        XMMATRIX m = XMLoadFloat4x4(&sourceBones[i]);
-                        XMStoreFloat4x4(&boneData.bones[i], XMMatrixTranspose(m));
+                    // データがなければデフォルト姿勢
+                    if (fbx.BoneTransforms.empty()) {
+                        auto defaults = fbx.Resource->GetDefaultBoneTransforms();
+                        for (size_t i = 0; i < std::min(defaults.size(), (size_t)MAX_BONES); ++i) {
+                            XMStoreFloat4x4(&boneData.bones[i], XMMatrixTranspose(XMLoadFloat4x4(&defaults[i])));
+                        }
+                    }
+                    else {
+                        for (size_t i = 0; i < std::min(fbx.BoneTransforms.size(), (size_t)MAX_BONES); ++i) {
+                            XMStoreFloat4x4(&boneData.bones[i], XMMatrixTranspose(XMLoadFloat4x4(&fbx.BoneTransforms[i])));
+                        }
                     }
                     cmdList->SetGraphicsRootConstantBufferView(2, mConstantBuffer->Upload(frameIndex, boneData));
                 }

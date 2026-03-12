@@ -1,7 +1,7 @@
 #include "pch.h"
 #include<ECS/Component/FBX/FbxComponent.hpp>
 #include<Graphics/FBX/Resource/FbxResource.hpp>
-
+using namespace DirectX;
 void Ecse::ECS::FbxComponent::SetResource(const Graphics::FbxResource* res)
 {
     this->Resource = res;
@@ -16,6 +16,8 @@ void Ecse::ECS::FbxComponent::SetResource(const Graphics::FbxResource* res)
         BoneTransforms[i] = bones[i].BindMatrix;
     }
 }
+
+
 
 void Ecse::ECS::AnimatorComponent::Play(const std::string& name, bool loop, float speed)
 {

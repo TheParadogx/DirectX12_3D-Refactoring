@@ -81,6 +81,12 @@ namespace Ecse::Graphics
         // ボーンを持っているか（スキニングが必要か）
         bool HasBones() const { return !mBones.empty(); }
 
+
+        void ComputeAnimationTransforms(
+            const std::string& animName,
+            float time,
+            std::vector<DirectX::XMFLOAT4X4>& outTransforms) const;
+
     private:
         bool LoadModelData(const std::filesystem::path& FilePath);
 

@@ -5,7 +5,7 @@
 #include <Graphics/IndexBuffer/IndexBuffer.hpp>
 #include <Graphics/VertexBuffer/VertexBuffer.hpp>
 #include <Graphics/Data/GraphicsData.hpp>
-
+using namespace DirectX;
 namespace Ecse::Graphics
 {
     FbxResource::FbxResource() : mVB(nullptr), mIB(nullptr) {}
@@ -156,5 +156,41 @@ namespace Ecse::Graphics
     {
         if (mVB) mVB->Set(CmdList);
         if (mIB) mIB->Set(CmdList);
+    }
+
+    void FbxResource::ComputeAnimationTransforms(
+        const std::string& animName,
+        float time,
+        std::vector<DirectX::XMFLOAT4X4>& outTransforms) const
+    {
+        if (mAnimations.find(animName) == mAnimations.end()) return;
+        const auto& anim = mAnimations.at(animName);
+
+        // フレーム特定 (60fps固定想定)
+        float duration = anim.NumFrame / 60.0f;
+        uint32_t frame = static_cast<uint32_t>(time * 60.0f) % anim.NumFrame;
+
+        outTransforms.resize(mBones.size());
+
+        // 1. 各ボーンのワールド姿勢を計算（親子階層の考慮）
+        for (size_t i = 0; i < mBones.size(); ++i) {
+            XMMATRIX local = XMLoadFloat4x4(&anim.KeyFrames[i][frame]);
+
+            if (mBones[i].ParentIndex != -1) {
+                XMMATRIX parent = XMLoadFloat4x4(&outTransforms[mBones[i].ParentIndex]);
+                XMMATRIX world = local * parent; // 親の座標系を掛ける
+                XMStoreFloat4x4(&outTransforms[i], world);
+            }
+            else {
+                XMStoreFloat4x4(&outTransforms[i], local);
+            }
+        }
+
+        // 2. 最終的なスキニング行列の計算 (BindMatrix * WorldPose)
+        for (size_t i = 0; i < mBones.size(); ++i) {
+            XMMATRIX bind = XMLoadFloat4x4(&mBones[i].BindMatrix);
+            XMMATRIX world = XMLoadFloat4x4(&outTransforms[i]);
+            XMStoreFloat4x4(&outTransforms[i], bind * world);
+        }
     }
 }

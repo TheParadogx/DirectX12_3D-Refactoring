@@ -32,6 +32,7 @@ namespace Ecse::ECS {
         /// リソースをセットし、ボーン数に合わせて行列配列を初期化する
         /// </summary>
         void SetResource(const Graphics::FbxResource* res);
+
     };
 
     /// <summary>
