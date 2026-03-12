@@ -163,30 +163,48 @@ namespace Ecse::Graphics
         float time,
         std::vector<DirectX::XMFLOAT4X4>& outTransforms) const
     {
-        if (mAnimations.find(animName) == mAnimations.end()) return;
-        const auto& anim = mAnimations.at(animName);
+        auto it = mAnimations.find(animName);
+        if (it == mAnimations.end()) return;
+        const auto& anim = it->second;
 
-        // フレーム特定 (60fps固定想定)
-        float duration = anim.NumFrame / 60.0f;
-        uint32_t frame = static_cast<uint32_t>(time * 60.0f) % anim.NumFrame;
+        // --- 補間パラメータの計算 ---
+        float frameFull = time * 60.0f; // 60fps想定
+        uint32_t frame0 = static_cast<uint32_t>(frameFull) % anim.NumFrame;
+        uint32_t frame1 = (frame0 + 1) % anim.NumFrame; // 次のフレーム
+        float t = frameFull - static_cast<uint32_t>(frameFull); // 小数点部分（補間係数）
 
         outTransforms.resize(mBones.size());
 
-        // 1. 各ボーンのワールド姿勢を計算（親子階層の考慮）
         for (size_t i = 0; i < mBones.size(); ++i) {
-            XMMATRIX local = XMLoadFloat4x4(&anim.KeyFrames[i][frame]);
+            // 前後のフレーム行列
+            XMMATRIX m0 = XMLoadFloat4x4(&anim.KeyFrames[i][frame0]);
+            XMMATRIX m1 = XMLoadFloat4x4(&anim.KeyFrames[i][frame1]);
 
+            // 行列をそのまま Lerp すると形が崩れるため、分解して補間する
+            XMVECTOR s0, r0, p0, s1, r1, p1;
+            XMMatrixDecompose(&s0, &r0, &p0, m0);
+            XMMatrixDecompose(&s1, &r1, &p1, m1);
+
+            // スケールと座標は線形補間 (Lerp)
+            XMVECTOR s = XMVectorLerp(s0, s1, t);
+            XMVECTOR p = XMVectorLerp(p0, p1, t);
+            // 回転は球面線形補間 (Slerp)
+            XMVECTOR r = XMQuaternionSlerp(r0, r1, t);
+
+            // 再び行列に合成
+            XMMATRIX local = XMMatrixScalingFromVector(s) * XMMatrixRotationQuaternion(r) * XMMatrixTranslationFromVector(p);
+
+            // 親子階層の計算
             if (mBones[i].ParentIndex != -1) {
                 XMMATRIX parent = XMLoadFloat4x4(&outTransforms[mBones[i].ParentIndex]);
-                XMMATRIX world = local * parent; // 親の座標系を掛ける
-                XMStoreFloat4x4(&outTransforms[i], world);
+                XMStoreFloat4x4(&outTransforms[i], local * parent);
             }
             else {
                 XMStoreFloat4x4(&outTransforms[i], local);
             }
         }
 
-        // 2. 最終的なスキニング行列の計算 (BindMatrix * WorldPose)
+        // --- スキニング行列（最終結果）の計算 ---
         for (size_t i = 0; i < mBones.size(); ++i) {
             XMMATRIX bind = XMLoadFloat4x4(&mBones[i].BindMatrix);
             XMMATRIX world = XMLoadFloat4x4(&outTransforms[i]);
