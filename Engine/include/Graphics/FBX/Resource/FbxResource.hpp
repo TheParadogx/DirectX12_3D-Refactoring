@@ -1,139 +1,95 @@
 #pragma once
-#include<Utility/Export/Export.hpp>
-#include<Utility/Types/EcseTypes.hpp>
-#include<DirectXMath.h>
+#include <Utility/Export/Export.hpp>
+#include <Utility/Types/EcseTypes.hpp>
+#include <DirectXMath.h>
 
-#include<string>
-#include<vector>
-#include<filesystem>
-#include<span>
-#include<memory>
-#include<unordered_map>
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <span>
+#include <memory>
+#include <unordered_map>
 
 namespace Ecse::Graphics
 {
-	class Texture;
-	class IndexBuffer;
-	class VertexBuffer;
+    class Texture;
+    class IndexBuffer;
+    class VertexBuffer;
 
-	/// <summary>
-	/// Fbxの共通化するリソース管理
-	/// </summary>
-	class ENGINE_API FbxResource
-	{
-	public:
-		/// <summary>
-		/// マテリアル・描画範囲情報
-		/// </summary>
-		struct Material
-		{
-			std::string Name;
-			Texture* Texture;
-			uint32_t IndexCount = 0;
-			uint32_t StartIndex = 0;
-		};
+    /// <summary>
+    /// 旧プロジェクトのFbxAnalyzerバイナリに対応したリソース管理クラス
+    /// </summary>
+    class ENGINE_API FbxResource
+    {
+    public:
+        struct Material
+        {
+            std::string Name;
+            Texture* Texture = nullptr;
+            uint32_t IndexCount = 0;
+            uint32_t StartIndex = 0;
+        };
 
-		/// <summary>
-		/// ボーン・スキニング用情報
-		/// </summary>
-		struct BoneInfo
-		{
-			std::string Name;
-			int ParentIndex;
-			DirectX::XMFLOAT4X4 BindMatrix;
-			DirectX::XMFLOAT4X4 OffsetMatrix;
-		};
+        struct BoneInfo
+        {
+            std::string Name;
+            int32_t ParentIndex;
+            DirectX::XMFLOAT4X4 BindMatrix; // ファイル内の行列(唯一)
+        };
 
-		/// <summary>
-		/// アニメーションデータ
-		/// </summary>
-		struct Animation
-		{
-			int NumFrame;
-			float FPS = 60.0f;
-			float Duration = 0.0f;  // ← 追加
-			std::vector<std::vector<DirectX::XMFLOAT4X4>> KeyFrame;
+        struct Animation
+        {
+            int32_t NumFrame = 0;
+            // KeyFrames[ボーンIndex][フレーム番号] 
+            std::vector<std::vector<DirectX::XMFLOAT4X4>> KeyFrames;
+        };
 
-			float GetDuration() const { return Duration > 0.0f ? Duration : (float)(NumFrame - 1) / FPS; }
-		};
+    public:
+        FbxResource();
+        virtual ~FbxResource();
 
-	public:
-		FbxResource();
-		virtual ~FbxResource();
+        /// <summary>
+        /// FBXモデル(.bin)の読込
+        /// </summary>
+        bool Create(const std::filesystem::path& FilePath);
 
-		/// <summary>
-		/// FBXリソース作成
-		/// </summary>
-		/// <param name="FilePath">ファイルパス</param>
-		/// <returns>true:成功</returns>
-		bool Create(const std::filesystem::path& FilePath);
+        /// <summary>
+        /// アニメーション(.anm)の読込
+        /// </summary>
+        bool LoadAnimation(const std::string& AnimationName, const std::filesystem::path& AnimationPath);
 
-		/// <summary>
-		/// アニメーションファイルの読込
-		/// </summary>
-		/// <param name="AnimationName">アニメーション名</param>
-		/// <param name="AnimationPath">アニメーションのファイルパス</param>
-		/// <returns>true:成功</returns>
-		bool LoadAnimation(const std::string& AnimationName, const std::filesystem::path& AnimationPath);
+        /// <summary>
+        /// リソースの解放
+        /// </summary>
+        void Release();
 
-		/// <summary>
-		/// リソースの解放
-		/// </summary>
-		void Release();
+        /// <summary>
+        /// バッファをコマンドリストにセット
+        /// </summary>
+        void SetBuffers(ID3D12GraphicsCommandList* CmdList) const;
 
-		/// <summary>
-		/// バッファのセット
-		/// </summary>
-		/// <param name="CmdList"></param>
-		void SetBuffers(ID3D12GraphicsCommandList* CmdList) const;
+        /// <summary>
+        /// 未解決シンボル解消：デフォルトの単位行列配列を生成
+        /// </summary>
+        std::vector<DirectX::XMFLOAT4X4> GetDefaultBoneTransforms() const;
 
-		std::vector<DirectX::XMFLOAT4X4> GetDefaultBoneTransforms() const;
+        // ゲッター
+        std::span<const Material> GetMaterials() const { return mMaterials; }
+        std::span<const BoneInfo> GetBones() const { return mBones; }
+        const std::unordered_map<std::string, Animation>& GetAnimations() const { return mAnimations; }
 
-		/*
-		* ゲッター
-		* 各情報へのアクセス
-		*/
-		std::span<const Material> GetMaterials() const { return mMaterials; }
-		std::span<const BoneInfo> GetBones() const { return mBones; }
-		const std::unordered_map<std::string, Animation>& GetAnimations() const { return mAnimations; }
+        // ボーンを持っているか（スキニングが必要か）
+        bool HasBones() const { return !mBones.empty(); }
 
-		std::span<const std::vector<DirectX::XMFLOAT4X4>> GetAnimationKeyFrames(const std::string& name) const;
+    private:
+        bool LoadModelData(const std::filesystem::path& FilePath);
 
-		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const;
-		D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const;
-	private:
-		/// <summary>
-		/// 専用binからfbxの情報を読み込む
-		/// </summary>
-		/// <param name="FilePath">バイナリのファイルパス</param>
-		/// <returns>true:成功</returns>
-		bool LoadModelData(const std::filesystem::path& FilePath);
+    private:
+        std::vector<Material> mMaterials;
+        std::vector<BoneInfo> mBones;
+        std::unordered_map<std::string, Animation> mAnimations;
 
-	private:
-		/// <summary>
-		/// マテリアル
-		/// </summary>
-		std::vector<Material> mMaterials;
-		/// <summary>
-		/// ボーン情報
-		/// </summary>
-		std::vector<BoneInfo> mBones;
-		/// <summary>
-		/// アニメーションのマップ
-		/// </summary>
-		std::unordered_map<std::string, Animation> mAnimations;
-		/// <summary>
-		/// ボーン名とインデックスのバインド
-		/// </summary>
-		std::unordered_map<std::string, int> mBoneIndexMap;
-
-		/// <summary>
-		/// 頂点バッファ　
-		/// </summary>
-		std::unique_ptr<VertexBuffer> mVB;
-		/// <summary>
-		/// インデックスバッファ
-		/// </summary>
-		std::unique_ptr<IndexBuffer> mIB;
-	};
+        std::unique_ptr<VertexBuffer> mVB;
+        std::unique_ptr<IndexBuffer> mIB;
+    };
 }

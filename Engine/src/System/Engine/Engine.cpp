@@ -61,15 +61,16 @@ void CreateTest()
 	// Fbxモデルのデバック
 	{
 		bool ret = false;
-		ret = spFbxRes.Create("Assets/TestFbx/Faul_model.bin");
-		ret = spFbxRes.LoadAnimation("AtkA", "Assets/TestFbx/Anim/Attack_A_anim.bin");
+		ret = spFbxRes.Create("Assets/TestFbx/Faul.fbx.bin");
+		ret = spFbxRes.LoadAnimation("AtkA", "Assets/TestFbx/Animation/Attack_A.fbx.anm");
 
 		auto entity = manager->CreateEntity();
 		auto& trans = registry.emplace<ECS::Transform3D>(entity);
 		trans.Position = { 0,-1,5 };
 		DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-180.0f), 0);
 		DirectX::XMStoreFloat4(&trans.Rotation, q);
-		float scale = 0.0001f;
+		float scale = 0.01f;
+		//float scale = 1.0f;
 		trans.Scale = { scale,scale,scale };
 
 		auto& fbx = registry.emplace<ECS::FbxComponent>(entity);

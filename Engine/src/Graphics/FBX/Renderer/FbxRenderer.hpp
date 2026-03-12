@@ -21,17 +21,22 @@ namespace Ecse::Graphics
 	public:
 		// 定数バッファの構造体定義
 		struct SceneConstant {
-			DirectX::XMFLOAT4X4 viewProjection;
+			DirectX::XMFLOAT4X4 viewProjection; // 64 bytes
 		};
 
 		struct MeshConstant {
 			DirectX::XMFLOAT4X4 world;
+			DirectX::XMFLOAT4 color;
+			int32_t isSkinned;
+			float padding[3]; // ここで HLSL の MeshPadding と合わせる
 		};
 
 		static constexpr uint32_t MAX_BONES = 256;
 		struct BoneConstant {
-			DirectX::XMFLOAT4X4 bones[MAX_BONES];
+			DirectX::XMFLOAT4X4 bones[MAX_BONES];     // 16384 bytes
 		};
+
+
 
 		FbxRenderer() = default;
 		virtual ~FbxRenderer() = default;

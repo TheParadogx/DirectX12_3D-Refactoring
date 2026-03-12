@@ -1,43 +1,41 @@
-// 定数バッファ
+// --- 定数バッファ定義 ---
 
-// 基本的な変換行列 (b3)
-// スロット 0 (b3): SceneConstant
+// Slot 0 (b3): シーン共通（カメラ等）
 cbuffer SceneBuffer : register(b3)
 {
-    matrix ViewProj; // C++ 側の SceneConstant.viewProjection
+    matrix ViewProj;
 };
 
-// スロット 1 (b4): MeshConstant
+// Slot 1 (b4): メッシュ固有
 cbuffer MeshBuffer : register(b4)
 {
-    matrix World; // C++ 側の MeshConstant.world
+    matrix World;
+    float4 Color;
+    int IsSkinned;
+    float3 MeshPadding; // 16バイトアライメント用
 };
 
-// スロット 2 (b5): BoneConstant
+// Slot 2 (b5): ボーン行列
 cbuffer BoneBuffer : register(b5)
 {
-    matrix BoneTransforms[256];
+    matrix Bones[256];
 };
-// --- テクスチャリソース ( register t0, s0 ) ---
-Texture2D DiffuseTexture : register(t0);
-SamplerState LinearSampler : register(s0);
 
-// --- 頂点レイアウト (SkeletalMeshVertexと一致させる) ---
+// --- 構造体定義 ---
+
 struct VS_INPUT
 {
     float3 Position : POSITION;
-    float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
-    float3 Tangent : TANGENT;
-    uint4 Indices : BONE_INDICES; // インプットレイアウトの名前と一致
-    float4 Weights : BONE_WEIGHTS; // インプットレイアウトの名前と一致
+    float3 Normal : NORMAL;
+    uint4 BoneIndex : BONE_INDEX;
+    float4 Weight : WEIGHT;
 };
 
-// 頂点シェーダーからピクセルシェーダーへの渡し
 struct VS_OUTPUT
 {
-    float4 Position : SV_POSITION; // システム用頂点座標
-    float2 UV : TEXCOORD0; // UV座標
-    float3 Normal : NORMAL; // 法線 (ワールド空間)
-    float3 WorldPos : POSITION; // ワールド座標
+    float4 Position : SV_Position;
+    float2 UV : TEXCOORD;
+    float3 Normal : NORMAL;
+    float4 Color : COLOR;
 };

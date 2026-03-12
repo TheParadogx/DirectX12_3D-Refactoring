@@ -16,13 +16,11 @@ namespace Ecse::Graphics
         auto device = System::ServiceLocator::Get<DX12>()->GetDevice();
         auto frameCount = System::ServiceLocator::Get<DX12>()->FRAME_COUNT;
 
+        // 定数バッファのメモリ確保
         mConstantBuffer = std::make_unique<DynamicBuffer>(device, 8 * 1024 * 1024, frameCount);
 
         mPipeline = std::make_unique<FbxPipeline>();
-        if (!mPipeline->Create())
-        {
-            return false;
-        }
+        if (!mPipeline->Create()) return false;
 
         return true;
     }
@@ -39,32 +37,42 @@ namespace Ecse::Graphics
         cmdList->SetPipelineState(mPipeline->GetPipelineState());
         cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+        // --- Slot 0: Scene Constant (b3) ---
         SceneConstant scene;
         XMStoreFloat4x4(&scene.viewProjection, XMMatrixTranspose(viewProj));
         cmdList->SetGraphicsRootConstantBufferView(0, mConstantBuffer->Upload(frameIndex, scene));
 
         auto view = registry.view<ECS::Transform3D, ECS::FbxComponent>();
-
         view.each([&](auto entity, ECS::Transform3D& transform, ECS::FbxComponent& fbx)
             {
                 if (!fbx.Resource) return;
 
+                // --- Slot 1: Mesh Constant (b4) ---
                 MeshConstant mesh;
                 XMStoreFloat4x4(&mesh.world, XMMatrixTranspose(transform.GetWorldMatrix()));
+                mesh.color = { 1.0f, 1.0f, 1.0f, 1.0f }; // Component等から取得可能なら変更
+                mesh.isSkinned = fbx.Resource->HasBones() ? 1 : 0;
                 cmdList->SetGraphicsRootConstantBufferView(1, mConstantBuffer->Upload(frameIndex, mesh));
 
-                BoneConstant boneData{};
-                const auto& sourceBones = fbx.BoneTransforms.empty()
-                    ? fbx.Resource->GetDefaultBoneTransforms()
-                    : fbx.BoneTransforms;
-
-                uint32_t copyCount = (uint32_t)std::min<size_t>(sourceBones.size(), MAX_BONES);
-                for (uint32_t i = 0; i < copyCount; ++i)
+                // --- Slot 2: Bone Constant (b5) ---
+                if (mesh.isSkinned)
                 {
-                    XMStoreFloat4x4(&boneData.bones[i], XMMatrixTranspose(XMLoadFloat4x4(&sourceBones[i])));
-                }
-                cmdList->SetGraphicsRootConstantBufferView(2, mConstantBuffer->Upload(frameIndex, boneData));
+                    BoneConstant boneData{};
+                    // コンポーネントが空ならリソースのTポーズを使用
+                    const auto& sourceBones = fbx.BoneTransforms.empty()
+                        ? fbx.Resource->GetDefaultBoneTransforms()
+                        : fbx.BoneTransforms;
 
+                    uint32_t copyCount = std::min((uint32_t)sourceBones.size(), MAX_BONES);
+                    for (uint32_t i = 0; i < copyCount; ++i)
+                    {
+                        XMMATRIX m = XMLoadFloat4x4(&sourceBones[i]);
+                        XMStoreFloat4x4(&boneData.bones[i], XMMatrixTranspose(m));
+                    }
+                    cmdList->SetGraphicsRootConstantBufferView(2, mConstantBuffer->Upload(frameIndex, boneData));
+                }
+
+                // --- Draw ---
                 fbx.Resource->SetBuffers(cmdList);
 
                 for (const auto& mat : fbx.Resource->GetMaterials())
@@ -73,7 +81,6 @@ namespace Ecse::Graphics
                     {
                         cmdList->SetGraphicsRootDescriptorTable(3, mat.Texture->GetGpuHandle());
                     }
-
                     cmdList->DrawIndexedInstanced(mat.IndexCount, 1, mat.StartIndex, 0, 0);
                 }
             });

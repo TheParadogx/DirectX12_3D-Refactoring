@@ -5,9 +5,6 @@
 #include <Graphics/IndexBuffer/IndexBuffer.hpp>
 #include <Graphics/VertexBuffer/VertexBuffer.hpp>
 #include <Graphics/Data/GraphicsData.hpp>
-#include <fstream>
-
-using namespace DirectX;
 
 namespace Ecse::Graphics
 {
@@ -19,33 +16,9 @@ namespace Ecse::Graphics
         mMaterials.clear();
         mBones.clear();
         mAnimations.clear();
-        mBoneIndexMap.clear();
+        mVB.reset();
+        mIB.reset();
     }
-
-    void FbxResource::SetBuffers(ID3D12GraphicsCommandList* CmdList) const
-    {
-        if (mVB) mVB->Set(CmdList);
-        if (mIB) mIB->Set(CmdList);
-    }
-
-    std::vector<DirectX::XMFLOAT4X4> FbxResource::GetDefaultBoneTransforms() const
-    {
-        std::vector<DirectX::XMFLOAT4X4> identities(mBones.size());
-        for (auto& mat : identities) {
-            XMStoreFloat4x4(&mat, XMMatrixIdentity());
-        }
-        return identities;
-    }
-
-    std::span<const std::vector<DirectX::XMFLOAT4X4>> FbxResource::GetAnimationKeyFrames(const std::string& name) const
-    {
-        auto it = mAnimations.find(name);
-        if (it != mAnimations.end()) return it->second.KeyFrame;
-        return {};
-    }
-
-    D3D12_VERTEX_BUFFER_VIEW FbxResource::GetVertexBufferView() const { return mVB ? mVB->GetView() : D3D12_VERTEX_BUFFER_VIEW{}; }
-    D3D12_INDEX_BUFFER_VIEW FbxResource::GetIndexBufferView() const { return mIB ? mIB->GetView() : D3D12_INDEX_BUFFER_VIEW{}; }
 
     bool FbxResource::Create(const std::filesystem::path& FilePath)
     {
@@ -53,114 +26,135 @@ namespace Ecse::Graphics
         return LoadModelData(FilePath);
     }
 
-    // --- アニメーション読み込み ---
+    bool FbxResource::LoadModelData(const std::filesystem::path& FilePath)
+    {
+        FILE* fp = nullptr;
+        if (fopen_s(&fp, FilePath.string().c_str(), "rb") != 0) return false;
+
+        // 1. ヘッダー読込
+        int32_t counts[3]; // Mesh, Poly, Vertex
+        fread(counts, sizeof(int32_t), 3, fp);
+        uint32_t vertexCount = static_cast<uint32_t>(counts[2]);
+
+        // 2. 頂点データ読込 (コンバータの fwrite 順序を死守)
+        std::vector<SkeletalMeshVertex> vertices(vertexCount);
+        for (auto& v : vertices) {
+            fread(&v.Position, sizeof(DirectX::XMFLOAT3), 1, fp); // Position
+            fread(&v.UV, sizeof(DirectX::XMFLOAT2), 1, fp); // UV
+            fread(&v.Normal, sizeof(DirectX::XMFLOAT3), 1, fp); // Normal
+            fread(v.Bone, sizeof(uint32_t), 4, fp);          // BoneIndices
+            fread(v.Weight, sizeof(float), 4, fp);             // Weights
+        }
+
+        // 3. インデックスデータ読込
+        int32_t indexCount = 0;
+        fread(&indexCount, sizeof(int32_t), 1, fp);
+        std::vector<uint32_t> indices(indexCount);
+        fread(indices.data(), sizeof(uint32_t), indexCount, fp);
+
+        // 4. マテリアル情報の読込
+        int32_t materialCount = 0;
+        fread(&materialCount, sizeof(int32_t), 1, fp);
+        mMaterials.reserve(materialCount);
+
+        std::filesystem::path baseDir = FilePath.parent_path();
+        auto* texManager = System::ServiceLocator::Get<TextureManager>();
+
+        uint32_t currentIndexOffset = 0;
+        for (int i = 0; i < materialCount; ++i) {
+            Material mat = {};
+            int32_t nLen, tLen;
+
+            fread(&nLen, sizeof(int32_t), 1, fp);
+            mat.Name.resize(nLen);
+            fread(mat.Name.data(), 1, nLen, fp);
+
+            fread(&tLen, sizeof(int32_t), 1, fp);
+            std::string texPath;
+            texPath.resize(tLen);
+            fread(texPath.data(), 1, tLen, fp);
+
+            if (!texPath.empty()) {
+                // コンバータが分解したファイル名を Texture フォルダから探す
+                mat.Texture = texManager->GetOrLoad(baseDir / "Texture" / texPath);
+            }
+
+            int32_t matPolyCount = 0;
+            fread(&matPolyCount, sizeof(int32_t), 1, fp);
+            mat.IndexCount = static_cast<uint32_t>(matPolyCount * 3);
+            mat.StartIndex = currentIndexOffset;
+
+            currentIndexOffset += mat.IndexCount;
+            mMaterials.push_back(std::move(mat));
+        }
+
+        // 5. ボーン情報の読込 (BindMatrix = OffsetMatrix)
+        int32_t boneCount = 0;
+        fread(&boneCount, sizeof(int32_t), 1, fp);
+        mBones.reserve(boneCount);
+        for (int i = 0; i < boneCount; ++i) {
+            BoneInfo info = {};
+            int32_t nLen;
+            fread(&nLen, sizeof(int32_t), 1, fp);
+            info.Name.resize(nLen);
+            fread(info.Name.data(), 1, nLen, fp);
+
+            fread(&info.ParentIndex, sizeof(int32_t), 1, fp);
+            fread(&info.BindMatrix, sizeof(DirectX::XMFLOAT4X4), 1, fp);
+
+            mBones.push_back(std::move(info));
+        }
+
+        fclose(fp);
+
+        mVB = std::make_unique<VertexBuffer>();
+        mVB->Create(sizeof(SkeletalMeshVertex) * vertexCount, sizeof(SkeletalMeshVertex));
+        mVB->Update(vertices.data(), sizeof(SkeletalMeshVertex) * vertexCount);
+
+        mIB = std::make_unique<IndexBuffer>();
+        mIB->Create(sizeof(uint32_t) * indexCount, eIndexBufferFormat::Uint32);
+        mIB->Update(indices.data(), sizeof(uint32_t) * indexCount);
+
+        return true;
+    }
+
     bool FbxResource::LoadAnimation(const std::string& AnimationName, const std::filesystem::path& AnimationPath)
     {
-        std::ifstream ifs(AnimationPath, std::ios::binary);
-        if (!ifs) return false;
+        FILE* fp = nullptr;
+        if (fopen_s(&fp, AnimationPath.string().c_str(), "rb") != 0) return false;
 
-        char magic[4];
-        ifs.read(magic, 4);
-        if (strncmp(magic, "ANIM", 4) != 0) return false;
+        Animation anim = {};
+        fread(&anim.NumFrame, sizeof(int32_t), 1, fp);
 
-        uint32_t bCount, fCount;
-        float duration;
-        ifs.read((char*)&bCount, 4);
-        ifs.read((char*)&fCount, 4);
-        ifs.read((char*)&duration, 4);
+        int32_t boneCount = 0;
+        fread(&boneCount, sizeof(int32_t), 1, fp);
 
-        Animation anim;
-        anim.NumFrame = fCount;
-        anim.Duration = duration;
-        anim.KeyFrame.resize(fCount);
-
-        for (auto& frame : anim.KeyFrame) {
-            float time;
-            ifs.read((char*)&time, 4);
-            frame.resize(bCount);
-            for (uint32_t i = 0; i < bCount; ++i) {
-                // ★修正：行優先(Row-Major)なので転置せずそのまま読み込む
-                ifs.read(reinterpret_cast<char*>(&frame[i]), 64);
-            }
+        anim.KeyFrames.resize(boneCount);
+        for (int i = 0; i < boneCount; ++i) {
+            int32_t frameCount = 0;
+            fread(&frameCount, sizeof(int32_t), 1, fp);
+            anim.KeyFrames[i].resize(frameCount);
+            fread(anim.KeyFrames[i].data(), sizeof(DirectX::XMFLOAT4X4), frameCount, fp);
         }
+
+        fclose(fp);
         mAnimations[AnimationName] = std::move(anim);
         return true;
     }
 
-    // --- モデル本体の読み込み ---
-    bool FbxResource::LoadModelData(const std::filesystem::path& FilePath)
+    std::vector<DirectX::XMFLOAT4X4> FbxResource::GetDefaultBoneTransforms() const
     {
-        std::ifstream ifs(FilePath, std::ios::binary);
-        if (!ifs) return false;
-
-        uint32_t head[5];
-        ifs.read(reinterpret_cast<char*>(head), 20);
-        if (head[0] != 0x4D4F444C) return false; // "MODL"
-
-        uint32_t vCount = head[2];
-        uint32_t iCount = head[3];
-        uint32_t bCount = head[4];
-
-        // 頂点バッファ作成
-        std::vector<SkeletalMeshVertex> vertices(vCount);
-        for (auto& v : vertices) {
-            ifs.read(reinterpret_cast<char*>(&v), sizeof(SkeletalMeshVertex));
+        // Tポーズ用：BindMatrixはリソース側にあるため、アニメーション行列としては単位行列を返す
+        std::vector<DirectX::XMFLOAT4X4> identities(mBones.size());
+        for (auto& mat : identities) {
+            DirectX::XMStoreFloat4x4(&mat, DirectX::XMMatrixIdentity());
         }
-        mVB = std::make_unique<VertexBuffer>();
-        if (!mVB->Create(sizeof(SkeletalMeshVertex) * vCount, sizeof(SkeletalMeshVertex))) return false;
-        mVB->Update(vertices.data(), sizeof(SkeletalMeshVertex) * vCount);
+        return identities;
+    }
 
-        // インデックスバッファ作成
-        std::vector<uint32_t> indices(iCount);
-        ifs.read(reinterpret_cast<char*>(indices.data()), sizeof(uint32_t) * iCount);
-        mIB = std::make_unique<IndexBuffer>();
-        if (!mIB->Create(sizeof(uint32_t) * iCount, eIndexBufferFormat::Uint32)) return false;
-        mIB->Update(indices.data(), sizeof(uint32_t) * iCount);
-
-        // マテリアル読み込み
-        uint32_t sCount = 0;
-        ifs.read(reinterpret_cast<char*>(&sCount), 4);
-        mMaterials.resize(sCount);
-        for (auto& mat : mMaterials) {
-            uint32_t matIdx;
-            ifs.read(reinterpret_cast<char*>(&matIdx), 4);
-            ifs.read(reinterpret_cast<char*>(&mat.StartIndex), 4);
-            ifs.read(reinterpret_cast<char*>(&mat.IndexCount), 4);
-        }
-
-        // ボーン読み込み
-        mBones.resize(bCount);
-        for (auto& b : mBones) {
-            uint32_t nLen;
-            ifs.read(reinterpret_cast<char*>(&nLen), 4);
-            b.Name.resize(nLen);
-            ifs.read(&b.Name[0], nLen);
-            ifs.read(reinterpret_cast<char*>(&b.ParentIndex), 4);
-
-            // ★修正：OffsetMatrixも転置せずそのまま読み込む
-            // ファイル内の行列形式を統一して扱うため
-            ifs.read(reinterpret_cast<char*>(&b.OffsetMatrix), 64);
-
-            b.BindMatrix = b.OffsetMatrix;
-        }
-
-        // テクスチャ読み込み
-        uint32_t mCount = 0;
-        ifs.read(reinterpret_cast<char*>(&mCount), 4);
-        std::filesystem::path baseDir = FilePath.parent_path();
-        TextureManager* Manager = System::ServiceLocator::Get<TextureManager>();
-
-        for (uint32_t i = 0; i < mCount; ++i) {
-            uint32_t nL, tL;
-            std::string mName, tPath;
-            ifs.read(reinterpret_cast<char*>(&nL), 4); mName.resize(nL); ifs.read(&mName[0], nL);
-            ifs.read(reinterpret_cast<char*>(&tL), 4); tPath.resize(tL); ifs.read(&tPath[0], tL);
-            if (i < mMaterials.size()) {
-                mMaterials[i].Name = mName;
-                auto path = baseDir / tPath;
-                mMaterials[i].Texture = Manager->GetOrLoad(path);
-            }
-        }
-        return true;
+    void FbxResource::SetBuffers(ID3D12GraphicsCommandList* CmdList) const
+    {
+        if (mVB) mVB->Set(CmdList);
+        if (mIB) mIB->Set(CmdList);
     }
 }

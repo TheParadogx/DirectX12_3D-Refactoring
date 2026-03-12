@@ -4,26 +4,16 @@
 
 void Ecse::ECS::FbxComponent::SetResource(const Graphics::FbxResource* res)
 {
-    Resource = res;
-
-    if (!Resource) {
-        BoneTransforms.clear();
-        return;
-    }
+    this->Resource = res;
+    if (!res) return;
 
     // リソースからボーン情報を取得
-    const auto bones = Resource->GetBones();
-    const size_t boneCount = bones.size();
+    auto bones = res->GetBones();
+    BoneTransforms.resize(bones.size());
 
-    // 行列配列をリサイズ（XMMATRIXは16バイト整列が必要な場合があるため、
-    // 必要に応じてアライメント済みのベクター検討もアリですが、
-    // std::vectorはC++17以降、型のアライメントを考慮します）
-    BoneTransforms.resize(boneCount);
-
-    // 単位行列で初期化
-    const DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
-    for (auto& m : BoneTransforms) {
-        DirectX::XMStoreFloat4x4(&m, identity);
+    // 初期ポーズとして BindMatrix をコピー
+    for (size_t i = 0; i < bones.size(); ++i) {
+        BoneTransforms[i] = bones[i].BindMatrix;
     }
 }
 
