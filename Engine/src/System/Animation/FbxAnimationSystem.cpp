@@ -1,65 +1,74 @@
 #include "pch.h"
 #include "FbxAnimationSystem.hpp"
-#include<ECS/Component/FBX/FbxComponent.hpp>
-#include<Graphics/FBX/Resource/FbxResource.hpp>
+#include <ECS/Component/FBX/FbxComponent.hpp>
+#include <Graphics/FBX/Resource/FbxResource.hpp>
 
 using namespace DirectX;
 
-void Ecse::System::FbxAnimationSystem::Update(entt::registry& registry, float deltaTime)
-{
-    auto view = registry.view<ECS::FbxComponent>();
+namespace Ecse::System {
 
-    // 並列更新を考慮したスレッドローカルバッファ
-    thread_local std::vector<XMMATRIX> sWorldMatrices;
+    void FbxAnimationSystem::Update(entt::registry& registry, float deltaTime)
+    {
+        auto view = registry.view<ECS::FbxComponent, ECS::AnimatorComponent>();
 
-    for (auto entity : view) {
-        auto& fbx = view.get<ECS::FbxComponent>(entity);
+        view.each([&](auto entity, ECS::FbxComponent& fbx, ECS::AnimatorComponent& animator)
+            {
+                if (!fbx.Resource || !animator.IsPlaying || animator.CurrentAnimationName.empty()) return;
 
-        if (!fbx.Resource || fbx.CurrentAnimationName.empty()) continue;
+                const auto& animations = fbx.Resource->GetAnimations();
+                auto it = animations.find(animator.CurrentAnimationName);
+                if (it == animations.end()) return;
 
-        // アニメーションスパン取得
-        auto animFrames = fbx.Resource->GetAnimationKeyFrames(fbx.CurrentAnimationName);
-        if (animFrames.empty()) continue;
+                const auto& animData = it->second;
 
-        const auto& bones = fbx.Resource->GetBones();
-        size_t boneCount = bones.size();
+                animator.CurrentTime = std::fmod(animator.CurrentTime + deltaTime * animator.PlaySpeed, animData.Duration);
+                if (animator.CurrentTime < 0.0f) animator.CurrentTime += animData.Duration;
 
-        // バッファの整合性チェック
-        if (fbx.BoneTransforms.size() != boneCount) fbx.BoneTransforms.resize(boneCount);
-        if (sWorldMatrices.size() < boneCount) sWorldMatrices.resize(boneCount);
+                const float framePos = animator.CurrentTime * animData.FPS;
+                const uint32_t f0 = static_cast<uint32_t>(std::floor(framePos)) % animData.NumFrame;
+                const uint32_t f1 = (f0 + 1u) % animData.NumFrame;
+                const float weight = framePos - std::floor(framePos);
 
-        // 時間更新とフレーム決定
-        fbx.CurrentTime += deltaTime * fbx.PlaySpeed;
-        int frameCount = static_cast<int>(animFrames.size());
-        int currentFrame = static_cast<int>(fbx.CurrentTime * 30.0f);
+                const auto& bones = fbx.Resource->GetBones();
+                const size_t numBones = bones.size();
+                fbx.BoneTransforms.resize(numBones);
 
-        if (fbx.IsLoop) currentFrame %= frameCount;
-        else currentFrame = (std::min)(currentFrame, frameCount - 1);
+                std::vector<XMMATRIX> currentGlobals(numBones);
 
-        const std::vector<XMFLOAT4X4>& currentKeyFrames = animFrames[currentFrame];
+                for (size_t i = 0; i < numBones; ++i)
+                {
+                    XMVECTOR s0, r0, t0, s1, r1, t1;
+                    XMMatrixDecompose(&s0, &r0, &t0, XMLoadFloat4x4(&animData.KeyFrame[f0][i]));
+                    XMMatrixDecompose(&s1, &r1, &t1, XMLoadFloat4x4(&animData.KeyFrame[f1][i]));
 
-        // スケルトン階層計算
-        for (size_t i = 0; i < boneCount; ++i) {
-            // 現在のボーンのローカル変換をロード
-            XMMATRIX local = XMLoadFloat4x4(&currentKeyFrames[i]);
+                    XMVECTOR s = XMVectorLerp(s0, s1, weight);
+                    XMVECTOR r = XMQuaternionSlerp(r0, r1, weight);
+                    XMVECTOR t = XMVectorLerp(t0, t1, weight);
 
-            // childWorld = parentWorld * childLocal
-            if (bones[i].ParentIndex >= 0) {
-                local = XMMatrixMultiply(
-                    sWorldMatrices[bones[i].ParentIndex],
-                    local
-                );
-            }
+                    XMMATRIX local = XMMatrixScalingFromVector(s) * XMMatrixRotationQuaternion(r) * XMMatrixTranslationFromVector(t);
 
-            // 子ボーンの参照用に保存
-            sWorldMatrices[i] = local;
+                    const int pIdx = bones[i].ParentIndex;
+                    if (pIdx < 0) {
+                        currentGlobals[i] = local;
+                    }
+                    else {
+                        currentGlobals[i] = XMMatrixMultiply(local, currentGlobals[pIdx]);
+                    }
 
-            // Final = InverseBindPose * World
-            XMMATRIX bindInv = XMLoadFloat4x4(&bones[i].BindMatrix);
-            XMMATRIX finalMat = XMMatrixMultiply(bindInv, local);
+                    XMMATRIX offset = XMLoadFloat4x4(&bones[i].OffsetMatrix);
+                    
+                    XMMATRIX finalTransform = XMMatrixMultiply(offset, currentGlobals[i]);
+                    
+                    XMStoreFloat4x4(&fbx.BoneTransforms[i], finalTransform);
 
-            // HLSL用に転置
-            XMStoreFloat4x4(&fbx.BoneTransforms[i], XMMatrixTranspose(finalMat));
-        }
+                    if (i == 0) {
+                        XMFLOAT4X4 checkF;
+                        XMStoreFloat4x4(&checkF, finalTransform);
+                        char buf[256];
+                        sprintf_s(buf, "Bone:0 X:%.2f, Y:%.2f, Z:%.2f\n", checkF._41, checkF._42, checkF._43);
+                        OutputDebugStringA(buf);
+                    }
+                }
+            });
     }
 }

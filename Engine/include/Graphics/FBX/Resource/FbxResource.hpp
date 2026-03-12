@@ -40,8 +40,8 @@ namespace Ecse::Graphics
 		{
 			std::string Name;
 			int ParentIndex;
-			// 逆バインドポーズ行列（計算用にXMFLOAT4X4）
 			DirectX::XMFLOAT4X4 BindMatrix;
+			DirectX::XMFLOAT4X4 OffsetMatrix;
 		};
 
 		/// <summary>
@@ -50,8 +50,11 @@ namespace Ecse::Graphics
 		struct Animation
 		{
 			int NumFrame;
-			// KeyFrame[フレームIndex][ボーンIndex]
+			float FPS = 60.0f;
+			float Duration = 0.0f;  // ← 追加
 			std::vector<std::vector<DirectX::XMFLOAT4X4>> KeyFrame;
+
+			float GetDuration() const { return Duration > 0.0f ? Duration : (float)(NumFrame - 1) / FPS; }
 		};
 
 	public:

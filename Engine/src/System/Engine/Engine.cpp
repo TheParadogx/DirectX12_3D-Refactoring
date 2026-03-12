@@ -62,18 +62,22 @@ void CreateTest()
 	{
 		bool ret = false;
 		ret = spFbxRes.Create("Assets/TestFbx/Faul_model.bin");
-
+		ret = spFbxRes.LoadAnimation("AtkA", "Assets/TestFbx/Anim/Attack_A_anim.bin");
 
 		auto entity = manager->CreateEntity();
 		auto& trans = registry.emplace<ECS::Transform3D>(entity);
-		trans.Position = { 0,0,5 };
-		DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), 0, 0);
+		trans.Position = { 0,-1,5 };
+		DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-180.0f), 0);
 		DirectX::XMStoreFloat4(&trans.Rotation, q);
-		float scale = 0.01f;
+		float scale = 0.0001f;
 		trans.Scale = { scale,scale,scale };
 
 		auto& fbx = registry.emplace<ECS::FbxComponent>(entity);
 		fbx.SetResource(&spFbxRes);
+
+		auto& anim = registry.emplace<ECS::AnimatorComponent>(entity);
+		anim.CurrentAnimationName = "AtkA";
+
 	}
 
 }
@@ -128,6 +132,7 @@ namespace Ecse::System
 		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
 		if (gdh->Initialize() == false) return false;
 
+		mTime.Initialize();
 
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		// ImGui
@@ -149,6 +154,8 @@ namespace Ecse::System
 		// Resource
 		if (Graphics::TextureManager::Create() == false) return false;
 		mpTextureManager = ServiceLocator::Get<Graphics::TextureManager>();
+
+
 
 		if (sRenderer.Initialize() == false) return false;
 		if (sFbxRenderer.Initialize() == false) return false;
@@ -183,7 +190,7 @@ namespace Ecse::System
 			return false;
 		}
 
-		this->NewFrame();
+		mTime.Update();
 
 		// 状態更新
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
@@ -192,8 +199,11 @@ namespace Ecse::System
 
 		Update();
 
+
 		//	描画
+		this->NewFrame();
 		Render();
+		this->EndFrame();
 
 
 		//	エンティティの削除
@@ -235,7 +245,7 @@ namespace Ecse::System
 	{
 		auto& reg = mpEntityManager->GetRegistry();
 		SYS::CameraSystem::Update(reg);
-		SYS::FbxAnimationSystem::Update(reg, 0.016);	//	今は固定値で更新しているが、実際は前フレームからの経過時間を入れるべき。後で作ります。
+		SYS::FbxAnimationSystem::Update(reg, mTime.GetDeltaTime());	//	今は固定値で更新しているが、実際は前フレームからの経過時間を入れるべき。後で作ります。
 	}
 
 	/// <summary>
@@ -252,7 +262,6 @@ namespace Ecse::System
 
 		sFbxRenderer.Render(reg, list, mpDX12->GetCurrentFrameIndex(), SYS::CameraSystem::GetMainCameraViewProj(reg));
 
-		this->EndFrame();
 
 	}
 

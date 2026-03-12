@@ -211,6 +211,7 @@
     <ClInclude Include="include\System\Window\Window.hpp" />
     <ClInclude Include="include\Graphics\Texture\Texture.hpp" />
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
+    <ClInclude Include="include\System\Time\Time.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\System\Animation\FbxAnimationSystem.cpp" />
@@ -295,6 +296,7 @@
     </ClCompile>
     <ClCompile Include="src\System\Window\Window.cpp" />
     <ClCompile Include="src\Graphics\Texture\Texture.cpp" />
+    <ClCompile Include="src\System\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shader\FbxShader.hlsli">

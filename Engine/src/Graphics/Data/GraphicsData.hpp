@@ -24,13 +24,17 @@ namespace Ecse::Graphics
 	/// <summary>
 	/// FBXの頂点構造体
 	/// </summary>
-	struct SkeletalMeshVertex {
-		DirectX::XMFLOAT3 Position;
-		DirectX::XMFLOAT3 Normal;
-		DirectX::XMFLOAT2 UV;
-		DirectX::XMFLOAT3 Tangent;
-		int32_t  BoneIndices[4];
-		float    BoneWeights[4];
-	};
+#pragma pack(push, 1)
+
+    struct SkeletalMeshVertex {
+        DirectX::XMFLOAT3 Position; // 12byte
+        DirectX::XMFLOAT3 Normal;   // 12byte
+        DirectX::XMFLOAT2 UV;       // 8byte
+        DirectX::XMFLOAT3 Tangent;  // 12byte
+        uint32_t BoneIndices[4];    // 16byte
+        float BoneWeights[4];       // 16byte
+    };
+
+#pragma pack(pop)
 
 }

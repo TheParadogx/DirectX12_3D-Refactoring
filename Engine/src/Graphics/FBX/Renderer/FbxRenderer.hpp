@@ -28,7 +28,7 @@ namespace Ecse::Graphics
 			DirectX::XMFLOAT4X4 world;
 		};
 
-		static constexpr uint32_t MAX_BONES = 128;
+		static constexpr uint32_t MAX_BONES = 256;
 		struct BoneConstant {
 			DirectX::XMFLOAT4X4 bones[MAX_BONES];
 		};

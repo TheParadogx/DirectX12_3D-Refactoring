@@ -2,6 +2,7 @@
 #include<vector>
 #include<string>
 #include<DirectXMath.h>
+#include<Utility/Export/Export.hpp>
 
 namespace Ecse::Graphics {
     class FbxResource;
@@ -12,7 +13,7 @@ namespace Ecse::ECS {
     /// <summary>
     /// FBXのインスタンス状態を管理するコンポーネント
     /// </summary>
-    struct FbxComponent {
+    struct ENGINE_API FbxComponent {
 
         FbxComponent() = default;
 
@@ -20,26 +21,6 @@ namespace Ecse::ECS {
         /// 使用するFBXリソースへの読み取り専用ポインタ
         /// </summary>
         const Graphics::FbxResource* Resource = nullptr;
-
-        /// <summary>
-        /// 現在再生中のアニメーション名（デバッグ・切り替え用）
-        /// </summary>
-        std::string CurrentAnimationName = "";
-
-        /// <summary>
-        /// 現在の再生時間（秒）
-        /// </summary>
-        float CurrentTime = 0.0f;
-
-        /// <summary>
-        /// 再生スピード（マイナスなら逆再生）
-        /// </summary>
-        float PlaySpeed = 1.0f;
-
-        /// <summary>
-        /// ループ設定
-        /// </summary>
-        bool IsLoop = true;
 
         /// <summary>
         /// 計算済みの最終スキニング行列配列
@@ -51,5 +32,24 @@ namespace Ecse::ECS {
         /// リソースをセットし、ボーン数に合わせて行列配列を初期化する
         /// </summary>
         void SetResource(const Graphics::FbxResource* res);
+    };
+
+    /// <summary>
+	/// /アニメーション用コンポーネント
+    /// </summary>
+    struct ENGINE_API AnimatorComponent {
+        std::string CurrentAnimationName = "";
+        std::string NextAnimationName = "";
+
+        float CurrentTime = 0.0f;
+        float PlaySpeed = 1.0f;
+        bool IsLoop = true;
+        bool IsPlaying = true;
+
+        float TransitionTime = 0.0f;
+        float TransitionDuration = 0.2f;
+
+        // 再生命令などのヘルパー関数
+        void Play(const std::string& name, bool loop = true, float speed = 1.0f);
     };
 }

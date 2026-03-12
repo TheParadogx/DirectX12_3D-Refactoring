@@ -54,39 +54,43 @@ namespace Ecse::Graphics
 
 	bool FbxPipeline::CreateRootSignature()
 	{
-		// Descriptor Range
+		// 1. Descriptor Range (t0用)
 		CD3DX12_DESCRIPTOR_RANGE1 rangeTex;
 		rangeTex.Init(
 			D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			1, 0, 0,
-			D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC // 描画中にSRVは不変
+			D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC
 		);
 
-
-		// Root Parameters 
+		// 2. Root Parameters
 		CD3DX12_ROOT_PARAMETER1 rootParams[4];
-		// CBVはRootDescriptorとして直接指定することで、アクセス速度を最大化してます
-		rootParams[0].InitAsConstantBufferView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX); // b0: Scene
-		rootParams[1].InitAsConstantBufferView(4, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX); // b1: Mesh
-		rootParams[2].InitAsConstantBufferView(5, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX); // b2: Bones
-		rootParams[3].InitAsDescriptorTable(1, &rangeTex, D3D12_SHADER_VISIBILITY_PIXEL); // t0: Texture
 
-		// Static Sampler
+		// b3: Scene/Transform
+		rootParams[0].InitAsConstantBufferView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+		// b4: Mesh/World
+		rootParams[1].InitAsConstantBufferView(4, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+		// b5: Bones
+		rootParams[2].InitAsConstantBufferView(5, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+		// t0: Texture (これを追加し忘れていました)
+		rootParams[3].InitAsDescriptorTable(1, &rangeTex, D3D12_SHADER_VISIBILITY_PIXEL);
+
+		// 3. Static Sampler (s0用)
 		CD3DX12_STATIC_SAMPLER_DESC sampler(
-			0,
+			0, // shaderRegister
 			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 			D3D12_TEXTURE_ADDRESS_MODE_WRAP
 		);
 
-		// Root Signature Flags
+		// 4. Flags
 		D3D12_ROOT_SIGNATURE_FLAGS flags =
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
+		// 5. Serialize
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSigDesc;
 		rootSigDesc.Init_1_1(_countof(rootParams), rootParams, 1, &sampler, flags);
 
@@ -94,7 +98,11 @@ namespace Ecse::Graphics
 		HRESULT hr = D3D12SerializeVersionedRootSignature(&rootSigDesc, &signatureBlob, &errorBlob);
 		if (FAILED(hr))
 		{
-			ECSE_LOG(System::eLogLevel::Error, "");
+			if (errorBlob) {
+				// エラー内容をログに出すとデバッグが捗ります
+				std::string err = (char*)errorBlob->GetBufferPointer();
+				ECSE_LOG(System::eLogLevel::Error, "RootSig Error: " + err);
+			}
 			return false;
 		}
 
@@ -115,19 +123,17 @@ namespace Ecse::Graphics
 	{
 
 		auto shaderManager = System::ServiceLocator::Get<ShaderManager>();
-		auto VS = shaderManager->GetShader("EngineAssets/Shader/VS_Fbx.hlsl", "VSMain", "vs_5_0");
-		auto PS = shaderManager->GetShader("EngineAssets/Shader/PS_Fbx.hlsl", "PSMain", "ps_5_0");
-
+		auto VS = shaderManager->GetShader("EngineAssets/Shader/VS_Fbx.hlsl", "VS_main", "vs_5_0");
+		auto PS = shaderManager->GetShader("EngineAssets/Shader/PS_Fbx.hlsl", "PS_main", "ps_5_0");
 		if (!VS || !PS) return false;
 
-		// Input Layout
 		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
-			{ "POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0,  0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,       0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TANGENT",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // 追加！
-			{ "BONE_INDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT,  0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // UINT32x4に変更
-			{ "BONE_WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // オフセット調整
+			{ "TANGENT",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "BONE_INDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT,  0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "BONE_WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		};
 
 		// PSO設定

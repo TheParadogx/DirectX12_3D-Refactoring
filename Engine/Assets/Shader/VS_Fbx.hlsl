@@ -1,32 +1,30 @@
-#include"FbxShader.hlsli"
+#include "FbxShader.hlsli"
 
-PSInput VSMain(VSInput input)
+VS_OUTPUT VS_main(VS_INPUT input)
 {
-    PSInput output;
+    VS_OUTPUT output;
 
-    // 位置のスキニング
-    matrix boneMatrix =
-        BoneTransforms[input.BoneIndices.x] * input.BoneWeights.x +
-        BoneTransforms[input.BoneIndices.y] * input.BoneWeights.y +
-        BoneTransforms[input.BoneIndices.z] * input.BoneWeights.z +
-        BoneTransforms[input.BoneIndices.w] * input.BoneWeights.w;
+    // --- スキニング計算 ---
+    float weightSum = input.Weights.x + input.Weights.y + input.Weights.z + input.Weights.w;
+    float4 w = input.Weights / (weightSum > 0.0f ? weightSum : 1.0f);
 
-    float4 localPos = float4(input.Position, 1.0f);
-    float4 skinnedPos = mul(localPos, boneMatrix);
-    float4 worldPos = mul(skinnedPos, World);
-    output.Position = mul(worldPos, ViewProjection);
+    float4x4 skinMatrix =
+        BoneTransforms[input.Indices.x] * w.x +
+        BoneTransforms[input.Indices.y] * w.y +
+        BoneTransforms[input.Indices.z] * w.z +
+        BoneTransforms[input.Indices.w] * w.w;
 
-    // 法線のスキニング (各ボーン変形後の合成方式)
-    // 各ボーンの回転・スケール成分のみを法線に適用し、重みでブレンドする
-    float3 skinnedNormal =
-        input.BoneWeights.x * mul((float3x3) BoneTransforms[input.BoneIndices.x], input.Normal) +
-        input.BoneWeights.y * mul((float3x3) BoneTransforms[input.BoneIndices.y], input.Normal) +
-        input.BoneWeights.z * mul((float3x3) BoneTransforms[input.BoneIndices.z], input.Normal) +
-        input.BoneWeights.w * mul((float3x3) BoneTransforms[input.BoneIndices.w], input.Normal);
+    // --- 座標変換 ---
+    float4 pos = mul(float4(input.Position, 1.0f), skinMatrix);
+    pos = mul(pos, World);
+    output.WorldPos = pos.xyz;
+    output.Position = mul(pos, ViewProj);
 
-    // ワールド空間への変換と正規化
-    // 頂点シェーダーで正規化しておくことで、ピクセルシェーダーの負荷を軽減
-    output.Normal = normalize(mul((float3x3) World, skinnedNormal));
+    // --- 法線変換 (逆行列なし) ---
+    // スケールが uniform の場合はこれで OK
+    float3 normal = mul(input.Normal, (float3x3) skinMatrix);
+    normal = mul(normal, (float3x3) World);
+    output.Normal = normalize(normal);
 
     output.UV = input.UV;
 

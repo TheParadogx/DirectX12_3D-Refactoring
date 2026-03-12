@@ -2,6 +2,7 @@
 
 #include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceProvider.hpp>
+#include<System/Time/Time.hpp>
 
 namespace Ecse::Graphics
 {
@@ -95,6 +96,11 @@ namespace Ecse::System
 		/// テクスチャリソース管理
 		/// </summary>
 		Graphics::TextureManager* mpTextureManager;
+
+		/// <summary>
+		/// 時間管理
+		/// </summary>
+		System::Time mTime;
 
 		/// <summary>
 		/// 初期化を複数回通さないためのフラグ
