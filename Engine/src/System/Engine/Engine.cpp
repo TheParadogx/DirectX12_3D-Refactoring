@@ -21,6 +21,8 @@
 #include<ECS/Component/Camera/CameraComponent.hpp>
 #include<System/Camera/CameraSystem.hpp>
 
+#include<System/FpsDisplay/FpsDisplay.hpp>
+
 #include<Graphics/FBX/Resource/FbxResource.hpp>
 #include<ECS/Component/FBX/FbxComponent.hpp>
 #include<Graphics/FBX/Renderer/FbxRenderer.hpp>
@@ -140,6 +142,7 @@ namespace Ecse::System
 		if (Debug::ImGuiManager::Create() == false) return false;
 		mpImGui = ServiceLocator::Get<ImGuiManager>();
 		if (mpImGui->Initialize() == false) return false;
+		System::FpsDisplay::StartMonitoring();
 #endif
 
 		//	EntityManager
@@ -156,7 +159,7 @@ namespace Ecse::System
 		if (Graphics::TextureManager::Create() == false) return false;
 		mpTextureManager = ServiceLocator::Get<Graphics::TextureManager>();
 
-
+		// display
 
 		if (sRenderer.Initialize() == false) return false;
 		if (sFbxRenderer.Initialize() == false) return false;
@@ -192,11 +195,6 @@ namespace Ecse::System
 		}
 
 		mTime.Update();
-
-		// 状態更新
-#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
-		mpImGui->Update();
-#endif
 
 		Update();
 
@@ -254,6 +252,11 @@ namespace Ecse::System
 	/// </summary>
 	void Engine::Render()
 	{
+#if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
+		mpImGui->Update();
+#endif
+
+
 		auto list = mpDX12->GetCommandList();
 		auto& reg = mpEntityManager->GetRegistry();
 

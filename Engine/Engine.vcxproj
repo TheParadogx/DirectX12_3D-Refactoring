@@ -156,6 +156,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\System\Input\Mouse\Mouse.h" />
+    <ClInclude Include="src\System\FpsDisplay\FpsDisplay.hpp" />
+    <ClInclude Include="src\System\Input\IInputSubscriber.hpp" />
+    <ClInclude Include="src\System\Input\Keyboard\Keyboard.hpp" />
     <ClInclude Include="src\System\Animation\FbxAnimationSystem.hpp" />
     <ClInclude Include="src\Graphics\DynamicBuffer\DynamicBuffer.hpp" />
     <ClInclude Include="src\Graphics\FBX\Renderer\FbxRenderer.hpp" />
@@ -212,8 +216,13 @@
     <ClInclude Include="include\Graphics\Texture\Texture.hpp" />
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
     <ClInclude Include="include\System\Time\Time.hpp" />
+    <ClInclude Include="src\System\Input\Keyboard\KeyCode.hpp" />
+    <ClInclude Include="src\System\Input\Mouse\MouseButton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Input\Mouse\Mouse.cpp" />
+    <ClCompile Include="src\System\FpsDisplay\FpsDisplay.cpp" />
+    <ClCompile Include="src\System\Input\Keyboard\Keyboard.cpp" />
     <ClCompile Include="src\System\Animation\FbxAnimationSystem.cpp" />
     <ClCompile Include="src\Graphics\DynamicBuffer\DynamicBuffer.cpp" />
     <ClCompile Include="src\Graphics\FBX\Renderer\FbxRenderer.cpp" />
