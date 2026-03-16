@@ -85,6 +85,7 @@
 #include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceLocator.hpp>
 #include<System/Log/Logger.hpp>
+#include<Debug/ImGui/ImGuiManager.hpp>
 
 // alias
 #include<Utility/Using/NamespaceAlias.hpp>

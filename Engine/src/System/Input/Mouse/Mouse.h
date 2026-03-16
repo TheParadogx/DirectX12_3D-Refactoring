@@ -8,8 +8,20 @@ namespace Ecse::System
 {
 	class Mouse : public IInputSubscriber
 	{
+		/// <summary>
+		/// Windowsのマウスメッセージから、eMouseButtonへの変換
+		/// </summary>
 		eMouseButton ToMouseButton(UINT message, WPARAM wParam) const;
+
+		/// <summary>
+		/// 入力状態の更新
+		/// </summary>
 		void SetInputState(eMouseButton button, bool isDown);
+
+		/// <summary>
+		/// 入力範囲の判定
+		/// </summary>
+		/// <returns>true:範囲内</returns>
 		bool IsValid(eMouseButton button) const;
 	public:
 		Mouse();
@@ -29,23 +41,23 @@ namespace Ecse::System
 		/// <summary>
 		/// 押した瞬間
 		/// </summary>
-		/// <param name="keyCode">キーコード</param>
+		/// <param name="button">ボタンコード</param>
 		/// <returns></returns>
-		bool IsPressed(eMouseButton keyCode)const;
+		bool IsPressed(eMouseButton button)const;
 
 		/// <summary>
 		/// 押している間
 		/// </summary>
-		/// <param name="keyCode">キーコード</param>
+		/// <param name="keyCode">ボタンコード</param>
 		/// <returns></returns>
-		bool IsHeld(eMouseButton keyCode)const;
+		bool IsHeld(eMouseButton button)const;
 
 		/// <summary>
 		/// 離した瞬間
 		/// </summary>
-		/// <param name="keyCode">キーコード</param>
+		/// <param name="keyCode">ボタンコード</param>
 		/// <returns></returns>
-		bool IsReleased(eMouseButton keyCode)const;
+		bool IsReleased(eMouseButton button)const;
 
 		/// <summary>
 		/// ImGuiManagerにデバッグUIを登録する
@@ -57,9 +69,9 @@ namespace Ecse::System
 		/// <summary>
 		/// 入力状態
 		/// </summary>
-		using ButtonState = std::array<bool, static_cast<size_t>(eMouseButton::Count)>;
-		ButtonState CurrButton;
-		ButtonState PrevButton;
+		using ButtonState = std::array<bool, static_cast<int>(eMouseButton::Count)>;
+		ButtonState mCurrButton;
+		ButtonState mPrevButton;
 
 		/// <summary>
 		/// 今の座標
@@ -81,7 +93,7 @@ namespace Ecse::System
 		/// <summary>
 		/// 蓄積されたホイールの回転量
 		/// </summary>
-		float mInternalWheelAccumulator;
+		float mWheelAccumulator;
 	};
 }
 

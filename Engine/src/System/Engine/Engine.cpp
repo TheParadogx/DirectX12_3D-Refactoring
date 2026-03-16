@@ -10,6 +10,8 @@
 #include<Debug/ImGui/ImGuiManager.hpp>
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<ECS/Entity/EntityManager.hpp>
+#include<System/Input/Manager/InputManager.hpp>
+
 #include<Graphics/Shader/ShaderManager.hpp>
 #include<Graphics/Texture/Manager/TextureManager.hpp>
 #include<System/Animation/FbxAnimationSystem.hpp>
@@ -42,14 +44,14 @@ void CreateTest()
 
 	// スプライト
 	{
-		//auto entity = manager->CreateEntity();
+		auto entity = manager->CreateEntity();
 
-		//// 座標
-		//auto& trans = registry.emplace<ECS::Transform2D>(entity);
-		////trans.Position = { 100,100 };
+		// 座標
+		auto& trans = registry.emplace<ECS::Transform2D>(entity);
+		//trans.Position = { 100,100 };
 
-		//auto& sprite = registry.emplace<ECS::Sprite>(entity, spTex);
-		//sprite.Size = { 1920,1080 };
+		auto& sprite = registry.emplace<ECS::Sprite>(entity, spTex);
+		sprite.Size = { 1920,1080 };
 	}
 
 	// かめら　
@@ -68,7 +70,7 @@ void CreateTest()
 
 		auto entity = manager->CreateEntity();
 		auto& trans = registry.emplace<ECS::Transform3D>(entity);
-		trans.Position = { 0,-1,5 };
+		trans.Position = { 0,-1,3 };
 		DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-180.0f), 0);
 		DirectX::XMStoreFloat4(&trans.Rotation, q);
 		float scale = 0.01f;
@@ -135,8 +137,6 @@ namespace Ecse::System
 		auto gdh = ServiceLocator::Get<GDescriptorHeapManager>();
 		if (gdh->Initialize() == false) return false;
 
-		mTime.Initialize();
-
 #if defined(_DEBUG) || ECSE_DEV_TOOL_ENABLED
 		// ImGui
 		if (Debug::ImGuiManager::Create() == false) return false;
@@ -144,6 +144,14 @@ namespace Ecse::System
 		if (mpImGui->Initialize() == false) return false;
 		System::FpsDisplay::StartMonitoring();
 #endif
+
+		// input
+		if (InputManager::Create() == false) return false;
+		mInputManager = ServiceLocator::Get<InputManager>();
+
+		// time
+		mTime.Initialize();
+
 
 		//	EntityManager
 		if (ECS::EntityManager::Create() == false) return false;
@@ -207,6 +215,9 @@ namespace Ecse::System
 
 		//	エンティティの削除
 		mpEntityManager->Update();
+
+		// 入力状態の保存
+		mInputManager->Update();
 
 		return true;
 	}

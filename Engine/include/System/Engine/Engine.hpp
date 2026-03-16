@@ -24,6 +24,7 @@ namespace Ecse::System
 {
 	class Window;
 	struct EngineContext;
+	class InputManager;
 
 	/// <summary>
 	/// エンジン全体の管理クラス
@@ -96,6 +97,11 @@ namespace Ecse::System
 		/// テクスチャリソース管理
 		/// </summary>
 		Graphics::TextureManager* mpTextureManager;
+
+		/// <summary>
+		/// 入力管理
+		/// </summary>
+		InputManager* mInputManager;
 
 		/// <summary>
 		/// 時間管理
