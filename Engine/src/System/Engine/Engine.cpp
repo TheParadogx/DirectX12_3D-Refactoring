@@ -256,13 +256,6 @@ namespace Ecse::System
 		auto& reg = mpEntityManager->GetRegistry();
 		SYS::CameraSystem::Update(reg);
 		SYS::FbxAnimationSystem::Update(reg, mTime.GetDeltaTime());
-
-		if (mInputManager->GetGamepad()->GetPad().IsPressed(SYS::ePadButton::DPadDown) || 
-			mInputManager->GetGamepad()->GetPad().IsHeld(SYS::ePadButton::L2) || 
-			mInputManager->GetGamepad()->GetPad().IsReleased(SYS::ePadButton::R3))
-		{
-			std::cout << "Pressed" << std::endl;
-		}
 	}
 
 	/// <summary>
