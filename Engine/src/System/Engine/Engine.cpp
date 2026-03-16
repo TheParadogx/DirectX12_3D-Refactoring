@@ -255,7 +255,14 @@ namespace Ecse::System
 	{
 		auto& reg = mpEntityManager->GetRegistry();
 		SYS::CameraSystem::Update(reg);
-		SYS::FbxAnimationSystem::Update(reg, mTime.GetDeltaTime());	//	今は固定値で更新しているが、実際は前フレームからの経過時間を入れるべき。後で作ります。
+		SYS::FbxAnimationSystem::Update(reg, mTime.GetDeltaTime());
+
+		if (mInputManager->GetGamepad()->GetPad().IsPressed(SYS::ePadButton::DPadDown) || 
+			mInputManager->GetGamepad()->GetPad().IsHeld(SYS::ePadButton::L2) || 
+			mInputManager->GetGamepad()->GetPad().IsReleased(SYS::ePadButton::R3))
+		{
+			std::cout << "Pressed" << std::endl;
+		}
 	}
 
 	/// <summary>

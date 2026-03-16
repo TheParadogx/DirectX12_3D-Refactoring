@@ -32,6 +32,9 @@ Ecse::System::Gamepad::Gamepad(const WgiGamepad& Gamepad, const float RightStick
 	,mRightStickDeadZone(RightStickDeadZone)
 	,mLeftTrigger(0.0f)
 	,mRightTrigger(0.0f)
+	, mTriggerDeadZone(TriggerDeadZone)
+    , mCurrButtons(0)
+	, mPrevButtons(0)
 {
 	mCurrTrigger.fill(false);
 	mPrevTrigger.fill(false);
