@@ -1,9 +1,10 @@
 ﻿#pragma once
 
-#include<Utility/Types/EcseTypes.hpp>
+#include<d3d12.h>
 #include<memory>
 #include<vector>
 #include<entt/entt.hpp>
+#include<Graphics/Data/GraphicsData.hpp>
 
 namespace Ecse::ECS
 {
@@ -17,7 +18,6 @@ namespace Ecse::Graphics
 	class VertexBuffer;
 	class StructuredBuffer;
 	class SpritePipeline;
-	struct SpriteShaderData;
 
 	/// <summary>
 	/// スプライトの描画管理
@@ -34,7 +34,7 @@ namespace Ecse::Graphics
 
 	public:
 		SpriteRenderer();
-		virtual ~SpriteRenderer() = default;
+		virtual ~SpriteRenderer();
 
 
 		/// <summary>

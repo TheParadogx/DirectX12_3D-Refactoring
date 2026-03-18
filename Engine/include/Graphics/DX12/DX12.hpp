@@ -7,6 +7,7 @@
 #include<DirectX12MA/D3D12MemAlloc.h>
 
 #include<array>
+#include<vector>
 
 namespace Ecse::Graphics
 {
@@ -42,7 +43,7 @@ namespace Ecse::Graphics
 		/// <summary>
 		/// 描画開始
 		/// </summary>
-		void BegineRendering();
+		void BeginRendering();
 
 		/// <summary>
 		/// 画面のフリップ
@@ -100,6 +101,14 @@ namespace Ecse::Graphics
 		/// </summary>
 		/// <returns></returns>
 		UINT GetCurrentFrameIndex()const;
+
+		/// <summary>
+		/// GPUにテクスチャリソース転送する。
+		/// </summary>
+		/// <param name="pResource"></param>
+		/// <param name="subresources"></param>
+		/// <returns></returns>
+		bool UploadTextureData(ID3D12Resource* pResource, const std::vector<D3D12_SUBRESOURCE_DATA>& subresources);
 	private:
 		/// <summary>
 		/// デバッグレイヤーの起動
@@ -144,7 +153,11 @@ namespace Ecse::Graphics
 		/// </summary>
 		/// <returns>true:成功</returns>
 		bool InitializeFence();
-
+		/// <summary>
+		/// アップロード用のリスト、アロケーター初期化
+		/// </summary>
+		/// <returns></returns>
+		bool InitializeUploadContext();
 	public:
 
 		/// <summary>
@@ -240,6 +253,30 @@ namespace Ecse::Graphics
 		/// 今のフレームのインデックス
 		/// </summary>
 		UINT mFrameIndex;
+
+
+		/// <summary>
+		/// アップロード用アロケーター
+		/// </summary>
+		CmdAlloc mUploadAllocator;
+		/// <summary>
+		/// アップロード用コマンドリスト
+		/// </summary>
+		CmdList  mUploadCmdList;
+		/// <summary>
+		/// アップロード用フェンス
+		/// </summary>
+		Fence    mUploadFence;
+		/// <summary>
+		/// アップロード用フェンス値
+		/// </summary>
+		UINT64   mUploadFenceValue;
+		/// <summary>
+		/// アップロード用のイベントハンドル
+		/// </summary>
+		HANDLE   mUploadEvent;
+
+
 
 		/// <summary>
 		/// 背景色

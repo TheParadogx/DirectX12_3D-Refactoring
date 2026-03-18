@@ -1,6 +1,7 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include<System/Window/Window.hpp>
 #include<System/Window/WindowSetting.hpp>
+#include<System/Input/Manager/InputManager.hpp>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -16,6 +17,13 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
         return true;
     }
     // TODO:Input
+	if (auto inputManager = Ecse::System::ServiceLocator::Get<Ecse::System::InputManager>())
+    {
+        if (inputManager->ProcessMessage(hWnd, msg, wParam, lParam))
+        {
+            return true;
+        }
+    }
 
     switch (msg)
     {

@@ -1,4 +1,4 @@
-﻿#include "SpriteShader.hlsli"
+#include "SpriteShader.hlsli"
 
 VStoPS main(VertexInput input, uint instID : SV_InstanceID)
 {

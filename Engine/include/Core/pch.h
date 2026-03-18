@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef PCH_H
 #define PCH_H
@@ -27,7 +27,7 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
-
+#pragma comment(lib, "dxguid.lib")
 
 // STL
 #include<utility>
@@ -85,5 +85,9 @@
 #include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceLocator.hpp>
 #include<System/Log/Logger.hpp>
+#include<Debug/ImGui/ImGuiManager.hpp>
+
+// alias
+#include<Utility/Using/NamespaceAlias.hpp>
 
 #endif //PCH_H

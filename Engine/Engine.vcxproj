@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -43,13 +44,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -156,17 +157,35 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\System\Input\Manager\InputManager.hpp" />
+    <ClInclude Include="src\System\Input\Gamepad\GamepadManager.hpp" />
+    <ClInclude Include="src\System\Input\Gamepad\Gamepad.hpp" />
+    <ClInclude Include="src\System\Input\Gamepad\PadButton.hpp" />
+    <ClInclude Include="src\System\Input\Mouse\Mouse.h" />
+    <ClInclude Include="src\System\FpsDisplay\FpsDisplay.hpp" />
+    <ClInclude Include="src\System\Input\IInputSubscriber.hpp" />
+    <ClInclude Include="src\System\Input\Keyboard\Keyboard.hpp" />
+    <ClInclude Include="src\System\Animation\FbxAnimationSystem.hpp" />
+    <ClInclude Include="src\Graphics\DynamicBuffer\DynamicBuffer.hpp" />
+    <ClInclude Include="src\Graphics\FBX\Renderer\FbxRenderer.hpp" />
+    <ClInclude Include="src\Graphics\FBX\Pipeline\FbxPipeline.hpp" />
+    <ClInclude Include="include\System\Camera\CameraSystem.hpp" />
+    <ClInclude Include="include\ECS\Component\Camera\CameraComponent.hpp" />
+    <ClInclude Include="include\ECS\Component\FBX\FbxComponent.hpp" />
     <ClInclude Include="include\ECS\Component\Sprite\SpriteComponent.hpp" />
     <ClInclude Include="include\ECS\Component\Transform\TransformComponent.hpp" />
     <ClInclude Include="include\Graphics\ConstantBuffer\ConstantBuffer.hpp" />
     <ClInclude Include="include\ECS\Entity\EntityManager.hpp" />
     <ClInclude Include="include\Debug\ImGui\ImGuiManager.hpp" />
     <ClInclude Include="include\ECS\Tag\SceneTags.hpp" />
+    <ClInclude Include="include\Graphics\FBX\Resource\FbxResource.hpp" />
     <ClInclude Include="include\Graphics\IndexBuffer\IndexBuffer.hpp" />
     <ClInclude Include="include\Graphics\Shader\ShaderManager.hpp" />
     <ClInclude Include="include\Graphics\Renderer\Renderer.hpp" />
     <ClInclude Include="include\Graphics\StructuredBuffer\StructuredBuffer.hpp" />
+    <ClInclude Include="include\Graphics\Texture\Manager\TextureManager.hpp" />
     <ClInclude Include="include\Graphics\VertexBuffer\VertexBuffer.hpp" />
+    <ClInclude Include="include\Utility\Using\NamespaceAlias.hpp" />
     <ClInclude Include="src\Graphics\Sprite\Renderer\SpriteRenderer.hpp" />
     <ClInclude Include="src\Graphics\Data\GraphicsData.hpp" />
     <ClInclude Include="include\Graphics\GraphicsDescriptorHeap\GDescriptorHeap.hpp" />
@@ -201,8 +220,25 @@
     <ClInclude Include="include\System\Window\Window.hpp" />
     <ClInclude Include="include\Graphics\Texture\Texture.hpp" />
     <ClInclude Include="src\Graphics\Sprite\Pipeline\SpritePipeline.hpp" />
+    <ClInclude Include="include\System\Time\Time.hpp" />
+    <ClInclude Include="src\System\Input\Keyboard\KeyCode.hpp" />
+    <ClInclude Include="src\System\Input\Mouse\MouseButton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Input\Manager\InputManager.cpp" />
+    <ClCompile Include="src\System\Input\Gamepad\GamepadManager.cpp" />
+    <ClCompile Include="src\System\Input\Gamepad\Gamepad.cpp" />
+    <ClCompile Include="src\System\Input\Mouse\Mouse.cpp" />
+    <ClCompile Include="src\System\FpsDisplay\FpsDisplay.cpp" />
+    <ClCompile Include="src\System\Input\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="src\System\Animation\FbxAnimationSystem.cpp" />
+    <ClCompile Include="src\Graphics\DynamicBuffer\DynamicBuffer.cpp" />
+    <ClCompile Include="src\Graphics\FBX\Renderer\FbxRenderer.cpp" />
+    <ClCompile Include="src\Graphics\FBX\Pipeline\FbxPipeline.cpp" />
+    <ClCompile Include="src\System\Camera\CameraSystem.cpp" />
+    <ClCompile Include="src\ECS\Component\FBX\FbxComponent.cpp" />
+    <ClCompile Include="src\Graphics\Texture\TextureManager.cpp" />
+    <ClCompile Include="src\Graphics\FBX\Resource\FbxResource.cpp" />
     <ClCompile Include="src\Graphics\StructuredBuffer\StructuredBuffer.cpp" />
     <ClCompile Include="src\ECS\Component\Sprite\SpriteComponent.cpp" />
     <ClCompile Include="src\Graphics\Sprite\Renderer\SpriteRenderer.cpp" />
@@ -277,8 +313,13 @@
     </ClCompile>
     <ClCompile Include="src\System\Window\Window.cpp" />
     <ClCompile Include="src\Graphics\Texture\Texture.cpp" />
+    <ClCompile Include="src\System\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shader\FbxShader.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="Assets\Shader\SpriteShader.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -292,6 +333,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Assets\Shader\PS_Fbx.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Assets\Shader\PS_Texture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -305,6 +356,16 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Assets\Shader\VS_Fbx.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Assets\Shader\VS_Texture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -324,6 +385,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -331,5 +393,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.618.5\build\native\Microsoft.Direct3D.D3D12.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
   </Target>
 </Project>

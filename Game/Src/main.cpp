@@ -1,4 +1,4 @@
-﻿#include<Windows.h>
+#include<Windows.h>
 
 #if _DEBUG
 #define _CRTDBG_MAP_ALLOC 
@@ -24,6 +24,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		return -1;
 	}
 	System::EngineContext context;
+	context.WinSetting.IsFullScreen = false;
 	if (engine->Initialize(context) == false)
 	{
 		return -2;

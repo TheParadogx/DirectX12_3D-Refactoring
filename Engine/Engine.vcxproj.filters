@@ -150,6 +150,69 @@
     <ClInclude Include="include\Graphics\StructuredBuffer\StructuredBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\FBX\Resource\FbxResource.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Texture\Manager\TextureManager.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS\Component\FBX\FbxComponent.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS\Component\Camera\CameraComponent.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\System\Camera\CameraSystem.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utility\Using\NamespaceAlias.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\FBX\Pipeline\FbxPipeline.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\FBX\Renderer\FbxRenderer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DynamicBuffer\DynamicBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Animation\FbxAnimationSystem.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\System\Time\Time.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Keyboard\Keyboard.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\IInputSubscriber.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Keyboard\KeyCode.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\FpsDisplay\FpsDisplay.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Mouse\MouseButton.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Mouse\Mouse.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Gamepad\Gamepad.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Gamepad\PadButton.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Gamepad\GamepadManager.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input\Manager\InputManager.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
@@ -239,14 +302,62 @@
     <ClCompile Include="src\Graphics\StructuredBuffer\StructuredBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\FBX\Resource\FbxResource.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Texture\TextureManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ECS\Component\FBX\FbxComponent.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Camera\CameraSystem.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\FBX\Pipeline\FbxPipeline.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\FBX\Renderer\FbxRenderer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DynamicBuffer\DynamicBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Animation\FbxAnimationSystem.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Time\Time.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input\Keyboard\Keyboard.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\FpsDisplay\FpsDisplay.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input\Mouse\Mouse.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input\Gamepad\Gamepad.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input\Gamepad\GamepadManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input\Manager\InputManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include="packages.config" />
     <None Include="Assets\Shader\SpriteShader.hlsli" />
+    <None Include="Assets\Shader\FbxShader.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\PS_Texture.hlsl" />
     <FxCompile Include="Assets\Shader\VS_Texture.hlsl" />
+    <FxCompile Include="Assets\Shader\VS_Fbx.hlsl" />
+    <FxCompile Include="Assets\Shader\PS_Fbx.hlsl" />
   </ItemGroup>
 </Project>

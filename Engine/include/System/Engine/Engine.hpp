@@ -2,10 +2,12 @@
 
 #include<Utility/Export/Export.hpp>
 #include<System/Service/ServiceProvider.hpp>
+#include<System/Time/Time.hpp>
 
 namespace Ecse::Graphics
 {
 	class DX12;
+	class TextureManager;
 }
 
 namespace Ecse::Debug
@@ -22,6 +24,7 @@ namespace Ecse::System
 {
 	class Window;
 	struct EngineContext;
+	class InputManager;
 
 	/// <summary>
 	/// エンジン全体の管理クラス
@@ -59,10 +62,19 @@ namespace Ecse::System
 		void NewFrame();
 
 		/// <summary>
+		/// 状態更新
+		/// </summary>
+		void Update();
+
+		/// <summary>
+		/// 描画処理
+		/// </summary>
+		void Render();
+
+		/// <summary>
 		/// フレームの終了処理
 		/// </summary>
 		void EndFrame();
-
 	private:
 		/// <summary>
 		/// ウィンドウ
@@ -80,6 +92,22 @@ namespace Ecse::System
 		/// ECSの管理
 		/// </summary>
 		ECS::EntityManager* mpEntityManager;
+
+		/// <summary>
+		/// テクスチャリソース管理
+		/// </summary>
+		Graphics::TextureManager* mpTextureManager;
+
+		/// <summary>
+		/// 入力管理
+		/// </summary>
+		InputManager* mInputManager;
+
+		/// <summary>
+		/// 時間管理
+		/// </summary>
+		System::Time mTime;
+
 		/// <summary>
 		/// 初期化を複数回通さないためのフラグ
 		/// </summary>

@@ -67,6 +67,8 @@ namespace Ecse::Graphics
 		/// <returns></returns>
 		size_t GetSize() const;
 
+		const D3D12_INDEX_BUFFER_VIEW& GetView() { return mBufferView; }
+
 	private:
 		/// <summary>
 		/// ビューをキャッシュ

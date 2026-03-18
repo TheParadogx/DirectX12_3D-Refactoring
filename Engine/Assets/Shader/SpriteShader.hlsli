@@ -1,4 +1,4 @@
-﻿
+
 // 頂点シェーダーへの入力
 struct VertexInput
 {
@@ -25,8 +25,8 @@ struct SpriteInstanceData
 };
 
 // 
-StructuredBuffer<SpriteInstanceData> gInstanceData : register(t1);
+StructuredBuffer<SpriteInstanceData> gInstanceData : register(t0);
 
-// register(t0) : DescriptorTable
-Texture2D MainTexture : register(t0);
+// テクスチャを t1 に
+Texture2D MainTexture : register(t1);
 SamplerState Sampler : register(s0);

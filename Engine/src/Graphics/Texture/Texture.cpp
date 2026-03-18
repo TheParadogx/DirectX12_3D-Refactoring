@@ -122,21 +122,6 @@ namespace Ecse::Graphics
 		const UINT numSubresources = static_cast<UINT>(metaData.mipLevels * metaData.arraySize);
 		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(mResource.Get(), 0, numSubresources);
 
-		D3D12MA::ALLOCATION_DESC uploadAllocDesc = {};
-		uploadAllocDesc.CustomPool = dx12->GetMAUploadPool();
-
-		Resource uploadRes;
-		MAAllocation uploadAlloc;
-		auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-
-		// アップロード用の中間バッファの作成
-		hr = allocator->CreateResource(&uploadAllocDesc, &uploadBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr, &uploadAlloc, IID_PPV_ARGS(&uploadRes));
-		if (FAILED(hr))
-		{
-			ECSE_LOG(System::eLogLevel::Error, "Failed Create for UploadBufferResource.");
-			return false;
-		}
 
 		// データ転送の準備（全サブリソース分）
 		std::vector<D3D12_SUBRESOURCE_DATA> subresources(numSubresources);
@@ -147,40 +132,39 @@ namespace Ecse::Graphics
 			subresources[i].SlicePitch = static_cast<LONG_PTR>(img->slicePitch);
 		}
 
-		// GPUへのコピーコマンド発行
-		UpdateSubresources(cmdList, mResource.Get(), uploadRes.Get(), 0, 0, numSubresources, subresources.data());
-	
-		//	リソースバリアで読み取り可能状態に
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(mResource.Get(),
-			D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		cmdList->ResourceBarrier(1, &barrier);
+		if (dx12->UploadTextureData(mResource.Get(), subresources) == false) 
+		{
+			ECSE_LOG(System::eLogLevel::Error, "Failed to upload texture data to GPU.");
+			return false;
+		}
 
-		// SRVの作成
+		// SRV作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = metaData.format;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
-		// キューブマップ処理
+		// キューブマップかどうか
 		if (metaData.IsCubemap()) {
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 			srvDesc.TextureCube.MipLevels = static_cast<UINT>(metaData.mipLevels);
 		}
-		// じゃないときは普通の画像として
 		else {
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 			srvDesc.Texture2D.MipLevels = static_cast<UINT>(metaData.mipLevels);
 		}
 
-		// GraphicsDescriptorHeapManagerから1枠貸し出して貰う
+		// デスクリプタヒープから1枠確保してSRVを書き込む
 		auto gdh = System::ServiceLocator::Get<GDescriptorHeapManager>();
 		mHeapInfo = gdh->Issuance(1);
 		device->CreateShaderResourceView(mResource.Get(), &srvDesc, gdh->GetCpuHandle(mHeapInfo));
 
-		// サイズ
+		// サイズの取得
 		mWidth = static_cast<float>(metaData.width);
 		mHeight = static_cast<float>(metaData.height);
 
+		ECSE_LOG(System::eLogLevel::Log, "Successfully loaded texture: " + FilePath.string());
 		return true;
+
 	}
 
 	void Texture::Release()
