@@ -213,6 +213,12 @@
     <ClInclude Include="src\System\Input\Manager\InputManager.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="include\Utility\Singleton\Singleton.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Assetpath\AssetPathManager.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
@@ -347,12 +353,16 @@
     <ClCompile Include="src\System\Input\Manager\InputManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\Assetpath\AssetPathManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include="packages.config" />
     <None Include="Assets\Shader\SpriteShader.hlsli" />
     <None Include="Assets\Shader\FbxShader.hlsli" />
+    <None Include="doc\Singleton.md" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\PS_Texture.hlsl" />

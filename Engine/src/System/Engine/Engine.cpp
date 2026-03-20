@@ -11,6 +11,7 @@
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<ECS/Entity/EntityManager.hpp>
 #include<System/Input/Manager/InputManager.hpp>
+#include<System/Assetpath/AssetPathManager.hpp>
 
 #include<Graphics/Shader/ShaderManager.hpp>
 #include<Graphics/Texture/Manager/TextureManager.hpp>
@@ -152,6 +153,10 @@ namespace Ecse::System
 		// time
 		mTime.Initialize();
 
+		// Assets
+		auto& pathMgr = AssetPathManager::Get();
+		pathMgr.Initialize();
+		std::filesystem::path exeDir = std::filesystem::current_path(); // または GetExeDir()
 
 		//	EntityManager
 		if (ECS::EntityManager::Create() == false) return false;
