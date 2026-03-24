@@ -47,8 +47,9 @@ namespace Ecse::Graphics
     bool FbxPipeline::CreatePipeline()
     {
         auto shaderManager = System::ServiceLocator::Get<ShaderManager>();
-        auto VS = shaderManager->GetShader("EngineAssets/Shader/VS_Fbx.hlsl", "VS_main", "vs_5_0");
-        auto PS = shaderManager->GetShader("EngineAssets/Shader/PS_Fbx.hlsl", "PS_main", "ps_5_0");
+        auto VS = shaderManager->GetShader(ASSET_PATH("/Engine/Shader/VS_Fbx.hlsl").string(), "VS_main", "vs_5_0");
+        auto PS = shaderManager->GetShader(ASSET_PATH("/Engine/Shader/PS_Fbx.hlsl").string(), "PS_main", "ps_5_0");
+
         if (!VS || !PS) return false;
 
         // 前のプロジェクトの形式に合わせたインプットレイアウト

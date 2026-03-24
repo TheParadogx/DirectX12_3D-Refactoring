@@ -157,6 +157,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\System\Scene\IScene.hpp" />
+    <ClInclude Include="include\System\Scene\ITransition.hpp" />
+    <ClInclude Include="src\System\Scene\SceneManager.hpp" />
+    <ClInclude Include="src\System\Assetpath\AssetPathManager.hpp" />
+    <ClInclude Include="include\Utility\Singleton\Singleton.hpp" />
     <ClInclude Include="src\System\Input\Manager\InputManager.hpp" />
     <ClInclude Include="src\System\Input\Gamepad\GamepadManager.hpp" />
     <ClInclude Include="src\System\Input\Gamepad\Gamepad.hpp" />
@@ -225,6 +230,8 @@
     <ClInclude Include="src\System\Input\Mouse\MouseButton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Scene\SceneManager.cpp" />
+    <ClCompile Include="src\System\Assetpath\AssetPathManager.cpp" />
     <ClCompile Include="src\System\Input\Manager\InputManager.cpp" />
     <ClCompile Include="src\System\Input\Gamepad\GamepadManager.cpp" />
     <ClCompile Include="src\System\Input\Gamepad\Gamepad.cpp" />
@@ -325,6 +332,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="doc\Singleton.md">
+      <SubType>
+      </SubType>
     </None>
     <None Include="packages.config" />
     <None Include="README.md">

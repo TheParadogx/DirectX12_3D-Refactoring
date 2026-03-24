@@ -145,8 +145,8 @@ namespace Ecse::Graphics
 	bool SpritePipeline::CreatePipeline()
 	{
 		auto shaderManager = System::ServiceLocator::Get<ShaderManager>();
-		auto VS = shaderManager->GetShader("EngineAssets/Shader/VS_Texture.hlsl", "main", "vs_5_0");
-		auto PS = shaderManager->GetShader("EngineAssets/Shader/PS_Texture.hlsl", "main", "ps_5_0");
+		auto VS = shaderManager->GetShader(ASSET_PATH("/Engine/Shader/VS_Texture.hlsl").string(), "main", "vs_5_0");
+		auto PS = shaderManager->GetShader(ASSET_PATH("/Engine/Shader/PS_Texture.hlsl").string(), "main", "ps_5_0");
 
 		if (VS == nullptr || PS == nullptr)
 		{

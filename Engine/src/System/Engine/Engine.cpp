@@ -11,10 +11,12 @@
 #include<Graphics/GraphicsDescriptorHeap/GDescriptorHeapManager.hpp>
 #include<ECS/Entity/EntityManager.hpp>
 #include<System/Input/Manager/InputManager.hpp>
+#include<System/Assetpath/AssetPathManager.hpp>
 
 #include<Graphics/Shader/ShaderManager.hpp>
 #include<Graphics/Texture/Manager/TextureManager.hpp>
 #include<System/Animation/FbxAnimationSystem.hpp>
+#include<System/Scene/SceneManager.hpp>
 
 #include<Graphics/Sprite/Renderer/SpriteRenderer.hpp>
 #include<Graphics/Texture/Texture.hpp>
@@ -149,9 +151,16 @@ namespace Ecse::System
 		if (InputManager::Create() == false) return false;
 		mInputManager = ServiceLocator::Get<InputManager>();
 
+		// Scene
+		mSceneManager = &SceneManager::Get();
+
 		// time
 		mTime.Initialize();
 
+		// Assets
+		auto& pathMgr = AssetPathManager::Get();
+		pathMgr.Initialize();
+		std::filesystem::path exeDir = std::filesystem::current_path(); // または GetExeDir()
 
 		//	EntityManager
 		if (ECS::EntityManager::Create() == false) return false;
@@ -254,8 +263,10 @@ namespace Ecse::System
 	void Engine::Update()
 	{
 		auto& reg = mpEntityManager->GetRegistry();
+		auto dt = mTime.GetDeltaTime();
 		SYS::CameraSystem::Update(reg);
-		SYS::FbxAnimationSystem::Update(reg, mTime.GetDeltaTime());
+		SYS::FbxAnimationSystem::Update(reg, dt);
+		mSceneManager->Update(dt);
 	}
 
 	/// <summary>

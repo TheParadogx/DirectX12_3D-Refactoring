@@ -86,6 +86,7 @@
 #include<System/Service/ServiceLocator.hpp>
 #include<System/Log/Logger.hpp>
 #include<Debug/ImGui/ImGuiManager.hpp>
+#include<System/Assetpath/AssetPathManager.hpp>
 
 // alias
 #include<Utility/Using/NamespaceAlias.hpp>
