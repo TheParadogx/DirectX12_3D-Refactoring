@@ -16,6 +16,7 @@
 #include<Graphics/Shader/ShaderManager.hpp>
 #include<Graphics/Texture/Manager/TextureManager.hpp>
 #include<System/Animation/FbxAnimationSystem.hpp>
+#include<System/Scene/SceneManager.hpp>
 
 #include<Graphics/Sprite/Renderer/SpriteRenderer.hpp>
 #include<Graphics/Texture/Texture.hpp>
@@ -150,6 +151,9 @@ namespace Ecse::System
 		if (InputManager::Create() == false) return false;
 		mInputManager = ServiceLocator::Get<InputManager>();
 
+		// Scene
+		mSceneManager = &SceneManager::Get();
+
 		// time
 		mTime.Initialize();
 
@@ -259,8 +263,10 @@ namespace Ecse::System
 	void Engine::Update()
 	{
 		auto& reg = mpEntityManager->GetRegistry();
+		auto dt = mTime.GetDeltaTime();
 		SYS::CameraSystem::Update(reg);
-		SYS::FbxAnimationSystem::Update(reg, mTime.GetDeltaTime());
+		SYS::FbxAnimationSystem::Update(reg, dt);
+		mSceneManager->Update(dt);
 	}
 
 	/// <summary>

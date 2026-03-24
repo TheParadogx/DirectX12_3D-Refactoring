@@ -157,6 +157,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\System\Scene\IScene.hpp" />
+    <ClInclude Include="include\System\Scene\ITransition.hpp" />
+    <ClInclude Include="src\System\Scene\SceneManager.hpp" />
     <ClInclude Include="src\System\Assetpath\AssetPathManager.hpp" />
     <ClInclude Include="include\Utility\Singleton\Singleton.hpp" />
     <ClInclude Include="src\System\Input\Manager\InputManager.hpp" />
@@ -227,6 +230,7 @@
     <ClInclude Include="src\System\Input\Mouse\MouseButton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Scene\SceneManager.cpp" />
     <ClCompile Include="src\System\Assetpath\AssetPathManager.cpp" />
     <ClCompile Include="src\System\Input\Manager\InputManager.cpp" />
     <ClCompile Include="src\System\Input\Gamepad\GamepadManager.cpp" />
