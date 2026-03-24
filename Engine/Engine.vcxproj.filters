@@ -228,6 +228,9 @@
     <ClInclude Include="include\System\Scene\ITransition.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="src\System\Physicsworld\Physicsworld.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\pch.cpp">
@@ -366,6 +369,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Scene\SceneManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Physicsworld\Physicsworld.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

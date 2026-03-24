@@ -128,8 +128,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\Plugin\DirectXTex\x64\$(Configuration);$(ProjectDir)External\Plugin\mimalloc\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex.lib;mimalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\Plugin\DirectXTex\x64\$(Configuration);$(ProjectDir)External\Plugin\mimalloc\lib;$(ProjectDir)External\Plugin\Jolt\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTex.lib;mimalloc.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,13 +152,14 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\Plugin\DirectXTex\x64\$(Configuration);$(ProjectDir)External\Plugin\mimalloc\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex.lib;mimalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\Plugin\DirectXTex\x64\$(Configuration);$(ProjectDir)External\Plugin\mimalloc\lib;$(ProjectDir)External\Plugin\Jolt\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTex.lib;mimalloc.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\System\Scene\IScene.hpp" />
     <ClInclude Include="include\System\Scene\ITransition.hpp" />
+    <ClInclude Include="src\System\Physicsworld\Physicsworld.hpp" />
     <ClInclude Include="src\System\Scene\SceneManager.hpp" />
     <ClInclude Include="src\System\Assetpath\AssetPathManager.hpp" />
     <ClInclude Include="include\Utility\Singleton\Singleton.hpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="src\System\Input\Mouse\MouseButton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\System\Physicsworld\Physicsworld.cpp" />
     <ClCompile Include="src\System\Scene\SceneManager.cpp" />
     <ClCompile Include="src\System\Assetpath\AssetPathManager.cpp" />
     <ClCompile Include="src\System\Input\Manager\InputManager.cpp" />
