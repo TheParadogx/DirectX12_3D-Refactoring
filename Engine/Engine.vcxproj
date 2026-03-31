@@ -157,6 +157,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ECS\Component\Rigidbody\RigidbodyComponent.hpp" />
     <ClInclude Include="include\System\Scene\IScene.hpp" />
     <ClInclude Include="include\System\Scene\ITransition.hpp" />
     <ClInclude Include="src\System\Physicsworld\Physicsworld.hpp" />
